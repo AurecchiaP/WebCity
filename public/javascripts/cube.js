@@ -23,14 +23,6 @@ function init() {
 
 
 
-    // var req = $.ajax(jsRoutes.controllers.HomeController.testo())
-    //     .done(
-    //         console.log(req)
-    //     )
-    //     .fail(
-    //         console.log("failed")
-    //     );
-
 
     var r = jsRoutes.controllers.HomeController.testo();
     $.ajax({
@@ -38,6 +30,7 @@ function init() {
         type: r.type,
         success: function(data) {
         console.log(data);
+        var json = JSON.parse(data)
     }, error: function() {
             console.log("fail")
         }

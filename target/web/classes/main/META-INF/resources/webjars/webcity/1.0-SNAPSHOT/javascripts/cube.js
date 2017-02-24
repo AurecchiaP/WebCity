@@ -23,14 +23,6 @@ function init() {
 
 
 
-    // var req = $.ajax(jsRoutes.controllers.HomeController.testo())
-    //     .done(
-    //         console.log(req)
-    //     )
-    //     .fail(
-    //         console.log("failed")
-    //     );
-
 
     var r = jsRoutes.controllers.HomeController.testo();
     $.ajax({
