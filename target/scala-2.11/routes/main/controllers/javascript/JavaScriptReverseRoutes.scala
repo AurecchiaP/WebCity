@@ -1,7 +1,7 @@
 
 // @GENERATOR:play-routes-compiler
 // @SOURCE:/Users/paolo/Documents/6th semester/thesis/webcity/conf/routes
-// @DATE:Thu Feb 23 14:17:10 CET 2017
+// @DATE:Fri Feb 24 11:38:23 CET 2017
 
 import play.api.routing.JavaScriptReverseRoute
 import play.api.mvc.{ QueryStringBindable, PathBindable, Call, JavascriptLiteral }
@@ -23,6 +23,16 @@ package controllers.javascript {
     }
 
   
+    // @LINE:8
+    def testo: JavaScriptReverseRoute = JavaScriptReverseRoute(
+      "controllers.HomeController.testo",
+      """
+        function() {
+          return _wA({method:"GET", url:"""" + _prefix + { _defaultPrefix } + """" + "test"})
+        }
+      """
+    )
+  
     // @LINE:6
     def index: JavaScriptReverseRoute = JavaScriptReverseRoute(
       "controllers.HomeController.index",
@@ -35,7 +45,7 @@ package controllers.javascript {
   
   }
 
-  // @LINE:9
+  // @LINE:12
   class ReverseAssets(_prefix: => String) {
 
     def _defaultPrefix: String = {
@@ -43,12 +53,32 @@ package controllers.javascript {
     }
 
   
-    // @LINE:9
+    // @LINE:12
     def versioned: JavaScriptReverseRoute = JavaScriptReverseRoute(
       "controllers.Assets.versioned",
       """
         function(file1) {
           return _wA({method:"GET", url:"""" + _prefix + { _defaultPrefix } + """" + "assets/" + (""" + implicitly[PathBindable[Asset]].javascriptUnbind + """)("file", file1)})
+        }
+      """
+    )
+  
+  }
+
+  // @LINE:9
+  class ReverseApplication(_prefix: => String) {
+
+    def _defaultPrefix: String = {
+      if (_prefix.endsWith("/")) "" else "/"
+    }
+
+  
+    // @LINE:9
+    def javascriptRoutes: JavaScriptReverseRoute = JavaScriptReverseRoute(
+      "controllers.Application.javascriptRoutes",
+      """
+        function() {
+          return _wA({method:"GET", url:"""" + _prefix + { _defaultPrefix } + """" + "javascriptRoutes"})
         }
       """
     )

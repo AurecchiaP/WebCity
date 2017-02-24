@@ -10,7 +10,7 @@ function init() {
     scene = new THREE.Scene();
     scene.background = new THREE.Color( 0xffffff );
 
-    camera = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 1, 10000 );
+    camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 10000 );
     camera.position.z = 5000;
 
     controls = new THREE.OrbitControls( camera );
@@ -21,20 +21,43 @@ function init() {
 
     document.body.appendChild( renderer.domElement );
 
-    for(i = 0; i < 10; i++) {
-        for (j = 0; j < 10; j++) {
-            drawCube(200, 50, 250*i, 250*j, 0);
-        }
-    }
 
+
+    // var req = $.ajax(jsRoutes.controllers.HomeController.testo())
+    //     .done(
+    //         console.log(req)
+    //     )
+    //     .fail(
+    //         console.log("failed")
+    //     );
+
+
+    var r = jsRoutes.controllers.HomeController.testo();
+    $.ajax({
+        url: r.url,
+        type: r.type,
+        success: function(data) {
+        console.log(data);
+    }, error: function() {
+            console.log("fail")
+        }
+    });
+
+    draw();
 }
 
-function drawCube(width, height, posX, posY, posZ) {
+function draw() {
+    drawCube( 800, 10, 200, 200, 0, 0xff0000, "package" );
+    drawCube( 200, 500, 0, 0, 250, 0x00ff00, "class" );
+}
+
+function drawCube(width, height, posX, posY, posZ, color, name) {
     geometry = new THREE.BoxGeometry( width, width, height );
-    material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: false } );
-    mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
-    mesh.position.set(posX, posY, posZ);
+    material = new THREE.MeshBasicMaterial( { color: color, wireframe: false } );
+    mesh = new THREE.Mesh( geometry, material );
+    scene.add( mesh );
+    mesh.name = name;
+    mesh.position.set( posX, posY, posZ );
 }
 
 function animate() {
@@ -67,19 +90,20 @@ function render() {
     // calculate objects intersecting the picking ray
     var intersects = raycaster.intersectObjects( scene.children );
 
-    if(intersects.length > 0) {
-        if(hoveredCube) {
-            hoveredCube.object.material.color.set( 0xff0000 );
+
+    if( intersects.length > 0 ) {
+        if( hoveredCube ) {
+            // hoveredCube.object.material.color.set( 0xff0000 );
         }
 
         hoveredCube = intersects[0];
-        hoveredCube.object.material.color.set( 0xff00ff );
+        // hoveredCube.object.material.color.set( 0xff00ff );
 
 
         text2.style.position = 'absolute';
         text2.style.width = 100;
         text2.style.height = 100;
-        text2.innerHTML = "test";
+        text2.innerHTML = hoveredCube.object.name;
         text2.style.top = event.clientY + 'px';
         text2.style.left = event.clientX + 'px';
         text2.hidden = false;
@@ -87,7 +111,7 @@ function render() {
     }
     else {
         if(hoveredCube) {
-            hoveredCube.object.material.color.set( 0xff0000 );
+            // hoveredCube.object.material.color.set( 0xff0000 );
             hoveredCube = null;
         }
         if(text2.hidden == false) {

@@ -3,16 +3,21 @@ plugins {
     id 'idea'
 }
 
+apply plugin: 'java'
+
+
 task wrapper(type: Wrapper) {
     gradleVersion = '3.1'
 }
 
 repositories {
     jcenter()
+    mavenCentral()
     maven {
         name "typesafe-maven-release"
         url "https://repo.typesafe.com/typesafe/maven-releases"
     }
+
     ivy {
         name "typesafe-ivy-release"
         url "https://repo.typesafe.com/typesafe/ivy-releases"
@@ -42,4 +47,5 @@ dependencies {
     ['filters-helpers', 'play-logback'].each { playModule ->
         play "com.typesafe.play:${playModule}_$scalaVersion:$playVersion"
     }
+    compile 'com.github.javaparser:javaparser-core:3.1.0'
 }
