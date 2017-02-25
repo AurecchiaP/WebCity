@@ -31,11 +31,11 @@ class index extends BaseScalaTemplate[play.twirl.api.HtmlFormat.Appendable,Forma
 
 Seq[Any](format.raw/*1.4*/("""
 
-"""),_display_(/*3.2*/main("Main page")/*3.19*/ {_display_(Seq[Any](format.raw/*3.21*/("""
-  """),format.raw/*4.58*/("""
-    """),format.raw/*5.41*/("""
-    """),format.raw/*6.45*/("""
-  """),format.raw/*7.14*/("""
+"""),_display_(/*3.2*/firstpage("Main page")/*3.24*/ {_display_(Seq[Any](format.raw/*3.26*/("""
+  """),format.raw/*4.3*/("""<form action="/test" method="post" id="inputField">
+    <input type="text" name="fname">
+    <input type="submit" value="Submit">
+  </form>
 """)))}),format.raw/*8.2*/("""
 """))
       }
@@ -57,11 +57,11 @@ Seq[Any](format.raw/*1.4*/("""
 object index extends index_Scope0.index
               /*
                   -- GENERATED --
-                  DATE: Wed Feb 22 09:32:37 CET 2017
+                  DATE: Sat Feb 25 10:51:13 CET 2017
                   SOURCE: /Users/paolo/Documents/6th semester/thesis/webcity/app/views/index.scala.html
-                  HASH: dcba1221a18253e1f2bc7b4a4c4cd02ed750cfb4
-                  MATRIX: 738->1|834->3|862->6|887->23|926->25|956->83|988->124|1020->169|1050->183|1081->185
-                  LINES: 27->1|32->1|34->3|34->3|34->3|35->4|36->5|37->6|38->7|39->8
+                  HASH: 7b2209d7d1ff417735cbabecb94a67442ffb64d3
+                  MATRIX: 738->1|834->3|862->6|892->28|931->30|960->33|1130->174
+                  LINES: 27->1|32->1|34->3|34->3|34->3|35->4|39->8
                   -- GENERATED --
               */
           

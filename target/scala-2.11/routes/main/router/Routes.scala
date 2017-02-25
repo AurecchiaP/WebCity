@@ -1,7 +1,7 @@
 
 // @GENERATOR:play-routes-compiler
 // @SOURCE:/Users/paolo/Documents/6th semester/thesis/webcity/conf/routes
-// @DATE:Fri Feb 24 11:38:23 CET 2017
+// @DATE:Sat Feb 25 10:11:02 CET 2017
 
 package router
 
@@ -18,9 +18,7 @@ class Routes(
   override val errorHandler: play.api.http.HttpErrorHandler, 
   // @LINE:6
   HomeController_0: controllers.HomeController,
-  // @LINE:9
-  Application_2: controllers.Application,
-  // @LINE:12
+  // @LINE:11
   Assets_1: controllers.Assets,
   val prefix: String
 ) extends GeneratedRouter {
@@ -29,17 +27,15 @@ class Routes(
    def this(errorHandler: play.api.http.HttpErrorHandler,
     // @LINE:6
     HomeController_0: controllers.HomeController,
-    // @LINE:9
-    Application_2: controllers.Application,
-    // @LINE:12
+    // @LINE:11
     Assets_1: controllers.Assets
-  ) = this(errorHandler, HomeController_0, Application_2, Assets_1, "/")
+  ) = this(errorHandler, HomeController_0, Assets_1, "/")
 
   import ReverseRouteContext.empty
 
   def withPrefix(prefix: String): Routes = {
     router.RoutesPrefix.setPrefix(prefix)
-    new Routes(errorHandler, HomeController_0, Application_2, Assets_1, prefix)
+    new Routes(errorHandler, HomeController_0, Assets_1, prefix)
   }
 
   private[this] val defaultPrefix: String = {
@@ -48,8 +44,8 @@ class Routes(
 
   def documentation = List(
     ("""GET""", this.prefix, """controllers.HomeController.index"""),
-    ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """test""", """controllers.HomeController.testo()"""),
-    ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """javascriptRoutes""", """controllers.Application.javascriptRoutes"""),
+    ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """classes""", """controllers.HomeController.getClasses()"""),
+    ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """javascriptRoutes""", """controllers.HomeController.javascriptRoutes"""),
     ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """assets/""" + "$" + """file<.+>""", """controllers.Assets.versioned(path:String = "/public", file:Asset)"""),
     Nil
   ).foldLeft(List.empty[(String,String,String)]) { (s,e) => e.asInstanceOf[Any] match {
@@ -75,32 +71,32 @@ class Routes(
     )
   )
 
-  // @LINE:8
-  private[this] lazy val controllers_HomeController_testo1_route = Route("GET",
-    PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("test")))
+  // @LINE:7
+  private[this] lazy val controllers_HomeController_getClasses1_route = Route("GET",
+    PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("classes")))
   )
-  private[this] lazy val controllers_HomeController_testo1_invoker = createInvoker(
-    HomeController_0.testo(),
+  private[this] lazy val controllers_HomeController_getClasses1_invoker = createInvoker(
+    HomeController_0.getClasses(),
     HandlerDef(this.getClass.getClassLoader,
       "router",
       "controllers.HomeController",
-      "testo",
+      "getClasses",
       Nil,
       "GET",
       """""",
-      this.prefix + """test"""
+      this.prefix + """classes"""
     )
   )
 
-  // @LINE:9
-  private[this] lazy val controllers_Application_javascriptRoutes2_route = Route("GET",
+  // @LINE:8
+  private[this] lazy val controllers_HomeController_javascriptRoutes2_route = Route("GET",
     PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("javascriptRoutes")))
   )
-  private[this] lazy val controllers_Application_javascriptRoutes2_invoker = createInvoker(
-    Application_2.javascriptRoutes,
+  private[this] lazy val controllers_HomeController_javascriptRoutes2_invoker = createInvoker(
+    HomeController_0.javascriptRoutes,
     HandlerDef(this.getClass.getClassLoader,
       "router",
-      "controllers.Application",
+      "controllers.HomeController",
       "javascriptRoutes",
       Nil,
       "GET",
@@ -109,7 +105,7 @@ class Routes(
     )
   )
 
-  // @LINE:12
+  // @LINE:11
   private[this] lazy val controllers_Assets_versioned3_route = Route("GET",
     PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("assets/"), DynamicPart("file", """.+""",false)))
   )
@@ -135,19 +131,19 @@ class Routes(
         controllers_HomeController_index0_invoker.call(HomeController_0.index)
       }
   
+    // @LINE:7
+    case controllers_HomeController_getClasses1_route(params) =>
+      call { 
+        controllers_HomeController_getClasses1_invoker.call(HomeController_0.getClasses())
+      }
+  
     // @LINE:8
-    case controllers_HomeController_testo1_route(params) =>
+    case controllers_HomeController_javascriptRoutes2_route(params) =>
       call { 
-        controllers_HomeController_testo1_invoker.call(HomeController_0.testo())
+        controllers_HomeController_javascriptRoutes2_invoker.call(HomeController_0.javascriptRoutes)
       }
   
-    // @LINE:9
-    case controllers_Application_javascriptRoutes2_route(params) =>
-      call { 
-        controllers_Application_javascriptRoutes2_invoker.call(Application_2.javascriptRoutes)
-      }
-  
-    // @LINE:12
+    // @LINE:11
     case controllers_Assets_versioned3_route(params) =>
       call(Param[String]("path", Right("/public")), params.fromPath[Asset]("file", None)) { (path, file) =>
         controllers_Assets_versioned3_invoker.call(Assets_1.versioned(path, file))

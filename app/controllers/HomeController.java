@@ -3,7 +3,11 @@ package controllers;
 import play.mvc.*;
 import utils.*;
 
+import play.routing.JavaScriptReverseRouter;
+
+
 import java.util.ArrayList;
+import java.io.File;
 
 //import com.google.gson.Gson;
 //import com.google.gson.GsonBuilder;
@@ -11,11 +15,19 @@ import java.util.ArrayList;
 
 public class HomeController extends Controller {
 
+    public Result javascriptRoutes() {
+        return ok(
+                JavaScriptReverseRouter.create("jsRoutes",
+                        routes.javascript.HomeController.getClasses()
+                )
+        ).as("text/javascript");
+    }
+
     public Result index() {
         return ok(views.html.index.render());
     }
 
-    public Result testo() {
+    public Result getClasses() {
 
         ArrayList<javaClass> classes = new ArrayList<>();
         ArrayList<File> files = BasicParser.getFiles("/Users/paolo/Documents/6th semester/thesis/commons-math", ".java");
@@ -30,7 +42,7 @@ public class HomeController extends Controller {
         });
 
 
-
+        //TODO toJSON
         return ok("{}");
     }
 }

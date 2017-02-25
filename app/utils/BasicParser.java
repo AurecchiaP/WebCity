@@ -14,7 +14,7 @@ public class BasicParser {
                     .filter((p) -> !p.toFile().isDirectory() && p.toFile().getAbsolutePath().endsWith(extension))
                     .forEach((p) -> files.add(p.toFile()));
         } catch (Exception e) {
-            System.out.println("failed");
+            System.out.println("failed to get files");
         }
         return files;
     }
