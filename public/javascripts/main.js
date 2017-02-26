@@ -4,11 +4,14 @@ var geometry, material, mesh;
 init();
 window.requestAnimationFrame( render );
 
-
 // Initialise the empty scene, with controls and camera
 function init() {
     scene = new THREE.Scene();
     scene.background = new THREE.Color( 0xffffff );
+
+    var light = new THREE.DirectionalLight( 0xffffff );
+    light.position.set( 0, 1, 1 ).normalize();
+    scene.add(light);
 
     camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 10000 );
     camera.position.z = 5000;
@@ -28,14 +31,20 @@ function init() {
         url: r.url,
         type: r.type,
         success: function(data) {
-            console.log(data);
-            var json = JSON.parse(data)
+            // console.log(data);
+            var json = JSON.parse(data);
+            console.log(json);
+            var i = 0;
+            var j = 0;
+            // json.forEach(function(obj) {
+            //     drawCube(obj.methods, obj.attributes,100*i, 100*j,10, 0xff0000, obj.path);
+            //     i++;
+            //     if(i%10 == 0) {i = 0; j++;}
+            // });
         }, error: function() {
             console.log("fail")
         }
     });
-
-    draw();
 }
 
 
@@ -43,13 +52,12 @@ function init() {
 window.addEventListener( 'mousemove', onMouseMove, false );
 
 var mouse = new THREE.Vector2();
-function onMouseMove( event ) {
 
+function onMouseMove( event ) {
     mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
     mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
     render();
 }
-
 
 
 // cast a ray to know if we're intersecting an object
@@ -62,8 +70,6 @@ hoverText.style.height = 100;
 document.body.appendChild( hoverText );
 
 function render() {
-
-
     raycaster.setFromCamera( mouse, camera );
     var intersects = raycaster.intersectObjects( scene.children );
 

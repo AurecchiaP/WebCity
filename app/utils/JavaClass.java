@@ -1,12 +1,12 @@
 package utils;
 
-public class javaClass {
+public class JavaClass {
 
     private String path;
     private int methods;
     private int attributes;
 
-    public javaClass(String path, int methods, int attributes) {
+    public JavaClass(String path, int methods, int attributes) {
         this.path = path;
         this.methods = methods;
         this.attributes = attributes;
