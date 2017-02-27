@@ -62,7 +62,7 @@ public class HomeController extends Controller {
         Gson gson = new Gson();
         String jsonClasses = gson.toJson(pkg);
 //        System.out.println(jsonClasses);
-
+        System.out.println(BasicParser.totClasses);
         //TODO toJSON
         return ok(jsonClasses);
     }

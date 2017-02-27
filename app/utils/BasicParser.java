@@ -37,10 +37,15 @@ import java.io.File;
 import java.io.IOException;
 
 
+
 public class BasicParser {
+
+    // TODO delete this later, it's to count size of repo
+    public static int totClasses = 0;
 
     public static JavaPackage getPackage(String path, String extension) {
         JavaPackage currentPackage = new JavaPackage(path);
+        totClasses += 1;
         currentPackage.setClasses(getClasses(path, extension, currentPackage));
 
         ArrayList<File> packageList = new ArrayList<>();
@@ -103,6 +108,7 @@ public class BasicParser {
             }, null);
 
             cls = new JavaClass(n.getName().toString(), methods, attributes);
+            totClasses +=1;
             pkg.addClass(cls);
             super.visit(n, arg);
         }

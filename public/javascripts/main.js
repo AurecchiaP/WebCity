@@ -6,9 +6,39 @@ init();
 
 window.requestAnimationFrame( render );
 
+var frame = 0;
+var an;
+
+function animate() {
+    an = requestAnimationFrame(animate);
+    if(frame < 10) {
+        var i = meshes.length;
+        while (i--) {
+            meshes[i].scale.z += Math.sin(frame);
+        }
+        frame += 0.5;
+        renderer.render(scene, camera);
+    }
+    else {
+        cancelAnimationFrame( an );
+        frame = 0;
+    }
+}
+
+var btn = document.createElement("button");
+btn.style.position = "absolute";
+btn.style.top = "10px";
+btn.style.left = "10px";
+var t = document.createTextNode("transition");
+btn.appendChild(t);
+
+btn.onclick = function() {
+    animate();
+};
+
+document.body.appendChild(btn);
 
 
-var x = 5;
 // Initialise the empty scene, with controls and camera
 function init() {
     scene = new THREE.Scene();
@@ -74,7 +104,9 @@ var hoverText = document.createElement( 'div' );
 hoverText.style.position = 'absolute';
 hoverText.style.width = 100;
 hoverText.style.height = 100;
-hoverText.style.textShadow = "#FFFFFF 0 0 15px";
+hoverText.style.textShadow = "-1px 0 rgba(255,255,255,0.8), 0 1px rgba(255,255,255,0.8), 1px 0 rgba(255,255,255,0.8), 0 -1px rgba(255,255,255,0.8)";
+// text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+
 document.body.appendChild( hoverText );
 
 function render() {
@@ -108,5 +140,6 @@ function render() {
         }
     }
 
+    TWEEN.update();
     renderer.render( scene, camera );
 }

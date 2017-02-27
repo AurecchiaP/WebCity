@@ -1,6 +1,6 @@
 function draw(data, sizeX, sizeY) {
 
-    drawCube( sizeX, sizeY, 20, 0, 0, 0, 0xff0000, data.name );
+    // drawCube( sizeX, sizeY, 20, 0, 0, 0, 0xff0000, data.name );
 
     if (data.classes.length != 0 && data.children.length != 0) {
 
@@ -11,7 +11,65 @@ function draw(data, sizeX, sizeY) {
     }
     else if (data.children.length != 0) {
         var split = Math.floor(data.children.length / 2);
-        // for(var i = 0; i < data.children.length; i++) {
+        var n = 10;
+        for (var i = 0; i < n; i++) {
+            for (var j = 0; j < n; j++) {
+                drawCube(
+                    50,
+                    50,
+                    50,
+                    55*i,
+                    55*j,
+                    10,
+                    0x220000,
+                    data.name
+                );
+            }
+        }
+        for (var i = 0; i < n; i++) {
+            for (var j = 0; j < n; j++) {
+                drawCube(
+                    50,
+                    50,
+                    50,
+                    55*-i,
+                    55*-j,
+                    10,
+                    0x220000,
+                    data.name
+                );
+            }
+        }
+        for (var i = 0; i < n; i++) {
+            for (var j = 0; j < n; j++) {
+                drawCube(
+                    50,
+                    50,
+                    50,
+                    55*i,
+                    55*-j,
+                    10,
+                    0x220000,
+                    data.name
+                );
+            }
+        }
+        for (var i = 0; i < n; i++) {
+            for (var j = 0; j < n; j++) {
+                drawCube(
+                    50,
+                    50,
+                    50,
+                    55*-i,
+                    55*j,
+                    10,
+                    0x220000,
+                    data.name
+                );
+            }
+        }
+
+        /*
             drawCube(
                 1730,
                 1730,
@@ -52,20 +110,35 @@ function draw(data, sizeX, sizeY) {
             0x220000,
             data.name
         );
-        // }
+        */
         loaded();
     }
-
-    // drawCube( 800, 10, 200, 200, 0, 0xff0000, "package" );
-    // drawCube( 200, 500, 0, 0, 250, 0x00ff00, "class" );
 }
+
+var meshes = [];
 
 function drawCube( width, depth, height, posX, posY, posZ, color, name ) {
     geometry = new THREE.BoxGeometry( width, depth, height );
     // TODO basic material gives best performance
     material = new THREE.MeshToonMaterial( { color: color, wireframe: false } );
+    // material = new THREE.MeshBasicMaterial( { color: color, wireframe: false } );
+    // material = new THREE.MeshPhongMaterial( { color: color, wireframe: false } );
     mesh = new THREE.Mesh( geometry, material );
-    scene.add( mesh );
+    // geometry.mergeMesh(mesh);
     mesh.name = name;
     mesh.position.set( posX, posY, posZ );
+    meshes.push( mesh );
+    // meshes.push( mesh );
+    scene.add( mesh );
+}
+
+function mergeMeshes (meshes) {
+    var combined = new THREE.Geometry();
+
+    for (var i = 0; i < meshes.length; i++) {
+        meshes[i].updateMatrix();
+        combined.merge(meshes[i].geometry, meshes[i].matrix);
+    }
+
+    return combined;
 }
