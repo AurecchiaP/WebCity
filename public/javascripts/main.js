@@ -127,8 +127,7 @@ document.body.appendChild( hoverText );
 
 function render() {
     raycaster.setFromCamera( mouse, camera );
-    var intersects = raycaster.intersectObjects( scene.children );
-
+    var intersects = raycaster.intersectObjects( meshes );
     // if we intersected some objects
     if( intersects.length > 0 ) {
         // if( hoveredCube ) {

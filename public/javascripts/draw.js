@@ -11,7 +11,7 @@ function draw(data, sizeX, sizeY) {
     }
     else if (data.children.length != 0) {
         var split = Math.floor(data.children.length / 2);
-        var n = 10;
+        var n = 100;
         for (var i = 0; i < n; i++) {
             for (var j = 0; j < n; j++) {
                 drawCube(
@@ -22,7 +22,7 @@ function draw(data, sizeX, sizeY) {
                     55*j,
                     10,
                     0x220000,
-                    data.name
+                    data.name + i.toString() + "-" + j.toString()
                 );
             }
         }
@@ -36,7 +36,7 @@ function draw(data, sizeX, sizeY) {
                     55*-j,
                     10,
                     0x220000,
-                    data.name
+                    data.name + i.toString() + "-" + j.toString()
                 );
             }
         }
@@ -50,7 +50,7 @@ function draw(data, sizeX, sizeY) {
                     55*-j,
                     10,
                     0x220000,
-                    data.name
+                    data.name + i.toString() + "-" + j.toString()
                 );
             }
         }
@@ -64,7 +64,7 @@ function draw(data, sizeX, sizeY) {
                     55*j,
                     10,
                     0x220000,
-                    data.name
+                    data.name + i.toString() + "-" + j.toString()
                 );
             }
         }
@@ -111,6 +111,10 @@ function draw(data, sizeX, sizeY) {
             data.name
         );
         */
+        var geom = mergeMeshes( meshes );
+        material.visible = true;
+        mesh = new THREE.Mesh( geom, material );
+        scene.add(mesh);
         loaded();
     }
 }
@@ -121,14 +125,14 @@ function drawCube( width, depth, height, posX, posY, posZ, color, name ) {
     geometry = new THREE.BoxGeometry( width, depth, height );
     // TODO basic material gives best performance
     material = new THREE.MeshToonMaterial( { color: color, wireframe: false } );
-    // material = new THREE.MeshBasicMaterial( { color: color, wireframe: false } );
-    // material = new THREE.MeshPhongMaterial( { color: color, wireframe: false } );
+    // invisible material allows raycasting invisible objects
+    material.visible = false;
     mesh = new THREE.Mesh( geometry, material );
-    // geometry.mergeMesh(mesh);
     mesh.name = name;
-    mesh.position.set( posX, posY, posZ );
+    mesh.translateX( posX );
+    mesh.translateY( posY );
+    mesh.translateZ( posZ );
     meshes.push( mesh );
-    // meshes.push( mesh );
     scene.add( mesh );
 }
 
