@@ -8,14 +8,28 @@ window.requestAnimationFrame( render );
 
 var frame = 0;
 var an;
+var upDown = false;
 
 function animate() {
     an = requestAnimationFrame(animate);
     if(frame < 10) {
         var i = meshes.length;
         while (i--) {
-            if(frame < 5){meshes[i].scale.z += 0.5;}
-            else {meshes[i].scale.z -= 0.5;}
+            if(i%2 == 0) {
+                if (upDown) {
+                    meshes[i].scale.z += 0.5;
+                }
+                else {
+                    meshes[i].scale.z -= 0.5;
+                }
+            } else {
+                if (!upDown) {
+                    meshes[i].scale.z += 0.5;
+                }
+                else {
+                    meshes[i].scale.z -= 0.5;
+                }
+            }
         }
         frame += 0.5;
         renderer.render(scene, camera);
@@ -23,6 +37,7 @@ function animate() {
     else {
         cancelAnimationFrame( an );
         frame = 0;
+        upDown = !upDown;
     }
 }
 
@@ -141,6 +156,5 @@ function render() {
         }
     }
 
-    TWEEN.update();
     renderer.render( scene, camera );
 }
