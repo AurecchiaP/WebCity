@@ -14,7 +14,8 @@ function animate() {
     if(frame < 10) {
         var i = meshes.length;
         while (i--) {
-            meshes[i].scale.z += Math.sin(frame);
+            if(frame < 5){meshes[i].scale.z += 0.5;}
+            else {meshes[i].scale.z -= 0.5;}
         }
         frame += 0.5;
         renderer.render(scene, camera);

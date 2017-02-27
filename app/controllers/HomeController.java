@@ -40,30 +40,8 @@ public class HomeController extends Controller {
         ArrayList<JavaClass> classes = new ArrayList<>();
         JavaPackage pkg = BasicParser.getPackage("/Users/paolo/Documents/6th semester/thesis/commons-math", ".java");
 
-        /*files.forEach(file-> {
-            try{
-//                FileInputStream in = new FileInputStream(file);
-//                CompilationUnit cu = JavaParser.parse(in);
-//                new MethodVisitor().visit(cu, null);
-
-            }
-            catch(FileNotFoundException e) {
-                System.out.println("file not found");
-            }
-            //TODO parse it
-//            javaClass cls = new javaClass(file.toString(),40,50);
-//            classes.add(cls);
-        });
-
-//        classes.forEach(cls->{
-//            System.out.println(cls.getPath());
-//        });
-        */
         Gson gson = new Gson();
         String jsonClasses = gson.toJson(pkg);
-//        System.out.println(jsonClasses);
-        System.out.println(BasicParser.totClasses);
-        //TODO toJSON
         return ok(jsonClasses);
     }
 }
