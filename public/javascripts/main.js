@@ -2,8 +2,13 @@ var scene, camera, renderer, controls;
 var geometry, material, mesh;
 
 init();
+
+
 window.requestAnimationFrame( render );
 
+
+
+var x = 5;
 // Initialise the empty scene, with controls and camera
 function init() {
     scene = new THREE.Scene();
@@ -19,7 +24,8 @@ function init() {
     controls = new THREE.OrbitControls( camera );
     controls.addEventListener( 'change', render );
 
-    renderer = new THREE.WebGLRenderer();
+    // TODO may have to remove antialias for performance
+    renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize( window.innerWidth, window.innerHeight );
 
     document.body.appendChild( renderer.domElement );
@@ -31,20 +37,21 @@ function init() {
         url: r.url,
         type: r.type,
         success: function(data) {
-            // console.log(data);
-            var json = JSON.parse(data);
-            console.log(json);
-            var i = 0;
-            var j = 0;
-            // json.forEach(function(obj) {
-            //     drawCube(obj.methods, obj.attributes,100*i, 100*j,10, 0xff0000, obj.path);
-            //     i++;
-            //     if(i%10 == 0) {i = 0; j++;}
-            // });
+
+            if(data) {
+                var json = JSON.parse(data);
+                draw(json, 3500, 3500);
+                console.log(json);
+            }
         }, error: function() {
-            console.log("fail")
+            console.log("invalid server response");
         }
     });
+}
+
+function loaded() {
+    document.getElementById("loader-container").remove();
+    render();
 }
 
 
@@ -67,6 +74,7 @@ var hoverText = document.createElement( 'div' );
 hoverText.style.position = 'absolute';
 hoverText.style.width = 100;
 hoverText.style.height = 100;
+hoverText.style.textShadow = "#FFFFFF 0 0 15px";
 document.body.appendChild( hoverText );
 
 function render() {

@@ -29,4 +29,9 @@ public class JavaPackage {
     public void addChild(JavaPackage child) {
         this.children.add(child);
     }
+
+
+    public void addClass(JavaClass cls) {
+        this.classes.add(cls);
+    }
 }

@@ -41,7 +41,7 @@ public class BasicParser {
 
     public static JavaPackage getPackage(String path, String extension) {
         JavaPackage currentPackage = new JavaPackage(path);
-        currentPackage.setClasses(getClasses(path, extension));
+        currentPackage.setClasses(getClasses(path, extension, currentPackage));
 
         ArrayList<File> packageList = new ArrayList<>();
         for (File file : new File(path).listFiles()) {
@@ -53,7 +53,7 @@ public class BasicParser {
         return currentPackage;
     }
 
-    private static ArrayList<JavaClass> getClasses(String path, String extension) {
+    private static ArrayList<JavaClass> getClasses(String path, String extension, JavaPackage pkg) {
         ArrayList<JavaClass> classesList = new ArrayList<>();
         File[] files = new File(path).listFiles();
         if (files != null) {
@@ -63,34 +63,35 @@ public class BasicParser {
                         FileInputStream in = new FileInputStream(file);
 
                         CompilationUnit cu = JavaParser.parse(in);
-//                        System.out.println(file);
-                        new ClassVisitor().visit(cu, null);
+                        ClassVisitor cv = new ClassVisitor(pkg);
+                        cv.visit(cu, null);
                     } catch(Exception e) {
                         System.out.println("failed");
                     }
-                    JavaClass cls = new JavaClass(file.getPath(), 5, 4);
-                    classesList.add(cls);
                 }
             }
         }
-        return classesList;
+        return pkg.getClasses();
     }
 
     private static class ClassVisitor extends VoidVisitorAdapter<Void> {
 
+        private JavaPackage pkg;
         private JavaClass cls;
         private int methods = 0;
         private int attributes = 0;
 
+        public ClassVisitor(JavaPackage pkg) {
+            this.pkg = pkg;
+        }
+
         @Override
         public void visit(ClassOrInterfaceDeclaration n, Void arg) {
-//            System.out.println(n.getName());
 
             n.accept(new VoidVisitorAdapter<Void>() {
                 @Override
                 public void visit(MethodDeclaration n, Void arg) {
                     methods += 1;
-//                    System.out.println("Method name: " + n.getName());
                 }
             }, null);
 
@@ -98,12 +99,11 @@ public class BasicParser {
                 @Override
                 public void visit(FieldDeclaration n, Void arg) {
                     attributes += 1;
-//                    System.out.println("Field name: " + n);
                 }
             }, null);
 
             cls = new JavaClass(n.getName().toString(), methods, attributes);
-//            System.out.println("class:" + n.getName() + " " + methods + " " + attributes);
+            pkg.addClass(cls);
             super.visit(n, arg);
         }
     }
