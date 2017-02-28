@@ -12,6 +12,7 @@ function draw(data, sizeX, sizeY) {
     else if (data.children.length != 0) {
         var split = Math.floor(data.children.length / 2);
         var n = 100;
+        var c = 0;
         for (var i = 0; i < n; i++) {
             for (var j = 0; j < n; j++) {
                 drawCube(
@@ -26,48 +27,48 @@ function draw(data, sizeX, sizeY) {
                 );
             }
         }
-        for (var i = 0; i < n; i++) {
-            for (var j = 0; j < n; j++) {
-                drawCube(
-                    50,
-                    50,
-                    50,
-                    55*-i,
-                    55*-j,
-                    10,
-                    0x220000,
-                    data.name + i.toString() + "-" + j.toString()
-                );
-            }
-        }
-        for (var i = 0; i < n; i++) {
-            for (var j = 0; j < n; j++) {
-                drawCube(
-                    50,
-                    50,
-                    50,
-                    55*i,
-                    55*-j,
-                    10,
-                    0x220000,
-                    data.name + i.toString() + "-" + j.toString()
-                );
-            }
-        }
-        for (var i = 0; i < n; i++) {
-            for (var j = 0; j < n; j++) {
-                drawCube(
-                    50,
-                    50,
-                    50,
-                    55*-i,
-                    55*j,
-                    10,
-                    0x220000,
-                    data.name + i.toString() + "-" + j.toString()
-                );
-            }
-        }
+        // for (var i = 0; i < n; i++) {
+        //     for (var j = 0; j < n; j++) {
+        //         drawCube(
+        //             50,
+        //             50,
+        //             50,
+        //             55*-i,
+        //             55*-j,
+        //             10,
+        //             0x220000,
+        //             data.name + i.toString() + "-" + j.toString()
+        //         );
+        //     }
+        // }
+        // for (var i = 0; i < n; i++) {
+        //     for (var j = 0; j < n; j++) {
+        //         drawCube(
+        //             50,
+        //             50,
+        //             50,
+        //             55*i,
+        //             55*-j,
+        //             10,
+        //             0x220000,
+        //             data.name + i.toString() + "-" + j.toString()
+        //         );
+        //     }
+        // }
+        // for (var i = 0; i < n; i++) {
+        //     for (var j = 0; j < n; j++) {
+        //         drawCube(
+        //             50,
+        //             50,
+        //             50,
+        //             55*-i,
+        //             55*j,
+        //             10,
+        //             0x220000,
+        //             data.name + i.toString() + "-" + j.toString()
+        //         );
+        //     }
+        // }
 
         /*
             drawCube(

@@ -126,6 +126,7 @@ hoverText.style.textShadow = "-1px 0 rgba(255,255,255,0.8), 0 1px rgba(255,255,2
 document.body.appendChild( hoverText );
 
 function render() {
+    // raycasting still slows down a bit, not as much as before
     raycaster.setFromCamera( mouse, camera );
     var intersects = raycaster.intersectObjects( meshes );
     // if we intersected some objects
