@@ -12,106 +12,20 @@ function draw(data, sizeX, sizeY) {
     else if (data.children.length != 0) {
         var split = Math.floor(data.children.length / 2);
         var n = 100;
-        var c = 0;
         for (var i = 0; i < n; i++) {
             for (var j = 0; j < n; j++) {
                 drawCube(
-                    50,
-                    50,
-                    50,
-                    55*i,
-                    55*j,
+                    30,
+                    30,
+                    30,
+                    -(n*30/2)+35*i,
+                    -(n*30/2)+35*j,
                     10,
                     0x220000,
                     data.name + i.toString() + "-" + j.toString()
                 );
             }
         }
-        // for (var i = 0; i < n; i++) {
-        //     for (var j = 0; j < n; j++) {
-        //         drawCube(
-        //             50,
-        //             50,
-        //             50,
-        //             55*-i,
-        //             55*-j,
-        //             10,
-        //             0x220000,
-        //             data.name + i.toString() + "-" + j.toString()
-        //         );
-        //     }
-        // }
-        // for (var i = 0; i < n; i++) {
-        //     for (var j = 0; j < n; j++) {
-        //         drawCube(
-        //             50,
-        //             50,
-        //             50,
-        //             55*i,
-        //             55*-j,
-        //             10,
-        //             0x220000,
-        //             data.name + i.toString() + "-" + j.toString()
-        //         );
-        //     }
-        // }
-        // for (var i = 0; i < n; i++) {
-        //     for (var j = 0; j < n; j++) {
-        //         drawCube(
-        //             50,
-        //             50,
-        //             50,
-        //             55*-i,
-        //             55*j,
-        //             10,
-        //             0x220000,
-        //             data.name + i.toString() + "-" + j.toString()
-        //         );
-        //     }
-        // }
-
-        /*
-            drawCube(
-                1730,
-                1730,
-                2000,
-                865,
-                865,
-                1020,
-                0x220000,
-                data.name
-            );
-        drawCube(
-            1730,
-            1730,
-            20,
-            865 - 1740,
-            865 - 1740,
-            20,
-            0x220000,
-            data.name
-        );
-        drawCube(
-            1730,
-            1730,
-            20,
-            865,
-            865 - 1740,
-            20,
-            0x220000,
-            data.name
-        );
-        drawCube(
-            1730,
-            1730,
-            20,
-            865 - 1740,
-            865,
-            20,
-            0x220000,
-            data.name
-        );
-        */
         var geom = mergeMeshes( meshes );
         material.visible = true;
         mesh = new THREE.Mesh( geom, material );

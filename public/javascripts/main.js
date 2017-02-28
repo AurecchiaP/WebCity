@@ -46,6 +46,7 @@ btn.style.position = "absolute";
 btn.style.top = "10px";
 btn.style.left = "10px";
 var t = document.createTextNode("transition");
+btn.style.display = "none";
 btn.appendChild(t);
 
 btn.onclick = function() {
@@ -97,24 +98,41 @@ function init() {
 
 function loaded() {
     document.getElementById("loader-container").remove();
+    btn.style.display = "block";
     render();
 }
 
 
 // handle and update events with moving of the mouse
 window.addEventListener( 'mousemove', onMouseMove, false );
+window.addEventListener( 'resize', onMouseMove, false );
 
 var mouse = new THREE.Vector2();
+// var windowWidth = window.innerWidth;
+// var windowHeight = window.innerHeight;
 
 function onMouseMove( event ) {
+    // have to store window size, for when I reisze window
     mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
     mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+    render();
+}
+
+window.addEventListener( 'resize', onWindowResize, false );
+
+function onWindowResize(){
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize( window.innerWidth, window.innerHeight );
     render();
 }
 
 
 // cast a ray to know if we're intersecting an object
 var raycaster = new THREE.Raycaster();
+var intersects = [];
 var hoveredCube = null;
 var hoverText = document.createElement( 'div' );
 hoverText.style.position = 'absolute';
@@ -128,7 +146,7 @@ document.body.appendChild( hoverText );
 function render() {
     // raycasting still slows down a bit, not as much as before
     raycaster.setFromCamera( mouse, camera );
-    var intersects = raycaster.intersectObjects( meshes );
+    intersects = raycaster.intersectObjects( meshes );
     // if we intersected some objects
     if( intersects.length > 0 ) {
         // if( hoveredCube ) {
