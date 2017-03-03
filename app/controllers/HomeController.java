@@ -38,7 +38,7 @@ public class HomeController extends Controller {
     public Result getClasses() {
 
         ArrayList<JavaClass> classes = new ArrayList<>();
-        JavaPackage pkg = BasicParser.getPackage("/Users/paolo/Documents/6th semester/thesis/commons-math", ".java");
+        JavaPackage pkg = BasicParser.buildStructure("/Users/paolo/Documents/6th semester/thesis/commons-math", ".java");
 
         Gson gson = new Gson();
         String jsonClasses = gson.toJson(pkg);

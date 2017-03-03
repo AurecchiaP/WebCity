@@ -1,5 +1,6 @@
 var scene, camera, renderer, controls;
 var geometry, material, mesh;
+var canvas;
 
 init();
 
@@ -73,7 +74,8 @@ function init() {
 
     // TODO may have to remove antialias for performance
     renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize( window.innerWidth, window.innerHeight );
+    canvas = document.getElementById('canvas');
+    renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 
     document.body.appendChild( renderer.domElement );
 
@@ -106,10 +108,26 @@ function loaded() {
 // handle and update events with moving of the mouse
 window.addEventListener( 'mousemove', onMouseMove, false );
 window.addEventListener( 'resize', onMouseMove, false );
+window.addEventListener("keydown", onKeyPress, false);
+
+
+function onKeyPress(e) {
+    // e
+    if (e.keyCode == 69) {
+        console.log(e);
+        controls.dollyIn(1.1);
+        render();
+
+    }
+    // f
+    else if (e.keyCode == 70) {
+        console.log(e);
+        controls.dollyOut(1.1);
+        render();
+    }
+}
 
 var mouse = new THREE.Vector2();
-// var windowWidth = window.innerWidth;
-// var windowHeight = window.innerHeight;
 
 function onMouseMove( event ) {
     // have to store window size, for when I reisze window

@@ -2,6 +2,7 @@ package utils;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
@@ -35,10 +36,29 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import java.io.File;
 import java.io.IOException;
-
+import java.util.Optional;
 
 
 public class BasicParser {
+
+    public static JavaPackage buildStructure(String path, String extension) {
+        Path p1 = Paths.get(path);
+        try {
+            Optional<Path> hit = Files.walk(p1)
+                    .filter(file -> file.getFileName().equals(Paths.get("main")))
+                    .findAny();
+
+            if (hit.isPresent()) {
+                System.out.println(hit.get());
+                return getPackage(hit.get().toString(), extension);
+            } else {
+                System.out.println("rip");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public static JavaPackage getPackage(String path, String extension) {
         JavaPackage currentPackage = new JavaPackage(path);
@@ -55,7 +75,6 @@ public class BasicParser {
     }
 
     private static ArrayList<JavaClass> getClasses(String path, String extension, JavaPackage pkg) {
-        ArrayList<JavaClass> classesList = new ArrayList<>();
         File[] files = new File(path).listFiles();
         if (files != null) {
             for (File file : files) {
