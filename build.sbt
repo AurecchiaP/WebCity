@@ -4,7 +4,7 @@ organization := "com.example"
 version := "1.0-SNAPSHOT"
 
 lazy val root = (project in file(".")).enablePlugins(PlayJava)
-unmanagedBase <<= baseDirectory { base => base / "libs" }
+
 
 
 scalaVersion := "2.11.8"

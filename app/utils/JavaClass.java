@@ -6,6 +6,9 @@ public class JavaClass {
     private int methods;
     private int attributes;
 
+    public int cx;
+    public int cy;
+
     public JavaClass(String path, int methods, int attributes) {
         this.path = path;
         this.methods = methods;
