@@ -140,9 +140,8 @@ function onKeyPress(e) {
 var mouse = new THREE.Vector2();
 
 function onMouseMove( event ) {
-    // have to store window size, for when I reisze window
-    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+    mouse.x = ( ( event.clientX - renderer.domElement.offsetLeft ) / renderer.domElement.clientWidth ) * 2 - 1;
+    mouse.y = - ( ( event.clientY - renderer.domElement.offsetTop ) / renderer.domElement.clientHeight ) * 2 + 1;
     render();
 }
 

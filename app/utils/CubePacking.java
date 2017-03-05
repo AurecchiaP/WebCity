@@ -53,7 +53,7 @@ public class CubePacking {
 //                classesBin.x2 = parentBin.x1 + getMinSize(pkg);
 //            }
 
-            // FIXME this fitInBit should actually be drawing the classes; for now it's a package for as a placeholder
+            // FIXME this fitInBit should actually be drawing the classes; for now it's a package as a placeholder
             //        fitInBin(localBin, pkg);
             localBin.mergeBin(classesBin);
 //            printBin(localBin);
@@ -68,7 +68,8 @@ public class CubePacking {
             localBin.y2 += 30;
 //        }
 
-        pkg.z = recDepth * 100;
+        // FIXME find better height for packages
+        pkg.z = recDepth * 10;
         pkg.color = RGBtoInt(30 * recDepth, 100, 100);
 //        System.out.println(pkg.getName());
         count++;

@@ -34,7 +34,7 @@ function recDraw(data) {
     }
 
     // drawCube(data.w, data.w, 10, data.cx, data.cy, data.z, 0xdd5555, data.name);
-    drawCube(data.w * scale, data.w * scale, 100, data.cx * scale, data.cy * scale, data.z * scale, data.color, data.name);
+    drawCube(data.w * scale, data.w * scale, 10, data.cx * scale, data.cy * scale, data.z * scale, data.color, data.name);
 }
 
 function rec(data) {
