@@ -26,13 +26,15 @@ function draw(data, sizeX, sizeY) {
 
 }
 
+
+var scale = 0.2;
 function recDraw(data) {
-    for(var i = 0; i < data.children.length; ++i) {
+    for (var i = 0; i < data.children.length; ++i) {
         recDraw(data.children[i]);
     }
 
     // drawCube(data.w, data.w, 10, data.cx, data.cy, data.z, 0xdd5555, data.name);
-    drawCube(data.w, data.w, 10, data.cx, data.cy, data.z, data.color, data.name);
+    drawCube(data.w * scale, data.w * scale, 100, data.cx * scale, data.cy * scale, data.z * scale, data.color, data.name);
 }
 
 function rec(data) {
@@ -61,7 +63,7 @@ function fitInBin(data, bin) {
     clss.sort(function (a, b) {
         return (a.methods > b.methods) ? 1 : ((b.methods > a.methods) ? -1 : 0);
     });
-    var binRatio = Math.floor((bin.x12 - bin.x11)/(bin.x22 - bin.x21));
+    var binRatio = Math.floor((bin.x12 - bin.x11) / (bin.x22 - bin.x21));
     // x := such that x*binRatio + x = total
     var cubesPerWidth = Math.floor(clss.length / (binRatio + 1));
     var cubesPerDepth = Math.floor(clss.length / cubesPerWidth);
@@ -70,9 +72,9 @@ function fitInBin(data, bin) {
     var count = 0;
     for (var i = 0; i < cubesPerDepth; i++) {
         for (var j = 0; j < cubesPerWidth; j++) {
-            drawCube(clss[count].methods, clss[count].methods, clss[count].methods, -(bin.x12/2) + gridXSpacing * (1 + j * 2) / 2,-(bin.x22/2) + gridYSpacing * (1 + i * 2) / 2, 10 + (clss[count].methods * 100/2), 0x005500, clss[count].path);
+            drawCube(clss[count].methods, clss[count].methods, clss[count].methods, -(bin.x12 / 2) + gridXSpacing * (1 + j * 2) / 2, -(bin.x22 / 2) + gridYSpacing * (1 + i * 2) / 2, 10 + (clss[count].methods * 100 / 2), 0x005500, clss[count].path);
             count++;
-            if(count >= clss.length) return;
+            if (count >= clss.length) return;
         }
     }
 }

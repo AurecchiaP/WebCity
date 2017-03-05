@@ -38,19 +38,20 @@ public class CubePacking {
 
 //        if (count >= 4)  return null;
 //        count++;
-        if (count < 20) {
+//        if (count < 26) {
 //            printBin(parentBin);
-            if (parentBin.depth() > parentBin.width()) {
+//            if (parentBin.depth() > parentBin.width()) {
                 classesBin.x1 = parentBin.x2;
                 classesBin.x2 = parentBin.x2 + getMinSize(pkg);
                 classesBin.y1 = parentBin.y1;
                 classesBin.y2 = parentBin.y1 + getMinSize(pkg);
-            } else {
-                classesBin.x1 = parentBin.x2;
-                classesBin.x2 = parentBin.x2 + getMinSize(pkg);
-                classesBin.y1 = parentBin.y1;
-                classesBin.y2 = parentBin.y1 + getMinSize(pkg);
-            }
+//            }
+//            else {
+//                classesBin.y1 = parentBin.y2;
+//                classesBin.y2 = parentBin.y2 + getMinSize(pkg);
+//                classesBin.x1 = parentBin.x1;
+//                classesBin.x2 = parentBin.x1 + getMinSize(pkg);
+//            }
 
             // FIXME this fitInBit should actually be drawing the classes; for now it's a package for as a placeholder
             //        fitInBin(localBin, pkg);
@@ -63,11 +64,11 @@ public class CubePacking {
             }
 
             fitInBin(localBin, pkg);
-            localBin.x2 += 10;
-            localBin.y2 += 10;
-        }
+            localBin.x2 += 30;
+            localBin.y2 += 30;
+//        }
 
-        pkg.z = recDepth * 10;
+        pkg.z = recDepth * 100;
         pkg.color = RGBtoInt(30 * recDepth, 100, 100);
 //        System.out.println(pkg.getName());
         count++;
