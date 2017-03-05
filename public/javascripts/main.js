@@ -114,26 +114,22 @@ window.addEventListener("keydown", onKeyPress, false);
 function onKeyPress(e) {
     // e
     if (e.keyCode == 69) {
-        // console.log(e);
-        // controls.dollyIn(1.1);
         camera.position.z -= 100;
+        controls.update();
         render();
 
     }
     // f
     else if (e.keyCode == 70) {
-        // console.log(e);
-        // controls.dollyOut(1.1);
         camera.position.z += 100;
+        controls.update();
         render();
     }
 
-    else if(e.keyCode == 83) {
-        console.log(camera.fov);
-        // camera = new THREE.PerspectiveCamera( c, window.innerWidth / window.innerHeight, 1, 10000 );
-        camera.fov += 10;
-        // camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 10000 );
-        // camera.position.z -= 100;
+    else if (e.keyCode == 71) {
+        camera.position.x -= 500;
+        controls.update();
+        render();
     }
 }
 

@@ -21,9 +21,17 @@ function draw(data, sizeX, sizeY) {
     });
     // material.visible = true;
     mesh = new THREE.Mesh(geometry, material);
+
+
+    // bounding box to know size of total mesh; then move camera to its center, and update OrbitControls accordingly
+    var box = new THREE.Box3().setFromObject( mesh );
+    camera.position.x -= -box.getSize().x/2;
+    camera.position.y -= -box.getSize().y/2;
+    controls.target.set(box.getSize().x/2,box.getSize().y/2,0);
+    controls.update();
+
     scene.add(mesh);
     loaded();
-
 }
 
 
