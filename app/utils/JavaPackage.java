@@ -11,6 +11,8 @@ public class JavaPackage {
     public int cx;
     public int cy;
     public int w;
+    public int z;
+    public int color;
 
     public JavaPackage(String name) {
         this.name = name;

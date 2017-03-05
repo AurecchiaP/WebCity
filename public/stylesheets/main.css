@@ -1,6 +1,7 @@
 body {
     margin: 0;
     /*max-height: 95vh;*/
+    cursor: default;
 }
 
 #canvas {

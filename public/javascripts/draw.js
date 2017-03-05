@@ -7,59 +7,9 @@ var bin = {
 
 function draw(data, sizeX, sizeY) {
 
-    drawCube(bin.x22, bin.x12, 10, 0, 0, 5, 0xdd5555, "package");
-    var dt = {
-        classes: [
-            {
-                attributes: 0,
-                methods: 3,
-                path: "box1"
-            },
-            {
-                attributes: 0,
-                methods: 5,
-                path: "box2"
-            },
-            {
-                attributes: 0,
-                methods: 1,
-                path: "box3"
-            },
-            {
-                attributes: 0,
-                methods: 2,
-                path: "box4"
-            },
-            {
-                attributes: 0,
-                methods: 10,
-                path: "box5"
-            },
-            {
-                attributes: 0,
-                methods: 3,
-                path: "box6"
-            }
-        ]
-    };
-    fitInBin(dt, bin);
-    // rec(data);
-    // var split = Math.floor(data.children.length / 2);
-    // var n = 100;
-    // for (var i = 0; i < n; i++) {
-    //     for (var j = 0; j < n; j++) {
-    //         drawCube(
-    //             30,
-    //             30,
-    //             30,
-    //             -(n*30/2)+35*i,
-    //             -(n*30/2)+35*j,
-    //             10,
-    //             0x220000,
-    //             data.name + i.toString() + "-" + j.toString()
-    //         );
-    //     }
-    // }
+    // drawCube(bin.x22, bin.x12, 10, 0, 0, 5, 0xdd5555, "package");
+
+    recDraw(data);
 
     // TODO merged get same color
     var geometry = mergeMeshes(meshes);
@@ -74,6 +24,15 @@ function draw(data, sizeX, sizeY) {
     scene.add(mesh);
     loaded();
 
+}
+
+function recDraw(data) {
+    for(var i = 0; i < data.children.length; ++i) {
+        recDraw(data.children[i]);
+    }
+
+    // drawCube(data.w, data.w, 10, data.cx, data.cy, data.z, 0xdd5555, data.name);
+    drawCube(data.w, data.w, 10, data.cx, data.cy, data.z, data.color, data.name);
 }
 
 function rec(data) {
@@ -111,7 +70,7 @@ function fitInBin(data, bin) {
     var count = 0;
     for (var i = 0; i < cubesPerDepth; i++) {
         for (var j = 0; j < cubesPerWidth; j++) {
-            drawCube(clss[count].methods * 100, clss[count].methods * 100, clss[count].methods * 100,-(bin.x12/2) + gridXSpacing * (1 + j * 2) / 2,-(bin.x22/2) + gridYSpacing * (1 + i * 2) / 2, 10 + (clss[count].methods * 100/2), 0x005500, clss[count].path);
+            drawCube(clss[count].methods, clss[count].methods, clss[count].methods, -(bin.x12/2) + gridXSpacing * (1 + j * 2) / 2,-(bin.x22/2) + gridYSpacing * (1 + i * 2) / 2, 10 + (clss[count].methods * 100/2), 0x005500, clss[count].path);
             count++;
             if(count >= clss.length) return;
         }
