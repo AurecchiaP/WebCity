@@ -6,15 +6,12 @@ body {
 }
 
 #canvas {
-    margin: 0;
+    margin: auto;
     padding: 0;
     position: absolute;
     top: 0;
-    /*left: 0;*/
-    width: 99vw;
+    width: 100vw;
     height: 99vh;
-    /*width: 90vw;*/
-    /*height: 90vh;*/
 }
 
 #inputField {

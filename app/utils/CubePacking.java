@@ -9,13 +9,9 @@ import static utils.RGB.RGBtoInt;
 
 public class CubePacking {
 
-    private Bin usedBin;
-    private Bin openBin;
     public int count = 0;
 
     public CubePacking(JavaPackage pkg) {
-//        this.usedBin = new Bin(0,0,0,0,0,0);
-//        this.openBin = new Bin(0,0,0,0,0,0);
         Bin mainBin = new Bin(0, 0, 0, 0, 0, 0);
         int recDepth = 0;
         pack(pkg, mainBin, recDepth);
@@ -32,46 +28,43 @@ public class CubePacking {
             Bin temp = pack(child, parentBin, recDepth + 1);
             localBin.mergeBin(temp);
             parentBin.mergeBin(temp);
-//            localBin.mergeBin( pack(child, parentBin) );
         }
 
 
-//        if (count >= 4)  return null;
-//        count++;
-//        if (count < 26) {
-//            printBin(parentBin);
 //            if (parentBin.depth() > parentBin.width()) {
-                classesBin.x1 = parentBin.x2;
-                classesBin.x2 = parentBin.x2 + getMinSize(pkg);
-                classesBin.y1 = parentBin.y1;
-                classesBin.y2 = parentBin.y1 + getMinSize(pkg);
-//            }
-//            else {
-//                classesBin.y1 = parentBin.y2;
-//                classesBin.y2 = parentBin.y2 + getMinSize(pkg);
-//                classesBin.x1 = parentBin.x1;
-//                classesBin.x2 = parentBin.x1 + getMinSize(pkg);
-//            }
+        classesBin.x1 = parentBin.x2;
+        classesBin.x2 = parentBin.x2 + getMinSize(pkg);
+        classesBin.y1 = parentBin.y1;
+        classesBin.y2 = parentBin.y1 + getMinSize(pkg);
+//        }
+//        else {
+//            classesBin.y1 = parentBin.y2;
+//            classesBin.y2 = parentBin.y2 + getMinSize(pkg);
+//            classesBin.x1 = parentBin.x1;
+//            classesBin.x2 = parentBin.x1 + getMinSize(pkg);
+//        }
 
-            // FIXME this fitInBit should actually be drawing the classes; for now it's a package as a placeholder
-            //        fitInBin(localBin, pkg);
-            localBin.mergeBin(classesBin);
+        // FIXME this fitInBit should actually be drawing the classes; for now it's a package as a placeholder
+        //        fitInBin(localBin, pkg);
+        localBin.mergeBin(classesBin);
 //            printBin(localBin);
-            if (localBin.depth() > localBin.width()) {
-                localBin.x2 += localBin.depth() - localBin.width();
-            } else if (localBin.width() > localBin.depth()) {
-                localBin.y2 += localBin.width() - localBin.depth();
-            }
+        if (localBin.depth() > localBin.width()) {
+            localBin.x2 += localBin.depth() - localBin.width();
+        } else if (localBin.width() > localBin.depth()) {
+            localBin.y2 += localBin.width() - localBin.depth();
+        }
 
-            fitInBin(localBin, pkg);
-            localBin.x2 += 30;
-            localBin.y2 += 30;
+        fitInBin(localBin, pkg);
+
+        // space between neighboor packages
+        localBin.x2 += 30;
+        localBin.y2 += 30;
 //        }
 
         // FIXME find better height for packages
-        pkg.z = recDepth * 10;
-        pkg.color = RGBtoInt(30 * recDepth, 100, 100);
-//        System.out.println(pkg.getName());
+        // FIXME when changing this, also change height in recDraw
+        pkg.z = recDepth * 50;
+        pkg.color = RGBtoInt(27 * recDepth, 100, 100);
         count++;
 
         return localBin;
@@ -107,7 +100,6 @@ public class CubePacking {
         pkg.cy = bin.y1 + bin.depth() / 2;
         pkg.z = bin.z;
         pkg.w = bin.depth();
-        System.out.println(pkg.cx + " " + pkg.cy + " " + pkg.w);
     }
 
     private class Bin {
@@ -162,15 +154,6 @@ public class CubePacking {
             if (other.z > this.z) {
                 this.z = other.z;
             }
-//
-//            if (openBin.x1 > this.x2) {
-//                this.x2 = openBin.x2;
-//                this.y2 = max(openBin.y2, this.y2);
-//            }
-//            else {
-//                this.y2 = openBin.y2;
-//                this.x2 = max(openBin.x2, this.x2);
-//            }
         }
     }
 }

@@ -73,8 +73,10 @@ function init() {
     controls.addEventListener( 'change', render );
 
     // TODO may have to remove antialias for performance
-    renderer = new THREE.WebGLRenderer({ antialias: true });
+    // renderer = new THREE.WebGLRenderer({ antialias: true });
     canvas = document.getElementById('canvas');
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    // canvas = document.getElementById('canvas');
     renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 
     document.body.appendChild( renderer.domElement );
@@ -145,10 +147,15 @@ window.addEventListener( 'resize', onWindowResize, false );
 
 function onWindowResize(){
 
-    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.aspect = canvas.clientWidth/ canvas.clientHeight;
+
     camera.updateProjectionMatrix();
 
-    renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    camera.updateProjectionMatrix();
+    controls.update();
+    // controls.handleResize();
+
     render();
 }
 
