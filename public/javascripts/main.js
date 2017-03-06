@@ -54,7 +54,9 @@ btn.onclick = function() {
     animate();
 };
 
-document.body.appendChild(btn);
+
+// FIXME for now, no transition button
+// document.body.appendChild(btn);
 
 
 // Initialise the empty scene, with controls and camera
