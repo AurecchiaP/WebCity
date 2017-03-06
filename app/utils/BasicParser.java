@@ -1,47 +1,26 @@
 package utils;
 
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-
-
-import play.routing.JavaScriptReverseRouter;
-
-
-import java.util.List;
-import java.util.ArrayList;
-import java.io.File;
-import java.io.FileInputStream;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.github.javaparser.ast.*;
-import com.github.javaparser.ast.visitor.*;
-import com.github.javaparser.ast.body.*;
-import com.github.javaparser.*;
-import com.github.javaparser.ast.*;
-import utils.*;
-
-import java.io.IOException;
-
-import java.io.FileNotFoundException;
-
-import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseException;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.Optional;
 
 
 public class BasicParser {
 
-    public static JavaPackage buildStructure(String path, String extension) {
+    public static JavaPackage parseRepo(String path) {
         Path p1 = Paths.get(path);
         try {
             Optional<Path> hit = Files.walk(p1)
@@ -49,10 +28,10 @@ public class BasicParser {
                     .findAny();
 
             if (hit.isPresent()) {
-                System.out.println(hit.get());
-                return getPackage(hit.get().toString(), extension);
+                return getPackage(hit.get().toString());
             } else {
-                System.out.println("rip");
+                System.out.println("folder src/main not found");
+                return getPackage(path);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -60,33 +39,35 @@ public class BasicParser {
         return null;
     }
 
-    public static JavaPackage getPackage(String path, String extension) {
+    private static JavaPackage getPackage(String path) {
         JavaPackage currentPackage = new JavaPackage(path);
-        currentPackage.setClasses(getClasses(path, extension, currentPackage));
+        currentPackage.setClasses(getClasses(path, currentPackage));
 
-        ArrayList<File> packageList = new ArrayList<>();
         for (File file : new File(path).listFiles()) {
             if (file.isDirectory()) {
-                JavaPackage pkg = getPackage(file.getPath(), extension);
+                JavaPackage pkg = getPackage(file.getPath());
                 currentPackage.addChild(pkg);
             }
         }
         return currentPackage;
     }
 
-    private static ArrayList<JavaClass> getClasses(String path, String extension, JavaPackage pkg) {
+
+
+    private static ArrayList<JavaClass> getClasses(String path, JavaPackage pkg) {
         File[] files = new File(path).listFiles();
         if (files != null) {
             for (File file : files) {
-                if (!file.isDirectory() && file.getPath().endsWith(extension)) {
-                    try {
-                        FileInputStream in = new FileInputStream(file);
+                if (!file.isDirectory() && file.getPath().endsWith(".java")) {
 
+                    FileInputStream in;
+                    try {
+                        in = new FileInputStream(file);
                         CompilationUnit cu = JavaParser.parse(in);
                         ClassVisitor cv = new ClassVisitor(pkg);
                         cv.visit(cu, null);
-                    } catch(Exception e) {
-                        System.out.println("failed");
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -101,7 +82,7 @@ public class BasicParser {
         private int methods = 0;
         private int attributes = 0;
 
-        public ClassVisitor(JavaPackage pkg) {
+        private ClassVisitor(JavaPackage pkg) {
             this.pkg = pkg;
         }
 

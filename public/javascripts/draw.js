@@ -7,59 +7,9 @@ var bin = {
 
 function draw(data, sizeX, sizeY) {
 
-    drawCube(bin.x22, bin.x12, 10, 0, 0, 5, 0xdd5555, "package");
-    var dt = {
-        classes: [
-            {
-                attributes: 0,
-                methods: 3,
-                path: "box1"
-            },
-            {
-                attributes: 0,
-                methods: 5,
-                path: "box2"
-            },
-            {
-                attributes: 0,
-                methods: 1,
-                path: "box3"
-            },
-            {
-                attributes: 0,
-                methods: 2,
-                path: "box4"
-            },
-            {
-                attributes: 0,
-                methods: 10,
-                path: "box5"
-            },
-            {
-                attributes: 0,
-                methods: 3,
-                path: "box6"
-            }
-        ]
-    };
-    fitInBin(dt, bin);
-    // rec(data);
-    // var split = Math.floor(data.children.length / 2);
-    // var n = 100;
-    // for (var i = 0; i < n; i++) {
-    //     for (var j = 0; j < n; j++) {
-    //         drawCube(
-    //             30,
-    //             30,
-    //             30,
-    //             -(n*30/2)+35*i,
-    //             -(n*30/2)+35*j,
-    //             10,
-    //             0x220000,
-    //             data.name + i.toString() + "-" + j.toString()
-    //         );
-    //     }
-    // }
+    // drawCube(bin.x22, bin.x12, 10, 0, 0, 5, 0xdd5555, "package");
+
+    recDraw(data);
 
     // TODO merged get same color
     var geometry = mergeMeshes(meshes);
@@ -71,9 +21,28 @@ function draw(data, sizeX, sizeY) {
     });
     // material.visible = true;
     mesh = new THREE.Mesh(geometry, material);
+
+
+    // bounding box to know size of total mesh; then move camera to its center, and update OrbitControls accordingly
+    var box = new THREE.Box3().setFromObject( mesh );
+    camera.position.x -= -box.getSize().x/2;
+    camera.position.y -= -box.getSize().y/2;
+    controls.target.set(box.getSize().x/2,box.getSize().y/2,0);
+    controls.update();
+
     scene.add(mesh);
     loaded();
+}
 
+
+var scale = 0.2;
+function recDraw(data) {
+    for (var i = 0; i < data.children.length; ++i) {
+        recDraw(data.children[i]);
+    }
+
+    // drawCube(data.w, data.w, 10, data.cx, data.cy, data.z, 0xdd5555, data.name);
+    drawCube(data.w * scale, data.w * scale, 10, data.cx * scale, data.cy * scale, data.z * scale, data.color, data.name);
 }
 
 function rec(data) {
@@ -102,7 +71,7 @@ function fitInBin(data, bin) {
     clss.sort(function (a, b) {
         return (a.methods > b.methods) ? 1 : ((b.methods > a.methods) ? -1 : 0);
     });
-    var binRatio = Math.floor((bin.x12 - bin.x11)/(bin.x22 - bin.x21));
+    var binRatio = Math.floor((bin.x12 - bin.x11) / (bin.x22 - bin.x21));
     // x := such that x*binRatio + x = total
     var cubesPerWidth = Math.floor(clss.length / (binRatio + 1));
     var cubesPerDepth = Math.floor(clss.length / cubesPerWidth);
@@ -111,9 +80,9 @@ function fitInBin(data, bin) {
     var count = 0;
     for (var i = 0; i < cubesPerDepth; i++) {
         for (var j = 0; j < cubesPerWidth; j++) {
-            drawCube(clss[count].methods * 100, clss[count].methods * 100, clss[count].methods * 100,-(bin.x12/2) + gridXSpacing * (1 + j * 2) / 2,-(bin.x22/2) + gridYSpacing * (1 + i * 2) / 2, 10 + (clss[count].methods * 100/2), 0x005500, clss[count].path);
+            drawCube(clss[count].methods, clss[count].methods, clss[count].methods, -(bin.x12 / 2) + gridXSpacing * (1 + j * 2) / 2, -(bin.x22 / 2) + gridYSpacing * (1 + i * 2) / 2, 10 + (clss[count].methods * 100 / 2), 0x005500, clss[count].path);
             count++;
-            if(count >= clss.length) return;
+            if (count >= clss.length) return;
         }
     }
 }

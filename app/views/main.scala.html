@@ -1,5 +1,6 @@
 @(title: String)(content: Html)
 
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -10,18 +11,20 @@
 
     </head>
     <body>
-        <div id="loader-container">
-            <div id="loader"></div>
-        </div>
-        <div id="canvas"></div>
+
+        @import helper._
+        @form(routes.HomeController.visualization()) {
+            @CSRF.formField
+            <form method="post">
+                <input name="repo">
+                <input type="submit">
+            </form>
+        }
+
         @* And here's where we render the `Html` object containing
          * the page content. *@
         @content
         <script type="text/javascript" src="@routes.HomeController.javascriptRoutes"></script>
         <script src="@routes.Assets.versioned("javascripts/jquery-3.1.1.min.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.versioned("javascripts/three.min.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.versioned("javascripts/OrbitControls.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.versioned("javascripts/draw.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.versioned("javascripts/main.js")" type="text/javascript"></script>
     </body>
 </html>

@@ -4,6 +4,7 @@
 
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index
+GET     /visualization              controllers.HomeController.visualization
 GET     /classes                    controllers.HomeController.getClasses()
 GET     /javascriptRoutes           controllers.HomeController.javascriptRoutes
 

@@ -1,25 +1,13 @@
 package controllers;
 
-import play.mvc.*;
-import utils.*;
-
-import play.routing.JavaScriptReverseRouter;
-
-
-import java.util.ArrayList;
-import java.io.File;
-import java.io.FileInputStream;
-
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.github.javaparser.ast.*;
-import com.github.javaparser.ast.visitor.*;
-import com.github.javaparser.ast.body.*;
-import com.github.javaparser.*;
-
-import java.io.IOException;
-
-import java.io.FileNotFoundException;
+import play.mvc.Controller;
+import play.mvc.Result;
+import play.routing.JavaScriptReverseRouter;
+import play.twirl.api.Content;
+import utils.BasicParser;
+import utils.JavaPackage;
+import utils.CubePacking;
 
 public class HomeController extends Controller {
 
@@ -37,11 +25,19 @@ public class HomeController extends Controller {
 
     public Result getClasses() {
 
-        ArrayList<JavaClass> classes = new ArrayList<>();
-        JavaPackage pkg = BasicParser.buildStructure("/Users/paolo/Documents/6th semester/thesis/commons-math", ".java");
+        JavaPackage pkg = BasicParser.parseRepo("/Users/paolo/Documents/6th semester/thesis/commons-math");
 
         Gson gson = new Gson();
-        String jsonClasses = gson.toJson(pkg);
-        return ok(jsonClasses);
+        new CubePacking(pkg);
+        String json = gson.toJson(pkg);
+
+
+
+        return ok(json);
+    }
+
+    public Result visualization() {
+        redirect("visualization");
+        return ok();
     }
 }

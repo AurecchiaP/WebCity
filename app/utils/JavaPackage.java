@@ -8,6 +8,12 @@ public class JavaPackage {
     private ArrayList<JavaClass> classes;
     private ArrayList<JavaPackage> children;
 
+    public int cx;
+    public int cy;
+    public int w;
+    public int z;
+    public int color;
+
     public JavaPackage(String name) {
         this.name = name;
         this.children = new ArrayList<>();
@@ -18,12 +24,20 @@ public class JavaPackage {
         return name;
     }
 
+    public void setClasses(ArrayList<JavaClass> classes) {
+        this.classes = classes;
+    }
+
     public ArrayList<JavaClass> getClasses() {
         return classes;
     }
 
-    public void setClasses(ArrayList<JavaClass> classes) {
-        this.classes = classes;
+    public void setChildren(ArrayList<JavaPackage> children) {
+        this.children = children;
+    }
+
+    public ArrayList<JavaPackage> getChildren() {
+        return children;
     }
 
     public void addChild(JavaPackage child) {
