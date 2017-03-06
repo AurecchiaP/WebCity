@@ -70,6 +70,8 @@ function init() {
     camera.position.z = 5000;
 
     controls = new THREE.OrbitControls( camera );
+    controls.maxDistance = 7000;
+    controls.minDistance = 0;
     controls.addEventListener( 'change', render );
 
     // TODO may have to remove antialias for performance
