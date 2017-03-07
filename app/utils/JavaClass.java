@@ -1,5 +1,8 @@
 package utils;
 
+/**
+ *
+ */
 public class JavaClass {
 
     private String path;
@@ -9,6 +12,11 @@ public class JavaClass {
     public int cx;
     public int cy;
 
+    /**
+     * @param path
+     * @param methods
+     * @param attributes
+     */
     public JavaClass(String path, int methods, int attributes) {
         this.path = path;
         this.methods = methods;

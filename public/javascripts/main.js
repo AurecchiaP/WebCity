@@ -54,7 +54,7 @@ btn.onclick = function() {
     animate();
 };
 
-document.body.appendChild(btn);
+// document.body.appendChild(btn);
 
 
 // Initialise the empty scene, with controls and camera
@@ -118,20 +118,14 @@ window.addEventListener("keydown", onKeyPress, false);
 function onKeyPress(e) {
     // e
     if (e.keyCode == 69) {
-        camera.position.z -= 100;
+        camera.position.z -= 200;
         controls.update();
         render();
 
     }
     // f
     else if (e.keyCode == 70) {
-        camera.position.z += 100;
-        controls.update();
-        render();
-    }
-
-    else if (e.keyCode == 71) {
-        camera.position.x -= 500;
+        camera.position.z += 200;
         controls.update();
         render();
     }
@@ -171,9 +165,11 @@ hoverText.style.position = 'absolute';
 hoverText.style.width = 100;
 hoverText.style.height = 100;
 hoverText.style.textShadow = "-1px 0 rgba(255,255,255,0.8), 0 1px rgba(255,255,255,0.8), 1px 0 rgba(255,255,255,0.8), 0 -1px rgba(255,255,255,0.8)";
-// text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-
 document.body.appendChild( hoverText );
+
+var methodsText = document.getElementById("methods");
+var attributesText = document.getElementById("attributes");
+var nameText = document.getElementById("name");
 
 function render() {
     // raycasting still slows down a bit, not as much as before
@@ -189,10 +185,14 @@ function render() {
         // hoveredCube.object.material.color.set( 0xff00ff );
 
         // update text
-        hoverText.innerHTML = hoveredCube.object.name;
-        hoverText.style.top = event.clientY + 'px';
-        hoverText.style.left = event.clientX + 'px';
-        hoverText.hidden = false;
+        // hoverText.innerHTML = hoveredCube.object.name;
+        // hoverText.style.top = event.clientY + 'px';
+        // hoverText.style.left = event.clientX + 'px';
+        // hoverText.hidden = false;
+
+
+        nameText.innerText = hoveredCube.object.name;
+        // methodsText.innerText = hoveredCube.object.methods;
 
     }
     else {
@@ -204,6 +204,7 @@ function render() {
         if( hoverText.hidden == false ) {
             hoverText.hidden = true;
         }
+        nameText.innerText = "None";
     }
 
     renderer.render( scene, camera );

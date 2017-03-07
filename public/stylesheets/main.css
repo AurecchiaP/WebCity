@@ -5,14 +5,29 @@ body {
     overflow-y: hidden;
 }
 
+#container {
+    /*display: flex;*/
+    /*flex-direction: column;*/
+    /*width: 100vw;*/
+    /*height: 100vh;*/
+}
+
 #canvas {
+    /*position: static;*/
     margin: auto;
     padding: 0;
     position: absolute;
     top: 0;
     width: 100vw;
     height: 100vh;
+}
 
+#statistics {
+    padding: 1vw;
+    position: absolute;
+    width: 98vw;
+    height: 13vh;
+    background-color: rgba(0, 0, 0, 0.1);
 }
 
 #inputField {

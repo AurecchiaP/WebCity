@@ -53,7 +53,6 @@ public class BasicParser {
     }
 
 
-
     private static ArrayList<JavaClass> getClasses(String path, JavaPackage pkg) {
         File[] files = new File(path).listFiles();
         if (files != null) {
