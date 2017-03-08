@@ -9,7 +9,7 @@ import static utils.RGB.RGBtoInt;
 
 public class CubePacking {
 
-    public int count = 0;
+    private int maxDepth = 0;
 
     public CubePacking(JavaPackage pkg) {
         Bin mainBin = new Bin(0, 0, 0, 0, 0);
@@ -19,13 +19,20 @@ public class CubePacking {
 
         // FIXME sort by size to get better packing
         // FIXME have to iterate twice, ugly
-        pkgWidth(pkg);
+        pkgWidth(pkg, recDepth);
+        recDepth = 0;
         pack(pkg, mainBin, localBin, recDepth);
     }
 
-    private int pkgWidth(JavaPackage pkg) {
+
+    // FIXME it doesn't give exact ordering, but its close enough
+    // FIXME (by doing += width, we assume we're stacking them in one direction, not considering we could put them also
+    // FIXME on top)
+    private int pkgWidth(JavaPackage pkg, int depth) {
+        if(depth > maxDepth) maxDepth = depth;
+
         for (JavaPackage child : pkg.getChildren()) {
-            pkg.w += pkgWidth(child);
+            pkg.w += pkgWidth(child, depth + 1);
         }
 
         pkg.w += getMinSize(pkg);
@@ -93,7 +100,9 @@ public class CubePacking {
         // FIXME find better height for packages
         // FIXME when changing this, also change height in recDraw
         pkg.z = recDepth * 50;
-        pkg.color = RGBtoInt(27 * recDepth, 100, 100);
+
+        //TODO interpolate between grey and red?
+        pkg.color = RGBtoInt(255 * recDepth/maxDepth, 100, 100);
 
         if (pkg.getClasses().size() > 0) {
             fitClasses(classesBin, pkg);

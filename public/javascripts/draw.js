@@ -1,13 +1,5 @@
-var bin = {
-    x11: 0,
-    x21: 0,
-    x12: 3500,
-    x22: 3500
-};
-
 function draw(data, sizeX, sizeY) {
 
-    // drawCube(bin.x22, bin.x12, 10, 0, 0, 5, 0xdd5555, "package");
 
     recDraw(data);
 
@@ -19,7 +11,7 @@ function draw(data, sizeX, sizeY) {
         vertexColors: THREE.VertexColors,
         visible: true
     });
-    // material.visible = true;
+
     mesh = new THREE.Mesh(geometry, material);
 
 
@@ -46,7 +38,7 @@ function recDraw(data) {
 
     for (var i = 0; i < data.classes.length; ++i) {
         var cls = data.classes[i];
-        var clsHeight = cls.attributes * scale * 20;
+        var clsHeight = cls.attributes * scale * 30;
         drawClass(cls.methods * scale, cls.methods * scale, clsHeight, cls.cx * scale, cls.cy * scale, (cls.cz * scale) + ((clsHeight/2) + 5), 0x00000ff, cls);
     }
 
@@ -68,6 +60,7 @@ function drawClass(width, depth, height, posX, posY, posZ, color, data) {
         mesh.name = data.name;
         mesh.methods = data.methods;
         mesh.attributes = data.attributes;
+        mesh.type = "class";
         mesh.translateX(posX);
         mesh.translateY(posY);
         mesh.translateZ(posZ);
@@ -131,9 +124,9 @@ function drawCube(width, depth, height, posX, posY, posZ, color, data) {
     material.visible = false;
     mesh = new THREE.Mesh(geometry, material);
     mesh.name = data.name;
-    // console.log(data);
     mesh.classes = data.classes.length;
     mesh.width = width;
+    mesh.type = "package";
     mesh.translateX(posX);
     mesh.translateY(posY);
     mesh.translateZ(posZ);

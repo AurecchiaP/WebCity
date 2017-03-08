@@ -1,7 +1,7 @@
 var scene, camera, renderer, controls;
 var geometry, material, mesh;
 var canvas;
-var pinned, pinnedColor;
+var pinnedObject, isPinned, pinnedColor;
 
 init();
 
@@ -118,7 +118,6 @@ window.addEventListener("click", onClick, false);
 
 
 function onClick(e) {
-    console.log(hoveredCube.object.width);
 }
 
 
@@ -140,23 +139,28 @@ function onKeyPress(e) {
     else if (e.keyCode == 71) {
         intersects = raycaster.intersectObjects(meshes);
         // if we intersected some objects
-        if (pinned) {
-            pinned.object.material.visible = false;
-            pinned.object.material.color.set(pinnedColor);
-            pinned = null;
+        if (pinnedObject) {
+            pinnedObject.object.material.visible = false;
+            pinnedObject.object.material.color.set(pinnedColor);
+            pinnedObject = null;
+            isPinned = false;
         }
 
         if (intersects.length > 0) {
-            pinned = intersects[0];
-            pinnedColor = pinned.object.material.color;
-            pinned.object.material.visible = true;
-            pinned.object.material.color.set(0xF1BB4E);
-            // if( hoveredCube ) {
-            // hoveredCube.object.material.color.set( 0xff0000 );
-            // }
-            // get the closest intersection
-            // hoveredCube.object.;
-            // render();
+            pinnedObject = intersects[0];
+            pinnedColor = pinnedObject.object.material.color;
+            pinnedObject.object.material.visible = true;
+            pinnedObject.object.material.color.set(0xF1BB4E);
+            isPinned = true;
+            if (hoveredCube.object.type == "package") {
+                nameText.innerText = "Package name: " + hoveredCube.object.name;
+                content1Text.innerText = "Contained classes: " + hoveredCube.object.classes;
+            }
+            else if (hoveredCube.object.type == "class") {
+                nameText.innerText = "Class name: " + hoveredCube.object.name;
+                content1Text.innerText = "Contained methods: " + hoveredCube.object.methods;
+                content2Text.innerText = "Contained attributes: " + hoveredCube.object.attributes;
+            }
         }
         renderer.render(scene, camera);
         renderer.render(scene, camera);
@@ -166,7 +170,6 @@ function onKeyPress(e) {
 var mouse = new THREE.Vector2();
 
 function onMouseMove(event) {
-    flag = 1;
     mouse.x = ( ( event.clientX - renderer.domElement.offsetLeft ) / renderer.domElement.clientWidth ) * 2 - 1;
     mouse.y = -( ( event.clientY - renderer.domElement.offsetTop ) / renderer.domElement.clientHeight ) * 2 + 1;
     render();
@@ -183,7 +186,6 @@ function onWindowResize() {
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
     camera.updateProjectionMatrix();
     controls.update();
-    // controls.handleResize();
 
     render();
 }
@@ -200,7 +202,8 @@ hoverText.style.height = 100;
 hoverText.style.textShadow = "-1px 0 rgba(255,255,255,0.8), 0 1px rgba(255,255,255,0.8), 1px 0 rgba(255,255,255,0.8), 0 -1px rgba(255,255,255,0.8)";
 document.body.appendChild(hoverText);
 
-var classesText = document.getElementById("classes");
+var content1Text = document.getElementById("content1");
+var content2Text = document.getElementById("content2");
 var nameText = document.getElementById("name");
 
 function render() {
@@ -209,34 +212,29 @@ function render() {
     intersects = raycaster.intersectObjects(meshes);
     // if we intersected some objects
     if (intersects.length > 0) {
-        // if( hoveredCube ) {
-        // hoveredCube.object.material.color.set( 0xff0000 );
-        // }
+
         // get the closest intersection
         hoveredCube = intersects[0];
-        // hoveredCube.object.material.color.set( 0xff00ff );
 
-        // update text
-        // hoverText.innerHTML = hoveredCube.object.name;
-        // hoverText.style.top = event.clientY + 'px';
-        // hoverText.style.left = event.clientX + 'px';
-        // hoverText.hidden = false;
+        if (!isPinned) {
 
-
-        classesText.innerText = "Contained classes: " + hoveredCube.object.classes;
-        nameText.innerText = "Package name: " + hoveredCube.object.name;
-
+            if (hoveredCube.object.type == "package") {
+                nameText.innerText = "Package name: " + hoveredCube.object.name;
+                content1Text.innerText = "Contained classes: " + hoveredCube.object.classes;
+            }
+            else if (hoveredCube.object.type == "class") {
+                nameText.innerText = "Class name: " + hoveredCube.object.name;
+                content1Text.innerText = "Contained methods: " + hoveredCube.object.methods;
+                content2Text.innerText = "Contained attributes: " + hoveredCube.object.attributes;
+            }
+        }
     }
     else {
-        // if( hoveredCube ) {
-        // hoveredCube.object.material.color.set( 0xff0000 );
-        // hoveredCube = null;
-        // }
-        // hide text
-        if (hoverText.hidden == false) {
-            hoverText.hidden = true;
+        if(!isPinned) {
+            nameText.innerText = "None";
+            content1Text.innerText = "None";
+            content2Text.innerText = "None";
         }
-        nameText.innerText = "None";
     }
 
     renderer.render(scene, camera);
