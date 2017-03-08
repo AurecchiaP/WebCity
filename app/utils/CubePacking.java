@@ -12,66 +12,77 @@ public class CubePacking {
     public int count = 0;
 
     public CubePacking(JavaPackage pkg) {
-        Bin mainBin = new Bin(0, 0, 0, 0, 0, 0);
+        Bin mainBin = new Bin(0, 0, 0, 0, 0);
+        Bin localBin = new Bin(0, 0, 0, 0, 0);
         int recDepth = 0;
-        pack(pkg, mainBin, recDepth);
+        pack(pkg, mainBin, localBin, recDepth);
     }
 
-    private Bin pack(JavaPackage pkg, Bin parentBin, int recDepth) {
-
-        Bin localBin = new Bin(0, 0, 0, 0, 0, 0);
-        Bin classesBin = new Bin(0, 0, 0, 0, 0, 0);
+    private Bin pack(JavaPackage pkg, Bin mainBin, Bin parentBin, int recDepth) {
+        Bin localBin;
+        if (parentBin.depth() > parentBin.width()) {
+            localBin = new Bin(parentBin.x2, parentBin.x2, parentBin.y1, parentBin.y2, parentBin.z);
+        } else {
+            localBin = new Bin(parentBin.x1, parentBin.x2, parentBin.y2, parentBin.y2, parentBin.z);
+        }
+        Bin classesBin = new Bin(0, 0, 0, 0, 0);
 
         // TODO parentBin is total size up to that point; localBin is size of this and of children
-
         for (JavaPackage child : pkg.getChildren()) {
-            Bin temp = pack(child, parentBin, recDepth + 1);
+            Bin temp = pack(child, mainBin, localBin, recDepth + 1);
             localBin.mergeBin(temp);
-            parentBin.mergeBin(temp);
+            mainBin.mergeBin(temp);
         }
 
 
-//            if (parentBin.depth() > parentBin.width()) {
-        classesBin.x1 = parentBin.x2;
-        classesBin.x2 = parentBin.x2 + getMinSize(pkg);
-        classesBin.y1 = parentBin.y1;
-        classesBin.y2 = parentBin.y1 + getMinSize(pkg);
-//        }
-//        else {
-//            classesBin.y1 = parentBin.y2;
-//            classesBin.y2 = parentBin.y2 + getMinSize(pkg);
-//            classesBin.x1 = parentBin.x1;
-//            classesBin.x2 = parentBin.x1 + getMinSize(pkg);
-//        }
+        int minClassesSize = getMinSize(pkg);
+
+        if (localBin.depth() > localBin.width()) {
+            classesBin.x1 = localBin.x2;
+            classesBin.x2 = localBin.x2 + minClassesSize;
+            classesBin.y1 = localBin.y1;
+            classesBin.y2 = localBin.y1 + minClassesSize;
+        } else {
+            classesBin.y1 = localBin.y2;
+            classesBin.y2 = localBin.y2 + getMinSize(pkg);
+            classesBin.x1 = localBin.x1;
+            classesBin.x2 = localBin.x1 + getMinSize(pkg);
+        }
 
         // FIXME this fitInBit should actually be drawing the classes; for now it's a package as a placeholder
-        //        fitInBin(localBin, pkg);
+//        if (pkg.getClasses().size() > 0) {
+//            fitClasses(classesBin, pkg);
+//        }
+
         localBin.mergeBin(classesBin);
-//            printBin(localBin);
+
+        // makes localBin into a square
         if (localBin.depth() > localBin.width()) {
             localBin.x2 += localBin.depth() - localBin.width();
         } else if (localBin.width() > localBin.depth()) {
             localBin.y2 += localBin.width() - localBin.depth();
         }
-
+        // FIXME from 55 to 65 it breaks
         fitInBin(localBin, pkg);
 
-        // space between neighboor packages
+        // space between neighbor packages
         localBin.x2 += 30;
         localBin.y2 += 30;
-//        }
 
         // FIXME find better height for packages
         // FIXME when changing this, also change height in recDraw
         pkg.z = recDepth * 50;
         pkg.color = RGBtoInt(27 * recDepth, 100, 100);
-        count++;
+
+        if (pkg.getClasses().size() > 0) {
+            fitClasses(classesBin, pkg);
+        }
 
         return localBin;
     }
 
-    public void printBin(Bin bin) {
-        System.out.println(" x1:" + bin.x1 + " x2:" + bin.x2 + " y1:" + bin.y1 + " y2:" + bin.y2 + " ");
+    public void printBin(String name, Bin bin) {
+        System.out.println("x1:" + bin.x1 + " x2:" + bin.x2 + " y1:" + bin.y1 + " y2:" + bin.y2 + " " + name);
     }
 
     private int getMinSize(JavaPackage pkg) {
@@ -91,15 +102,39 @@ public class CubePacking {
 
         // TODO bins are squares, so I take maximum class size times the number of classes/2,
         // TODO which is the minimum side of a square needed to fit in the classes
-        return classes.get(0).getMethods() * classes.size() / 2;
+
+        // FIXME this isn't right, the second one should be
+        // FIXME find out why I have to scale it/ find the proper way to scale things
+//        return classes.get(0).getMethods() * (classes.size()) / 2;
+        return (int) Math.ceil(Math.sqrt(classes.get(0).getMethods() * (classes.size()))) * 40;
     }
 
     private void fitInBin(Bin bin, JavaPackage pkg) {
-        // TODO for now just center package; later, position every class in package
         pkg.cx = bin.x1 + bin.width() / 2;
         pkg.cy = bin.y1 + bin.depth() / 2;
         pkg.z = bin.z;
         pkg.w = bin.depth();
+    }
+
+    private void fitClasses(Bin bin, JavaPackage pkg) {
+        // FIXME find way to add "padding"
+        int x1 = bin.x1;
+        int x2 = bin.x2;
+        int y1 = bin.y1;
+        int y2 = bin.y2;
+        ArrayList<JavaClass> classes = pkg.getClasses();
+        int totalClasses = classes.size();
+        // FIXME ceil or floor
+        int cubesPerWidth = (int) Math.ceil(Math.sqrt(totalClasses)) + 2;
+        int gridSpacing = (x2 - x1) / (cubesPerWidth);
+        for (int i = 0; i < totalClasses; ++i) {
+            JavaClass cls = classes.get(i);
+            int x = i % (cubesPerWidth - 1) + 1;
+            int y = i / (cubesPerWidth - 1) + 1;
+            cls.cx = x1 + gridSpacing * x;
+            cls.cy = y1 + gridSpacing * y;
+            cls.cz = pkg.z;
+        }
     }
 
     private class Bin {
@@ -109,7 +144,7 @@ public class CubePacking {
         public int y2;
         public int z;
 
-        public Bin(int x1, int x2, int y1, int y2, int z1, int z2) {
+        public Bin(int x1, int x2, int y1, int y2, int z) {
             this.x1 = x1;
             this.x2 = x2;
             this.y1 = y1;
@@ -126,8 +161,20 @@ public class CubePacking {
         }
 
         public void mergeBin(Bin other) {
+
             // this is empty bin
-            if (this.x1 == this.x2) {
+
+
+//            if (this.x2 < other.x1 || other.x2 < this.x1 ||
+//                    this.y2 < other.y1 || other.y2 < this.y1) {
+//                this.x1 = other.x1;
+//                this.x2 = other.x2;
+//                this.y1 = other.y1;
+//                this.y2 = other.y2;
+//                this.z = other.z;
+//                return;
+//            }
+            if (this.width() == 0 || this.depth() == 0) {
                 this.x1 = other.x1;
                 this.x2 = other.x2;
                 this.y1 = other.y1;

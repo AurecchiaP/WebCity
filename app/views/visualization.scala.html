@@ -13,9 +13,18 @@
         <div id="loader-container">
             <div id="loader"></div>
         </div>
-        <div id="canvas"></div>
-        @* And here's where we render the `Html` object containing
-        * the page content. *@
+
+        <div id="container">
+
+            <div id="statistics">
+                <p id="name">None</p>
+                <p id="classes">0</p>
+            </div>
+
+            <p id="version">alpha</p>
+
+            <div id="canvas"></div>
+        </div>
         @content
 
         <script type="text/javascript" src="@routes.HomeController.javascriptRoutes"></script>

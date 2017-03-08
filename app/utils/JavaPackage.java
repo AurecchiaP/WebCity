@@ -2,6 +2,9 @@ package utils;
 
 import java.util.ArrayList;
 
+/**
+ *
+ */
 public class JavaPackage {
 
     private String name;
