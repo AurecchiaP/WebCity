@@ -15,7 +15,28 @@ public class CubePacking {
         Bin mainBin = new Bin(0, 0, 0, 0, 0);
         Bin localBin = new Bin(0, 0, 0, 0, 0);
         int recDepth = 0;
+
+
+        // FIXME sort by size to get better packing
+        // FIXME have to iterate twice, ugly
+        pkgWidth(pkg);
         pack(pkg, mainBin, localBin, recDepth);
+    }
+
+    private int pkgWidth(JavaPackage pkg) {
+        for (JavaPackage child : pkg.getChildren()) {
+            pkg.w += pkgWidth(child);
+        }
+
+        pkg.w += getMinSize(pkg);
+
+        pkg.getChildren().sort((c1, c2) -> {
+            if (c1.w == c2.w)
+                return 0;
+            return c1.w > c2.w ? -1 : 1;
+        });
+
+        return pkg.w;
     }
 
     private Bin pack(JavaPackage pkg, Bin mainBin, Bin parentBin, int recDepth) {

@@ -133,6 +133,7 @@ function drawCube(width, depth, height, posX, posY, posZ, color, data) {
     mesh.name = data.name;
     // console.log(data);
     mesh.classes = data.classes.length;
+    mesh.width = width;
     mesh.translateX(posX);
     mesh.translateY(posY);
     mesh.translateZ(posZ);
