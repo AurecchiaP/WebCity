@@ -28,9 +28,6 @@ public class CubePacking {
         Bin classesBin = new Bin(0, 0, 0, 0, 0);
 
         // TODO parentBin is total size up to that point; localBin is size of this and of children
-        if (count < 5) {
-            printBin(pkg.getName(), localBin);
-        }
         for (JavaPackage child : pkg.getChildren()) {
             Bin temp = pack(child, mainBin, localBin, recDepth + 1);
             localBin.mergeBin(temp);
@@ -53,15 +50,11 @@ public class CubePacking {
         }
 
         // FIXME this fitInBit should actually be drawing the classes; for now it's a package as a placeholder
-        //        fitInBin(localBin, pkg);
-        if (count < 5) {
+//        if (pkg.getClasses().size() > 0) {
+//            fitClasses(classesBin, pkg);
+//        }
 
-            printBin("main bin ", mainBin);
-            printBin("before classes merge ", localBin);
-            printBin("classes bin ", classesBin);
-            localBin.mergeBin(classesBin);
-            printBin("after classes merge ", localBin);
-        }
+        localBin.mergeBin(classesBin);
 
         // makes localBin into a square
         if (localBin.depth() > localBin.width()) {
@@ -72,7 +65,7 @@ public class CubePacking {
         // FIXME from 55 to 65 it breaks
         fitInBin(localBin, pkg);
 
-        // space between neighboor packages
+        // space between neighbor packages
         localBin.x2 += 30;
         localBin.y2 += 30;
 
@@ -80,6 +73,10 @@ public class CubePacking {
         // FIXME when changing this, also change height in recDraw
         pkg.z = recDepth * 50;
         pkg.color = RGBtoInt(27 * recDepth, 100, 100);
+
+        if (pkg.getClasses().size() > 0) {
+            fitClasses(classesBin, pkg);
+        }
 
         return localBin;
     }
@@ -105,15 +102,39 @@ public class CubePacking {
 
         // TODO bins are squares, so I take maximum class size times the number of classes/2,
         // TODO which is the minimum side of a square needed to fit in the classes
-        return classes.get(0).getMethods() * classes.size() / 2;
+
+        // FIXME this isn't right, the second one should be
+        // FIXME find out why I have to scale it/ find the proper way to scale things
+//        return classes.get(0).getMethods() * (classes.size()) / 2;
+        return (int) Math.ceil(Math.sqrt(classes.get(0).getMethods() * (classes.size()))) * 40;
     }
 
     private void fitInBin(Bin bin, JavaPackage pkg) {
-        // TODO for now just center package; later, position every class in package
         pkg.cx = bin.x1 + bin.width() / 2;
         pkg.cy = bin.y1 + bin.depth() / 2;
         pkg.z = bin.z;
         pkg.w = bin.depth();
+    }
+
+    private void fitClasses(Bin bin, JavaPackage pkg) {
+        // FIXME find way to add "padding"
+        int x1 = bin.x1;
+        int x2 = bin.x2;
+        int y1 = bin.y1;
+        int y2 = bin.y2;
+        ArrayList<JavaClass> classes = pkg.getClasses();
+        int totalClasses = classes.size();
+        // FIXME ceil or floor
+        int cubesPerWidth = (int) Math.ceil(Math.sqrt(totalClasses)) + 2;
+        int gridSpacing = (x2 - x1) / (cubesPerWidth);
+        for (int i = 0; i < totalClasses; ++i) {
+            JavaClass cls = classes.get(i);
+            int x = i % (cubesPerWidth - 1) + 1;
+            int y = i / (cubesPerWidth - 1) + 1;
+            cls.cx = x1 + gridSpacing * x;
+            cls.cy = y1 + gridSpacing * y;
+            cls.cz = pkg.z;
+        }
     }
 
     private class Bin {

@@ -30,6 +30,13 @@ body {
     background-color: rgba(0, 0, 0, 0.1);
 }
 
+#version {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding-right: 1vw;
+}
+
 #inputField {
     margin: auto;
     width: 100%;

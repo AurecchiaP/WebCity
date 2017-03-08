@@ -167,8 +167,7 @@ hoverText.style.height = 100;
 hoverText.style.textShadow = "-1px 0 rgba(255,255,255,0.8), 0 1px rgba(255,255,255,0.8), 1px 0 rgba(255,255,255,0.8), 0 -1px rgba(255,255,255,0.8)";
 document.body.appendChild( hoverText );
 
-var methodsText = document.getElementById("methods");
-var attributesText = document.getElementById("attributes");
+var classesText = document.getElementById("classes");
 var nameText = document.getElementById("name");
 
 function render() {
@@ -191,8 +190,8 @@ function render() {
         // hoverText.hidden = false;
 
 
-        nameText.innerText = hoveredCube.object.name;
-        // methodsText.innerText = hoveredCube.object.methods;
+        classesText.innerText = "Contained classes: " + hoveredCube.object.classes;
+        nameText.innerText = "Package name: " + hoveredCube.object.name;
 
     }
     else {
