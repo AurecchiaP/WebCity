@@ -57,8 +57,9 @@ public class HomeController extends Controller {
 
             pkg = BasicParser.parseRepo("/Users/paolo/Documents/6th semester/thesis/webcity/repository");
         }
-        else{
-        pkg = BasicParser.parseRepo("/Users/paolo/Documents/6th semester/thesis/commons-math");
+        else {
+            pkg = BasicParser.parseRepo("/Users/paolo/Documents/6th semester/thesis/commons-math");
+        }
 
         Gson gson = new Gson();
         new CubePacking(pkg);

@@ -1,6 +1,7 @@
 package utils;
 
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
@@ -14,6 +15,7 @@ public class CubePacking {
     public CubePacking(JavaPackage pkg) {
         Bin mainBin = new Bin(0, 0, 0, 0, 0);
         Bin localBin = new Bin(0, 0, 0, 0, 0);
+        ArrayList<Bin> openBins = new ArrayList<>();
         int recDepth = 0;
 
 
@@ -21,7 +23,7 @@ public class CubePacking {
         // FIXME have to iterate twice, ugly
         pkgWidth(pkg, recDepth);
         recDepth = 0;
-        pack(pkg, mainBin, localBin, recDepth);
+        pack(pkg, mainBin, localBin, openBins, recDepth);
     }
 
 
@@ -46,7 +48,8 @@ public class CubePacking {
         return pkg.w;
     }
 
-    private Bin pack(JavaPackage pkg, Bin mainBin, Bin parentBin, int recDepth) {
+    private Bin pack(JavaPackage pkg, Bin mainBin, Bin parentBin, ArrayList<Bin> parentOpenBins, int recDepth) {
+        ArrayList<Bin> openBins = new ArrayList<>();
         Bin localBin;
         if (parentBin.depth() > parentBin.width()) {
             localBin = new Bin(parentBin.x2, parentBin.x2, parentBin.y1, parentBin.y2, parentBin.z);
@@ -57,7 +60,7 @@ public class CubePacking {
 
         // TODO parentBin is total size up to that point; localBin is size of this and of children
         for (JavaPackage child : pkg.getChildren()) {
-            Bin temp = pack(child, mainBin, localBin, recDepth + 1);
+            Bin temp = pack(child, mainBin, localBin, openBins, recDepth + 1);
             localBin.mergeBin(temp);
             mainBin.mergeBin(temp);
         }
