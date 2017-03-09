@@ -1,7 +1,7 @@
-package utils;
+package models;
 
 /**
- *
+ * A model for Java classes
  */
 public class JavaClass {
 
@@ -13,11 +13,6 @@ public class JavaClass {
     public int cy;
     public int cz;
 
-    /**
-     * @param name
-     * @param methods
-     * @param attributes
-     */
     public JavaClass(String name, int methods, int attributes) {
         this.name = name;
         this.methods = methods;

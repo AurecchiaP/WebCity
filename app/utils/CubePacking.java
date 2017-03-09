@@ -1,9 +1,11 @@
 package utils;
 
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
+import models.JavaClass;
+import models.JavaPackage;
 
+import java.util.List;
+import java.util.ArrayList;
 
 import static utils.RGB.RGBtoInt;
 
@@ -15,7 +17,7 @@ public class CubePacking {
     public CubePacking(JavaPackage pkg) {
         Bin mainBin = new Bin(0, 0, 0, 0, 0);
         Bin localBin = new Bin(0, 0, 0, 0, 0);
-        ArrayList<Bin> openBins = new ArrayList<>();
+        List<Bin> openBins = new ArrayList<>();
         int recDepth = 0;
 
 
@@ -39,18 +41,16 @@ public class CubePacking {
 
         pkg.w += getMinSize(pkg);
 
-        pkg.getChildren().sort((c1, c2) -> {
-            if (c1.w == c2.w)
-                return 0;
-            return c1.w > c2.w ? -1 : 1;
-        });
+        pkg.sortChildren();
 
         return pkg.w;
     }
 
-    private Bin pack(JavaPackage pkg, Bin mainBin, Bin parentBin, ArrayList<Bin> parentOpenBins, int recDepth) {
-        ArrayList<Bin> openBins = new ArrayList<>();
+    private Bin pack(JavaPackage pkg, Bin mainBin, Bin parentBin, List<Bin> parentOpenBins, int recDepth) {
+        List<Bin> openBins = new ArrayList<>();
         Bin localBin;
+
+        // see if parent bin is larger on one side, to know in which direction to "grow" the representation
         if (parentBin.depth() > parentBin.width()) {
             localBin = new Bin(parentBin.x2, parentBin.x2, parentBin.y1, parentBin.y2, parentBin.z);
         } else {
@@ -80,11 +80,6 @@ public class CubePacking {
             classesBin.x2 = localBin.x1 + getMinSize(pkg);
         }
 
-        // FIXME this fitInBit should actually be drawing the classes; for now it's a package as a placeholder
-//        if (pkg.getClasses().size() > 0) {
-//            fitClasses(classesBin, pkg);
-//        }
-
         localBin.mergeBin(classesBin);
 
         // makes localBin into a square
@@ -93,7 +88,6 @@ public class CubePacking {
         } else if (localBin.width() > localBin.depth()) {
             localBin.y2 += localBin.width() - localBin.depth();
         }
-        // FIXME from 55 to 65 it breaks
         fitInBin(localBin, pkg);
 
         // space between neighbor packages
@@ -119,18 +113,12 @@ public class CubePacking {
     }
 
     private int getMinSize(JavaPackage pkg) {
-        ArrayList<JavaClass> classes = pkg.getClasses();
+        List<JavaClass> classes = pkg.getClasses();
         if (classes.size() == 0) {
             return 0;
         }
 
-        // TODO maybe move the sorting directly in JavaClass
-        // TODO this is DESCENDING sort
-        classes.sort((c1, c2) -> {
-            if (c1.getMethods() == c2.getMethods())
-                return 0;
-            return c1.getMethods() > c2.getMethods() ? -1 : 1;
-        });
+        pkg.sortClasses();
 
 
         // TODO bins are squares, so I take maximum class size times the number of classes/2,
@@ -150,22 +138,16 @@ public class CubePacking {
     }
 
     private void fitClasses(Bin bin, JavaPackage pkg) {
-        // FIXME find way to add "padding"
-        int x1 = bin.x1;
-        int x2 = bin.x2;
-        int y1 = bin.y1;
-        int y2 = bin.y2;
-        ArrayList<JavaClass> classes = pkg.getClasses();
+        List<JavaClass> classes = pkg.getClasses();
         int totalClasses = classes.size();
-        // FIXME ceil or floor
         int cubesPerWidth = (int) Math.ceil(Math.sqrt(totalClasses)) + 2;
-        int gridSpacing = (x2 - x1) / (cubesPerWidth);
+        int gridSpacing = (bin.x2 - bin.x1) / (cubesPerWidth);
         for (int i = 0; i < totalClasses; ++i) {
             JavaClass cls = classes.get(i);
             int x = i % (cubesPerWidth - 1) + 1;
             int y = i / (cubesPerWidth - 1) + 1;
-            cls.cx = x1 + gridSpacing * x;
-            cls.cy = y1 + gridSpacing * y;
+            cls.cx = bin.x1 + gridSpacing * x;
+            cls.cy = bin.y1 + gridSpacing * y;
             cls.cz = pkg.z;
         }
     }
@@ -195,18 +177,6 @@ public class CubePacking {
 
         public void mergeBin(Bin other) {
 
-            // this is empty bin
-
-
-//            if (this.x2 < other.x1 || other.x2 < this.x1 ||
-//                    this.y2 < other.y1 || other.y2 < this.y1) {
-//                this.x1 = other.x1;
-//                this.x2 = other.x2;
-//                this.y1 = other.y1;
-//                this.y2 = other.y2;
-//                this.z = other.z;
-//                return;
-//            }
             if (this.width() == 0 || this.depth() == 0) {
                 this.x1 = other.x1;
                 this.x2 = other.x2;
