@@ -1,6 +1,7 @@
 package utils;
 
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
@@ -9,16 +10,46 @@ import static utils.RGB.RGBtoInt;
 
 public class CubePacking {
 
-    public int count = 0;
+    private int maxDepth = 0;
 
     public CubePacking(JavaPackage pkg) {
         Bin mainBin = new Bin(0, 0, 0, 0, 0);
         Bin localBin = new Bin(0, 0, 0, 0, 0);
+        ArrayList<Bin> openBins = new ArrayList<>();
         int recDepth = 0;
-        pack(pkg, mainBin, localBin, recDepth);
+
+
+        // FIXME sort by size to get better packing
+        // FIXME have to iterate twice, ugly
+        pkgWidth(pkg, recDepth);
+        recDepth = 0;
+        pack(pkg, mainBin, localBin, openBins, recDepth);
     }
 
-    private Bin pack(JavaPackage pkg, Bin mainBin, Bin parentBin, int recDepth) {
+
+    // FIXME it doesn't give exact ordering, but its close enough
+    // FIXME (by doing += width, we assume we're stacking them in one direction, not considering we could put them also
+    // FIXME on top)
+    private int pkgWidth(JavaPackage pkg, int depth) {
+        if(depth > maxDepth) maxDepth = depth;
+
+        for (JavaPackage child : pkg.getChildren()) {
+            pkg.w += pkgWidth(child, depth + 1);
+        }
+
+        pkg.w += getMinSize(pkg);
+
+        pkg.getChildren().sort((c1, c2) -> {
+            if (c1.w == c2.w)
+                return 0;
+            return c1.w > c2.w ? -1 : 1;
+        });
+
+        return pkg.w;
+    }
+
+    private Bin pack(JavaPackage pkg, Bin mainBin, Bin parentBin, ArrayList<Bin> parentOpenBins, int recDepth) {
+        ArrayList<Bin> openBins = new ArrayList<>();
         Bin localBin;
         if (parentBin.depth() > parentBin.width()) {
             localBin = new Bin(parentBin.x2, parentBin.x2, parentBin.y1, parentBin.y2, parentBin.z);
@@ -29,7 +60,7 @@ public class CubePacking {
 
         // TODO parentBin is total size up to that point; localBin is size of this and of children
         for (JavaPackage child : pkg.getChildren()) {
-            Bin temp = pack(child, mainBin, localBin, recDepth + 1);
+            Bin temp = pack(child, mainBin, localBin, openBins, recDepth + 1);
             localBin.mergeBin(temp);
             mainBin.mergeBin(temp);
         }
@@ -72,7 +103,9 @@ public class CubePacking {
         // FIXME find better height for packages
         // FIXME when changing this, also change height in recDraw
         pkg.z = recDepth * 50;
-        pkg.color = RGBtoInt(27 * recDepth, 100, 100);
+
+        //TODO interpolate between grey and red?
+        pkg.color = RGBtoInt(255 * recDepth/maxDepth, 100, 100);
 
         if (pkg.getClasses().size() > 0) {
             fitClasses(classesBin, pkg);
