@@ -15,6 +15,8 @@ public class CubePacking {
     private int maxDepth = 0;
 
     public CubePacking(JavaPackage pkg) {
+
+        // not used
         Bin mainBin = new Bin(0, 0, 0, 0, 0);
         Bin localBin = new Bin(0, 0, 0, 0, 0);
         List<Bin> openBins = new ArrayList<>();
@@ -50,12 +52,14 @@ public class CubePacking {
         List<Bin> openBins = new ArrayList<>();
         Bin localBin;
 
-        // see if parent bin is larger on one side, to know in which direction to "grow" the representation
+        // decide in which direction to "grow" the representation
         if (parentBin.depth() > parentBin.width()) {
             localBin = new Bin(parentBin.x2, parentBin.x2, parentBin.y1, parentBin.y2, parentBin.z);
         } else {
             localBin = new Bin(parentBin.x1, parentBin.x2, parentBin.y2, parentBin.y2, parentBin.z);
         }
+
+        // bin that will contain the classes of the current package
         Bin classesBin = new Bin(0, 0, 0, 0, 0);
 
         // TODO parentBin is total size up to that point; localBin is size of this and of children
@@ -64,7 +68,6 @@ public class CubePacking {
             localBin.mergeBin(temp);
             mainBin.mergeBin(temp);
         }
-
 
         int minClassesSize = getMinSize(pkg);
 
@@ -75,9 +78,9 @@ public class CubePacking {
             classesBin.y2 = localBin.y1 + minClassesSize;
         } else {
             classesBin.y1 = localBin.y2;
-            classesBin.y2 = localBin.y2 + getMinSize(pkg);
+            classesBin.y2 = localBin.y2 + minClassesSize;
             classesBin.x1 = localBin.x1;
-            classesBin.x2 = localBin.x1 + getMinSize(pkg);
+            classesBin.x2 = localBin.x1 + minClassesSize;
         }
 
         localBin.mergeBin(classesBin);
@@ -91,8 +94,8 @@ public class CubePacking {
         fitInBin(localBin, pkg);
 
         // space between neighbor packages
-        localBin.x2 += 30;
-        localBin.y2 += 30;
+        localBin.x2 += 100;
+        localBin.y2 += 100;
 
         // FIXME find better height for packages
         // FIXME when changing this, also change height in recDraw
@@ -124,7 +127,7 @@ public class CubePacking {
         // TODO bins are squares, so I take maximum class size times the number of classes/2,
         // TODO which is the minimum side of a square needed to fit in the classes
 
-        // FIXME this isn't right, the second one should be
+        // FIXME this isn't right, the second one should be right
         // FIXME find out why I have to scale it/ find the proper way to scale things
 //        return classes.get(0).getMethods() * (classes.size()) / 2;
         return (int) Math.ceil(Math.sqrt(classes.get(0).getMethods() * (classes.size()))) * 40;
@@ -152,58 +155,4 @@ public class CubePacking {
         }
     }
 
-    private class Bin {
-        public int x1;
-        public int x2;
-        public int y1;
-        public int y2;
-        public int z;
-
-        public Bin(int x1, int x2, int y1, int y2, int z) {
-            this.x1 = x1;
-            this.x2 = x2;
-            this.y1 = y1;
-            this.y2 = y2;
-            this.z = z;
-        }
-
-        int width() {
-            return x2 - x1;
-        }
-
-        int depth() {
-            return y2 - y1;
-        }
-
-        public void mergeBin(Bin other) {
-
-            if (this.width() == 0 || this.depth() == 0) {
-                this.x1 = other.x1;
-                this.x2 = other.x2;
-                this.y1 = other.y1;
-                this.y2 = other.y2;
-                this.z = other.z;
-                return;
-            }
-            if (other.x2 > this.x2) {
-                this.x2 = other.x2;
-            }
-
-            if (other.x1 < this.x1) {
-                this.x1 = other.x1;
-            }
-
-            if (other.y2 > this.y2) {
-                this.y2 = other.y2;
-            }
-
-            if (other.y1 < this.y1) {
-                this.y1 = other.y1;
-            }
-
-            if (other.z > this.z) {
-                this.z = other.z;
-            }
-        }
-    }
 }

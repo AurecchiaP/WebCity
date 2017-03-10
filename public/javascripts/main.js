@@ -103,9 +103,15 @@ function init() {
     });
 }
 
+var classesText = document.getElementById("classes");
+var packagesText = document.getElementById("packages");
+
+
 function loaded() {
     document.getElementById("loader-container").remove();
     btn.style.display = "block";
+    classesText.innerText = "Total classes: 1000";
+    packagesText.innerText = "Total packages: 1001";
     render();
 }
 
@@ -154,12 +160,12 @@ function onKeyPress(e) {
             isPinned = true;
             if (hoveredCube.object.type == "package") {
                 nameText.innerText = "Package name: " + hoveredCube.object.name;
-                content1Text.innerText = "Contained classes: " + hoveredCube.object.classes;
+                statistic1Text.innerText = "Contained classes: " + hoveredCube.object.classes;
             }
             else if (hoveredCube.object.type == "class") {
                 nameText.innerText = "Class name: " + hoveredCube.object.name;
-                content1Text.innerText = "Contained methods: " + hoveredCube.object.methods;
-                content2Text.innerText = "Contained attributes: " + hoveredCube.object.attributes;
+                statistic1Text.innerText = "Contained methods: " + hoveredCube.object.methods;
+                statistic2Text.innerText = "Contained attributes: " + hoveredCube.object.attributes;
             }
         }
         renderer.render(scene, camera);
@@ -202,8 +208,8 @@ hoverText.style.height = 100;
 hoverText.style.textShadow = "-1px 0 rgba(255,255,255,0.8), 0 1px rgba(255,255,255,0.8), 1px 0 rgba(255,255,255,0.8), 0 -1px rgba(255,255,255,0.8)";
 document.body.appendChild(hoverText);
 
-var content1Text = document.getElementById("content1");
-var content2Text = document.getElementById("content2");
+var statistic1Text = document.getElementById("statistic1");
+var statistic2Text = document.getElementById("statistic2");
 var nameText = document.getElementById("name");
 
 function render() {
@@ -220,20 +226,20 @@ function render() {
 
             if (hoveredCube.object.type == "package") {
                 nameText.innerText = "Package name: " + hoveredCube.object.name;
-                content1Text.innerText = "Contained classes: " + hoveredCube.object.classes;
+                statistic1Text.innerText = "Contained classes: " + hoveredCube.object.classes;
             }
             else if (hoveredCube.object.type == "class") {
                 nameText.innerText = "Class name: " + hoveredCube.object.name;
-                content1Text.innerText = "Contained methods: " + hoveredCube.object.methods;
-                content2Text.innerText = "Contained attributes: " + hoveredCube.object.attributes;
+                statistic1Text.innerText = "Contained methods: " + hoveredCube.object.methods;
+                statistic2Text.innerText = "Contained attributes: " + hoveredCube.object.attributes;
             }
         }
     }
     else {
         if(!isPinned) {
             nameText.innerText = "None";
-            content1Text.innerText = "None";
-            content2Text.innerText = "None";
+            statistic1Text.innerText = "None";
+            statistic2Text.innerText = "None";
         }
     }
 

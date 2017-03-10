@@ -77,10 +77,11 @@ public class BasicParser {
 
 
     /**
-     *
+     * Given a path and a JavaPackage that represents this path, it finds the .java files contained in it, parses them
+     * with JavaParser, and adds the found classes to the package.
      *
      * @param path the path to the package that contains the .java files we want to parse
-     * @param pkg the JavaPackage that will contain the classes that we are parsing
+     * @param pkg  the JavaPackage that will contain the classes that we are parsing
      * @return a List of JavaClass contained in pkg
      */
     private static List<JavaClass> getClasses(String path, JavaPackage pkg) {
@@ -88,11 +89,11 @@ public class BasicParser {
         if (files != null) {
             for (File file : files) {
                 if (!file.isDirectory() && file.getPath().endsWith(".java")) {
-
                     FileInputStream in;
                     try {
                         in = new FileInputStream(file);
                         CompilationUnit cu = JavaParser.parse(in);
+
                         ClassVisitor cv = new ClassVisitor(pkg);
                         cv.visit(cu, null);
                     } catch (FileNotFoundException e) {

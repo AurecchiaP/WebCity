@@ -22,12 +22,22 @@ body {
     height: 100vh;
 }
 
-#statistics {
+#selected-statistics {
     padding: 1vw;
     position: absolute;
     width: 98vw;
     height: 13vh;
     background-color: rgba(0, 0, 0, 0.1);
+}
+
+#general-statistics {
+    padding: 1vw;
+    position: absolute;
+    right: 0;
+    float: right;
+    /*width: 98vw;*/
+    height: 13vh;
+    /*background-color: rgba(0, 0, 0, 0.1);*/
 }
 
 #version {
