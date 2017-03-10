@@ -34,6 +34,7 @@ public class CubePacking {
     }
 
 
+
     // FIXME it doesn't give exact ordering, but its close enough
     // FIXME (by doing += width, we assume we're stacking them in one direction, not considering we could put them also
     // FIXME on top)
@@ -83,9 +84,14 @@ public class CubePacking {
         // bin that will contain the classes of the current package
         Bin classesBin = new Bin(0, 0, 0, 0, 0);
 
-
+        pkg.addClassTotal(pkg.getClasses().size());
         for (JavaPackage child : pkg.getChildren()) {
             Bin temp = pack(child, mainBin, localBin, openBins, recDepth + 1);
+            System.out.println(child.getName());
+            System.out.println(child.getClasses().size());
+            pkg.addClassTotal(child.getClassTotal());
+            System.out.println(pkg.getClassTotal());
+            System.out.println();
             localBin.mergeBin(temp);
             mainBin.mergeBin(temp);
         }

@@ -21,6 +21,7 @@ import java.util.List;
 public class HomeController extends Controller {
 
     private String currentRepo;
+    private boolean web = false;
 
     @Inject
     FormFactory formFactory;
@@ -64,7 +65,6 @@ public class HomeController extends Controller {
 
 //        https://github.com/junit-team/junit4.git"
 
-        boolean web = false;
         JavaPackage pkg;
         if(web) {
             deleteDir(new File("/Users/paolo/Documents/6th semester/thesis/webcity/repository"));
@@ -97,6 +97,8 @@ public class HomeController extends Controller {
      * Route for the visualisation page; not yet used.
      */
     public Result visualization() {
+
+        if(!web) return ok(views.html.index2.render());
 
         DynamicForm dynamicForm = formFactory.form().bindFromRequest();
 

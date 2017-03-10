@@ -92,6 +92,7 @@ function drawCube(width, depth, height, posX, posY, posZ, color, data) {
     mesh = new THREE.Mesh(geometry, material);
     mesh.name = data.name;
     mesh.classes = data.classes.length;
+    mesh.totalClasses = data.totalClasses;
     mesh.width = width;
     mesh.type = "package";
     mesh.translateX(posX);

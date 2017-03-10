@@ -74,6 +74,7 @@ public class BasicParser {
             if (file.isDirectory()) {
                 JavaPackage pkg = getPackage(file.getPath());
                 currentPackage.addChild(pkg);
+//                currentPackage.addClassTotal(pkg.getClasses().size());
             }
         }
         return currentPackage;
@@ -100,6 +101,7 @@ public class BasicParser {
 
                         ClassVisitor cv = new ClassVisitor(pkg);
                         cv.visit(cu, null);
+
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }

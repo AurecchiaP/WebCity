@@ -11,6 +11,7 @@ public class JavaPackage {
 
     private String name;
     private List<JavaClass> classes;
+    private int totalClasses = 0;
     private List<JavaPackage> children;
 
     public int cx;
@@ -68,8 +69,15 @@ public class JavaPackage {
         this.children.add(child);
     }
 
-
     public void addClass(JavaClass cls) {
         this.classes.add(cls);
+    }
+
+    public void addClassTotal(int num) {
+        this.totalClasses += num;
+    }
+
+    public int getClassTotal() {
+        return totalClasses;
     }
 }

@@ -161,6 +161,7 @@ function onKeyPress(e) {
             if (hoveredCube.object.type == "package") {
                 nameText.innerText = "Package name: " + hoveredCube.object.name;
                 statistic1Text.innerText = "Contained classes: " + hoveredCube.object.classes;
+                statistic1Text.innerText = "Total classes: " + hoveredCube.object.totalClasses;
             }
             else if (hoveredCube.object.type == "class") {
                 nameText.innerText = "Class name: " + hoveredCube.object.name;
@@ -227,6 +228,7 @@ function render() {
             if (hoveredCube.object.type == "package") {
                 nameText.innerText = "Package name: " + hoveredCube.object.name;
                 statistic1Text.innerText = "Contained classes: " + hoveredCube.object.classes;
+                statistic2Text.innerText = "Total classes: " + hoveredCube.object.totalClasses;
             }
             else if (hoveredCube.object.type == "class") {
                 nameText.innerText = "Class name: " + hoveredCube.object.name;

@@ -12,6 +12,13 @@ body {
     /*height: 100vh;*/
 }
 
+#main-content {
+    width: 100vw;
+    height: 100vh;
+    margin: 45vh auto auto;
+    text-align: center;
+}
+
 #canvas {
     /*position: static;*/
     margin: auto;
