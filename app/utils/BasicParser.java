@@ -26,7 +26,11 @@ import java.util.Optional;
  * from the folder "main". For each package found a JavaPackage is created, containing possibly other JavaPackage or
  * JavaClass. The parsing of the .Java file found is done with the library JavaParser.
  */
+
 public class BasicParser {
+
+    // FIXME change this to thesis/repository (?) when using the download feature
+    static String repoPath = "/Users/paolo/Documents/6th semester/thesis/";
 
     /**
      * Starts the recursive parsing of the repository corresponding to the given path.
@@ -62,7 +66,7 @@ public class BasicParser {
      * @return the new JavaPackage that corresponds to the given path
      */
     private static JavaPackage getPackage(String path) {
-        JavaPackage currentPackage = new JavaPackage(path);
+        JavaPackage currentPackage = new JavaPackage(path.replaceFirst(repoPath, ""));
         List<JavaClass> clss = getClasses(path, currentPackage);
         currentPackage.setClasses(new ArrayList<>(clss));
 

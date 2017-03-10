@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String, version: String)(content: Html)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -27,7 +27,7 @@
                 <p id="packages">None</p>
             </div>
 
-            <p id="version">alpha</p>
+            <p id="version">@version</p>
 
             <div id="canvas"></div>
         </div>

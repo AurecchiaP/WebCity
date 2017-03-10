@@ -30,6 +30,7 @@ public class HomeController extends Controller {
      * Route for index page
      */
     public Result index() {
+
         return ok(views.html.index.render());
     }
 
@@ -82,7 +83,7 @@ public class HomeController extends Controller {
      * Route for the visualisation page; not yet used.
      */
     public Result visualization() {
-        redirect("visualization");
-        return ok();
+        System.out.println("in vis");
+        return ok(views.html.index2.render());
     }
 }

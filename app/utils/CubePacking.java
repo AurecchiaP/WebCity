@@ -64,17 +64,9 @@ public class CubePacking {
             if(bin.width() > pkg.w && bin.depth() > pkg.w) {
 //                if( count < 4) {
                 localBin = new Bin(bin.x1, bin.x1, bin.y1, bin.y1, bin.z);
-                System.out.println(pkg.getName());
-                System.out.println(pkg.w);
-                printBin("parentBin", parentBin);
-                printBin("openBin", bin);
-                printBin("localBin", localBin);
-                System.out.println("");
                 found = true;
                 parentOpenBins.remove(bin);
-                count++;
                 break;
-//                }
             }
         }
 

@@ -5,6 +5,14 @@ function draw(data) {
 
     // TODO merged get same color
     var geometry = mergeMeshes(meshes);
+    // TODO best looking, but computationally expensive
+    // var material = new THREE.MeshStandardMaterial({
+    //     color: 0xffffff,
+    //     shading: THREE.SmoothShading,
+    //     vertexColors: THREE.VertexColors,
+    //     visible: true
+    // });
+
     var material = new THREE.MeshToonMaterial({
         color: 0xffffff,
         shading: THREE.SmoothShading,
