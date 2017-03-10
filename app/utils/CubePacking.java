@@ -14,10 +14,13 @@ public class CubePacking {
 
     private int maxDepth = 0;
 
+    int count = 0;
+
     public CubePacking(JavaPackage pkg) {
 
         // not used
         Bin mainBin = new Bin(0, 0, 0, 0, 0);
+
         Bin localBin = new Bin(0, 0, 0, 0, 0);
         List<Bin> openBins = new ArrayList<>();
         int recDepth = 0;
@@ -34,6 +37,7 @@ public class CubePacking {
     // FIXME it doesn't give exact ordering, but its close enough
     // FIXME (by doing += width, we assume we're stacking them in one direction, not considering we could put them also
     // FIXME on top)
+    // FIXME is this heuristic good enough?
     private int pkgWidth(JavaPackage pkg, int depth) {
         if(depth > maxDepth) maxDepth = depth;
 
@@ -41,7 +45,8 @@ public class CubePacking {
             pkg.w += pkgWidth(child, depth + 1);
         }
 
-        pkg.w += getMinSize(pkg);
+        // FIXME add 200 for the paddings (for now 2*paddings)
+        pkg.w += getMinSize(pkg) + 200;
 
         pkg.sortChildren();
 
@@ -50,19 +55,43 @@ public class CubePacking {
 
     private Bin pack(JavaPackage pkg, Bin mainBin, Bin parentBin, List<Bin> parentOpenBins, int recDepth) {
         List<Bin> openBins = new ArrayList<>();
-        Bin localBin;
+        Bin localBin = new Bin(0,0,0,0,0);
+        boolean found = false;
 
-        // decide in which direction to "grow" the representation
-        if (parentBin.depth() > parentBin.width()) {
-            localBin = new Bin(parentBin.x2, parentBin.x2, parentBin.y1, parentBin.y2, parentBin.z);
-        } else {
-            localBin = new Bin(parentBin.x1, parentBin.x2, parentBin.y2, parentBin.y2, parentBin.z);
+
+        // FIXME try to put classesBin in openBins as well
+        for(Bin bin : parentOpenBins) {
+            if(bin.width() > pkg.w && bin.depth() > pkg.w) {
+//                if( count < 4) {
+                localBin = new Bin(bin.x1, bin.x1, bin.y1, bin.y1, bin.z);
+                System.out.println(pkg.getName());
+                System.out.println(pkg.w);
+                printBin("parentBin", parentBin);
+                printBin("openBin", bin);
+                printBin("localBin", localBin);
+                System.out.println("");
+                found = true;
+                parentOpenBins.remove(bin);
+                count++;
+                break;
+//                }
+            }
+        }
+
+
+        if(!found) {
+            // decide in which direction to "grow" the representation
+            if (parentBin.depth() > parentBin.width()) {
+                localBin = new Bin(parentBin.x2, parentBin.x2, parentBin.y1, parentBin.y2, parentBin.z);
+            } else {
+                localBin = new Bin(parentBin.x1, parentBin.x2, parentBin.y2, parentBin.y2, parentBin.z);
+            }
         }
 
         // bin that will contain the classes of the current package
         Bin classesBin = new Bin(0, 0, 0, 0, 0);
 
-        // TODO parentBin is total size up to that point; localBin is size of this and of children
+
         for (JavaPackage child : pkg.getChildren()) {
             Bin temp = pack(child, mainBin, localBin, openBins, recDepth + 1);
             localBin.mergeBin(temp);
@@ -108,10 +137,15 @@ public class CubePacking {
             fitClasses(classesBin, pkg);
         }
 
+        Bin remainderBin = new Bin(localBin.x1, localBin.x2, localBin.y2, parentBin.y2 - localBin.y2, localBin.z);
+        parentOpenBins.add(remainderBin);
+        Bin remainderBin2 = new Bin(localBin.x2, parentBin.x2 - localBin.x2, localBin.y1, localBin.y2, localBin.z);
+        parentOpenBins.add(remainderBin2);
+
         return localBin;
     }
 
-    public void printBin(String name, Bin bin) {
+    private void printBin(String name, Bin bin) {
         System.out.println("x1:" + bin.x1 + " x2:" + bin.x2 + " y1:" + bin.y1 + " y2:" + bin.y2 + " " + name);
     }
 
