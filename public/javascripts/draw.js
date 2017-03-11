@@ -1,10 +1,20 @@
-function draw(data, sizeX, sizeY) {
+
+function draw(data) {
+
 
 
     recDraw(data);
 
     // TODO merged get same color
     var geometry = mergeMeshes(meshes);
+    // TODO best looking, but computationally expensive
+    // var material = new THREE.MeshStandardMaterial({
+    //     color: 0xffffff,
+    //     shading: THREE.SmoothShading,
+    //     vertexColors: THREE.VertexColors,
+    //     visible: true
+    // });
+
     var material = new THREE.MeshToonMaterial({
         color: 0xffffff,
         shading: THREE.SmoothShading,
@@ -29,8 +39,8 @@ function draw(data, sizeX, sizeY) {
 
 var scale = .2;
 function recDraw(data) {
-    for (var i = 0; i < data.children.length; ++i) {
-        recDraw(data.children[i]);
+    for (var i = 0; i < data.childPackages.length; ++i) {
+        recDraw(data.childPackages[i]);
     }
 
     // drawCube(data.w, data.w, 10, data.cx, data.cy, data.z, 0xdd5555, data.name);
@@ -68,47 +78,6 @@ function drawClass(width, depth, height, posX, posY, posZ, color, data) {
         scene.add(mesh);
 }
 
-// function rec(data) {
-//     for (var child in data.children) {
-//         rec(child);
-//     }
-//
-//     if (canFit(data.classes)) {
-//
-//     } else {
-//         // TODO make new bin
-//     }
-//     fitInBin(data.classes);
-// }
-
-// function canFit(data) {
-//     // getSize to know if we can fit in current bin
-//     return true;
-// }
-
-// function fitInBin(data, bin) {
-//     // We sort the classes; and make a grid in the bin. if we could put the biggest one in every position of the grid,
-//     // then we can fit. do so with every class.
-//     var clss = data.classes;
-//     // sort by number of methods
-//     clss.sort(function (a, b) {
-//         return (a.methods > b.methods) ? 1 : ((b.methods > a.methods) ? -1 : 0);
-//     });
-//     var binRatio = Math.floor((bin.x12 - bin.x11) / (bin.x22 - bin.x21));
-//     // x := such that x*binRatio + x = total
-//     var cubesPerWidth = Math.floor(clss.length / (binRatio + 1));
-//     var cubesPerDepth = Math.floor(clss.length / cubesPerWidth);
-//     var gridXSpacing = (bin.x12 - bin.x11) / (cubesPerWidth);
-//     var gridYSpacing = (bin.x12 - bin.x11) / (cubesPerDepth);
-//     var count = 0;
-//     for (var i = 0; i < cubesPerDepth; i++) {
-//         for (var j = 0; j < cubesPerWidth; j++) {
-//             drawCube(clss[count].methods, clss[count].methods, clss[count].methods, -(bin.x12 / 2) + gridXSpacing * (1 + j * 2) / 2, -(bin.x22 / 2) + gridYSpacing * (1 + i * 2) / 2, 10 + (clss[count].methods * 100 / 2), 0x005500, clss[count].path);
-//             count++;
-//             if (count >= clss.length) return;
-//         }
-//     }
-// }
 
 var meshes = [];
 
@@ -125,6 +94,7 @@ function drawCube(width, depth, height, posX, posY, posZ, color, data) {
     mesh = new THREE.Mesh(geometry, material);
     mesh.name = data.name;
     mesh.classes = data.classes.length;
+    mesh.totalClasses = data.totalClasses;
     mesh.width = width;
     mesh.type = "package";
     mesh.translateX(posX);

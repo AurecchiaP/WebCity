@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String, version: String)(content: Html)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -16,13 +16,19 @@
 
         <div id="container">
 
-            <div id="statistics">
+            <div id="selected-statistics">
                 <p id="name">None</p>
-                <p id="content1">0</p>
-                <p id="content2">0</p>
+
+                <p id="statistic1">0</p>
+                <p id="statistic2">0</p>
             </div>
 
-            <p id="version">alpha</p>
+            <div id="general-statistics">
+                <p id="classes">None</p>
+                <p id="packages">None</p>
+            </div>
+
+            <p id="version">@version</p>
 
             <div id="canvas"></div>
         </div>
