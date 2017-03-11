@@ -1,6 +1,7 @@
 package controllers;
 
 import com.google.gson.Gson;
+
 import com.google.inject.Inject;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
@@ -16,6 +17,7 @@ import models.JavaPackage;
 import utils.CubePacking;
 
 import java.io.File;
+
 import java.util.List;
 
 import static utils.FileUtils.deleteDir;
@@ -50,6 +52,7 @@ public class HomeController extends Controller {
     }
 
 
+
     /**
      * downloads the linked repository, parses it, does the rectangle packing, and returns the data to be visualized
      */
@@ -72,7 +75,6 @@ public class HomeController extends Controller {
                 System.out.println("failed to download repo");
                 e.printStackTrace();
             }
-
             pkg = BasicParser.parseRepo("/Users/paolo/Documents/6th semester/thesis/webcity/repository");
         }
         else {

@@ -24,6 +24,7 @@ public class CubePacking {
     public CubePacking(JavaPackage pkg) {
 
         Bin localBin = new Bin(0, 0, 0, 0, 0);
+
         List<Bin> openBins = new ArrayList<>();
         int recDepth = 0;
 
@@ -101,6 +102,7 @@ public class CubePacking {
         // bin that will contain the classes of the current package
         Bin classesBin = new Bin(0, 0, 0, 0, 0);
 
+
         pkg.addClassTotal(pkg.getClasses().size());
         for (JavaPackage child : pkg.getChildPackages()) {
             Bin temp = pack(child, localBin, openBins, recDepth + 1);
@@ -140,6 +142,7 @@ public class CubePacking {
         // FIXME when changing this, also change height in recDraw
         // set the height of the package, depending on the depth of the recursion of the current package
         pkg.z = recDepth * 50;
+
 
         //TODO interpolate between grey and red?
         pkg.color = RGBtoInt(255 * recDepth / maxDepth, 100, 100);
