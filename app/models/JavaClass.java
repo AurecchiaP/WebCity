@@ -19,7 +19,7 @@ public class JavaClass {
         this.attributes = attributes;
     }
 
-    public String getPath() {
+    public String getName() {
         return name;
     }
 

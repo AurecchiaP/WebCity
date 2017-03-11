@@ -10,9 +10,9 @@ import java.util.List;
 public class JavaPackage {
 
     private String name;
+    private List<JavaPackage> childPackages;
     private List<JavaClass> classes;
     private int totalClasses = 0;
-    private List<JavaPackage> children;
 
     public int cx;
     public int cy;
@@ -22,36 +22,54 @@ public class JavaPackage {
 
     public JavaPackage(String name) {
         this.name = name;
-        this.children = new ArrayList<>();
+        this.childPackages = new ArrayList<>();
         this.classes = new ArrayList<>();
     }
 
+    /**
+     * @return the name of the package
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * replaces the list of classes contained in this package with the given classes parameter
+     *
+     * @param classes the new list of classes to be set
+     */
     public void setClasses(List<JavaClass> classes) {
         this.classes.clear();
         this.classes.addAll(classes);
     }
 
+    /**
+     * @return a list of classes contained in this package (only depth 1, it does not count the classes contained
+     * in child packages)
+     */
     public List<JavaClass> getClasses() {
         return Collections.unmodifiableList(classes);
     }
 
-    public void setChildren(List<JavaPackage> children) {
-        this.children.clear();
-        this.children.addAll(children);
+    public void setChildPackages(List<JavaPackage> childPackages) {
+        this.childPackages.clear();
+        this.childPackages.addAll(childPackages);
     }
 
+    /**
+     * sorts the child packages by their number of methods, in descending order
+     */
     public void sortChildren() {
-        this.children.sort((c1, c2) -> {
+        this.childPackages.sort((c1, c2) -> {
             if (c1.w == c2.w)
                 return 0;
             return c1.w > c2.w ? -1 : 1;
         });
     }
 
+    /**
+     * sorts the classes by their number of methods, in descending order
+     */
     public void sortClasses() {
         this.classes.sort((c1, c2) -> {
             if (c1.getMethods() == c2.getMethods())
@@ -61,22 +79,38 @@ public class JavaPackage {
     }
 
 
-    public List<JavaPackage> getChildren() {
-        return Collections.unmodifiableList(children);
+    /**
+     * @return the list of packages contained in this package
+     */
+    public List<JavaPackage> getChildPackages() {
+        return Collections.unmodifiableList(childPackages);
     }
 
-    public void addChild(JavaPackage child) {
-        this.children.add(child);
+    /**
+     * @param child the JavaPackage to be added to the list of child packages of this package
+     */
+    public void addChildPackage(JavaPackage child) {
+        this.childPackages.add(child);
     }
 
+    /**
+     * @param cls adds a single class to the list of classes of this package
+     */
     public void addClass(JavaClass cls) {
         this.classes.add(cls);
     }
 
+
+    /**
+     * @param num adds num to the number of total classes contained in this package, at any depth
+     */
     public void addClassTotal(int num) {
         this.totalClasses += num;
     }
 
+    /**
+     * @return the number of total classes contained in this package, at any depth
+     */
     public int getClassTotal() {
         return totalClasses;
     }

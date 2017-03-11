@@ -1,14 +1,15 @@
 package utils;
 
 /**
- * Class that represents a rectangle, defined by the 4 points x1, x2, y1, y2 and height z
+ * Class that represents a rectangle, defined by the 5 points x1, x2, y1, y2 and z.
+ * z needs no upper bound since we are not stacking objects of varying size on the z axis.
  */
 class Bin {
-    public int x1;
-    public int x2;
-    public int y1;
-    public int y2;
-    public int z;
+    private int x1;
+    private int x2;
+    private int y1;
+    private int y2;
+    private int z;
 
     Bin(int x1, int x2, int y1, int y2, int z) {
         this.x1 = x1;
@@ -18,10 +19,56 @@ class Bin {
         this.z = z;
     }
 
+    public int getX1() {
+        return x1;
+    }
+
+    public void setX1(int x1) {
+        this.x1 = x1;
+    }
+
+    public int getX2() {
+        return x2;
+    }
+
+    public void setX2(int x2) {
+        this.x2 = x2;
+    }
+
+    public int getY1() {
+        return y1;
+    }
+
+    public void setY1(int y1) {
+        this.y1 = y1;
+    }
+
+    public int getY2() {
+        return y2;
+    }
+
+    public void setY2(int y2) {
+        this.y2 = y2;
+    }
+
+    public int getZ() {
+        return z;
+    }
+
+    public void setZ(int z) {
+        this.z = z;
+    }
+
+    /**
+     * @return the width of this bin
+     */
     int width() {
         return x2 - x1;
     }
 
+    /**
+     * @return the depth of this bin
+     */
     int depth() {
         return y2 - y1;
     }

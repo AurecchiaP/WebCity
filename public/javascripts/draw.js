@@ -37,8 +37,8 @@ function draw(data) {
 
 var scale = .2;
 function recDraw(data) {
-    for (var i = 0; i < data.children.length; ++i) {
-        recDraw(data.children[i]);
+    for (var i = 0; i < data.childPackages.length; ++i) {
+        recDraw(data.childPackages[i]);
     }
 
     // drawCube(data.w, data.w, 10, data.cx, data.cy, data.z, 0xdd5555, data.name);
