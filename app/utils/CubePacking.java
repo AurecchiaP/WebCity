@@ -23,17 +23,19 @@ public class CubePacking {
      */
     public CubePacking(JavaPackage pkg) {
 
-        Bin localBin = new Bin(0, 0, 0, 0, 0);
 
         List<Bin> openBins = new ArrayList<>();
         int recDepth = 0;
 
         // traverse recursively the packages to find out the maximum size needed for the visualization and the maximum
         // depth of recursion
-        getPackageMaxWidth(pkg, recDepth);
+        int maxWidth = getPackageMaxWidth(pkg, recDepth);
 
         // traverse again, this time to find the positions for packages and classes and their colors
         recDepth = 0;
+
+//        Bin localBin = new Bin(maxWidth/2, maxWidth/2, maxWidth/2, maxWidth/2, 0);
+        Bin localBin = new Bin(0,0,0,0, 0);
         pack(pkg, localBin, openBins, recDepth);
     }
 
@@ -99,16 +101,20 @@ public class CubePacking {
             }
         }
 
+
         // bin that will contain the classes of the current package
         Bin classesBin = new Bin(0, 0, 0, 0, 0);
 
 
         pkg.addClassTotal(pkg.getClasses().size());
+
         for (JavaPackage child : pkg.getChildPackages()) {
             Bin temp = pack(child, localBin, openBins, recDepth + 1);
             pkg.addClassTotal(child.getClassTotal());
             localBin.mergeBin(temp);
         }
+
+
 
         int minClassesSize = getMinClassesSize(pkg);
 
@@ -132,11 +138,27 @@ public class CubePacking {
         } else if (localBin.width() > localBin.depth()) {
             localBin.setY2(localBin.getY2() + localBin.width() - localBin.depth());
         }
+
+        int k = 100*recDepth;
+
+        localBin.setX1(localBin.getX1() + k);
+        localBin.setY1(localBin.getY1() + k);
+        localBin.setX2(localBin.getX2() + k);
+        localBin.setY2(localBin.getY2() + k);
+
+//        localBin.setY1(localBin.getY1() + 100);
+
         fitPackage(localBin, pkg);
 
+        localBin.setX1(localBin.getX1() - k);
+        localBin.setY1(localBin.getY1() - k);
+        localBin.setX2(localBin.getX2() - k);
+        localBin.setY2(localBin.getY2() - k);
+
+
         // add padding to right/top of packages
-        localBin.setX2(localBin.getX2() + 100);
-        localBin.setY2(localBin.getY2() + 100);
+        localBin.setX2(localBin.getX2() + 200);
+        localBin.setY2(localBin.getY2() + 200);
 
         // FIXME find better height for packages
         // FIXME when changing this, also change height in recDraw
@@ -147,12 +169,30 @@ public class CubePacking {
         //TODO interpolate between grey and red?
         pkg.color = RGBtoInt(255 * recDepth / maxDepth, 100, 100);
 
+        classesBin.setX1(classesBin.getX1() + k);
+        classesBin.setY1(classesBin.getY1() + k);
+        classesBin.setX2(classesBin.getX2() + k);
+        classesBin.setY2(classesBin.getY2() + k);
+
         fitClasses(classesBin, pkg);
+
+        classesBin.setX1(classesBin.getX1() - k);
+        classesBin.setY1(classesBin.getY1() - k);
+        classesBin.setX2(classesBin.getX2() - k);
+        classesBin.setY2(classesBin.getY2() - k);
+
+
+        // add padding to right/top of packages
+        classesBin.setX2(classesBin.getX2() + 200);
+        classesBin.setY2(classesBin.getY2() + 200);
 
         Bin remainderBin = new Bin(localBin.getX1(), localBin.getX2(), localBin.getY2(), parentBin.getY2() - localBin.getY2(), localBin.getZ());
         parentOpenBins.add(remainderBin);
         Bin remainderBin2 = new Bin(localBin.getX2(), parentBin.getX2() - localBin.getX2(), localBin.getY1(), localBin.getY2(), localBin.getZ());
         parentOpenBins.add(remainderBin2);
+
+//        localBin.setX1(localBin.getX1() - 100);
+//        localBin.setY1(localBin.getY1() - 100);
 
         return localBin;
     }
