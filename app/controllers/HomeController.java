@@ -18,6 +18,8 @@ import utils.CubePacking;
 import java.io.File;
 import java.util.List;
 
+import static utils.FileUtils.deleteDir;
+
 public class HomeController extends Controller {
 
     private String currentRepo;
@@ -28,19 +30,19 @@ public class HomeController extends Controller {
 
 
     /**
-     * Used by Play Framework to create routes callable from Javascript.
-     * Shouldn't be called manually.
+     * used by Play Framework to create routes callable from Javascript;
+     * shouldn't be called manually
      */
     public Result javascriptRoutes() {
         return ok(
                 JavaScriptReverseRouter.create("jsRoutes",
-                        routes.javascript.HomeController.getClasses()
+                        routes.javascript.HomeController.getVisualizationData()
                 )
         ).as("text/javascript");
     }
 
     /**
-     * Route for index page
+     * default route for index page
      */
     public Result index() {
 
@@ -48,21 +50,14 @@ public class HomeController extends Controller {
     }
 
 
-    // TODO move to utils
-    void deleteDir(File file) {
-        File[] contents = file.listFiles();
-        if (contents != null) {
-            for (File f : contents) {
-                deleteDir(f);
-            }
-        }
-        file.delete();
-    }
+    /**
+     * downloads the linked repository, parses it, does the rectangle packing, and returns the data to be visualized
+     */
+    // FIXME do this properly; should there be option to authenticate and use private repos?though then they
+    // FIXME would be on the server
 
-    public Result getClasses() {
-        // FIXME do this properly; should there be option to authenticate and use private repos?though then they
-        // FIXME would be on the server
-
+    // FIXME add a token sent from javascript, which javascript received from the server from `visualization`
+    public Result getVisualizationData() {
 //        https://github.com/junit-team/junit4.git"
 
         JavaPackage pkg;
@@ -88,13 +83,11 @@ public class HomeController extends Controller {
         new CubePacking(pkg);
         String json = gson.toJson(pkg);
 
-
-
         return ok(json);
     }
 
     /**
-     * Route for the visualisation page; not yet used.
+     * route for the visualisation page; not yet used
      */
     public Result visualization() {
 

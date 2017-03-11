@@ -74,7 +74,7 @@ public class BasicParser {
             if (file.isDirectory()) {
                 JavaPackage pkg = getPackage(file.getPath());
                 currentPackage.addChildPackage(pkg);
-//                currentPackage.addClassTotal(pkg.getClasses().size());
+//                currentPackage.addClassTotal(pkg.getVisualizationData().size());
             }
         }
         return currentPackage;

@@ -86,7 +86,7 @@ function init() {
 
 
     // call to server to get the data to draw
-    var r = jsRoutes.controllers.HomeController.getClasses();
+    var r = jsRoutes.controllers.HomeController.getVisualizationData();
     $.ajax({
         url: r.url,
         type: r.type,
