@@ -48,7 +48,10 @@ function draw(pkg) {
     loaded(pkg);
 }
 
-
+/**
+ * recursively call recDraw on child packages and draw the packages and their classes
+ * @param {object} pkg - the root package of the visualization to be drawn
+ */
 function recDraw(pkg) {
     // recursion on the child packages, to be drawn first
     for (var i = 0; i < pkg.childPackages.length; ++i) {
@@ -63,6 +66,7 @@ function recDraw(pkg) {
     drawPackage(pkg);
 }
 
+
 /**
  * creates the mesh representing the given class, with the right position, size and attributes
  * @param {object} cls - the object representing the class to be drawn
@@ -75,8 +79,6 @@ function drawClass(cls) {
     var posX = cls.cx * scale;
     var posY = cls.cy * scale;
     var posZ = (cls.cz * scale * 100) + ((clsHeight / 2) + 5);
-
-    var color = 0x00000ff;
 
     // create geometry and material for this class
     geometry = new THREE.BoxGeometry(clsWidth, clsWidth, clsHeight);
@@ -152,9 +154,22 @@ function drawPackage(pkg) {
     meshes.push(mesh);
     scene.add(mesh);
 }
+
+
+/**
+ * readies the page when the visualization is loaded
+ */
+function loaded(data) {
+    document.getElementById("loader-container").remove();
+    classesText.innerText = "Total classes: " + data.totalClasses;
+    render();
+}
+
+
 /**
  * merges together an array of meshes
- * @param {array} meshes - the array of meshes to merge
+ *
+ * @param {Array} meshes - the array of meshes to merge
  * @returns the combined mesh
  */
 function mergeMeshes(meshes) {

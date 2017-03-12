@@ -46,7 +46,6 @@ public class RectanglePacking {
     // FIXME it doesn't give exact ordering, but its close enough
     // FIXME (by doing += width, we assume we're stacking them in one direction, not considering we could put them also
     // FIXME on top)
-    // FIXME is this heuristic good enough?
     private int getPackageMaxWidth(JavaPackage pkg, int depth) {
 
         // store maximum depth of packages reached
@@ -66,8 +65,9 @@ public class RectanglePacking {
         return pkg.w;
     }
 
+
     /**
-     *
+     * takes care of positioning the JavaPackage pkg and its children and classes
      *
      * @param pkg the current package we're trying to position/fit
      * @param parentBin the bin/space occupied by the parent package of pkg
@@ -76,12 +76,21 @@ public class RectanglePacking {
      * @return the bin/size occupied by pkg
      */
     private Bin pack(JavaPackage pkg, Bin parentBin, List<Bin> parentOpenBins, int recDepth) {
+
+        // the Bins available to pkg's children packages
         List<Bin> openBins = new ArrayList<>();
+
+        // the Bin occupied by pkg
         Bin localBin = new Bin(0, 0, 0, 0, 0);
+
+        // found: if we have found an open Bin to fit pkg into
         boolean found = false;
 
         // FIXME try to put classesBin in openBins as well
+
+        // see if there is an open Bin in which pkg can fit into
         for (Bin bin : parentOpenBins) {
+            // if can fit in openBin
             if (bin.width() > pkg.w && bin.depth() > pkg.w) {
                 localBin = new Bin(bin.getX1(), bin.getX1(), bin.getY1(), bin.getY1(), bin.getZ());
                 found = true;
@@ -90,9 +99,9 @@ public class RectanglePacking {
             }
         }
 
-
+        // if no valid open Bin, put local Bin either to the right or above of parentBin
         if (!found) {
-            // decide in which direction to "grow" the representation
+            // decide in which direction to "grow" the representation to keep it as square as possible
             if (parentBin.depth() > parentBin.width()) {
                 localBin = new Bin(parentBin.getX2(), parentBin.getX2(), parentBin.getY1(), parentBin.getY2(), parentBin.getZ());
             } else {
@@ -105,18 +114,24 @@ public class RectanglePacking {
         Bin classesBin = new Bin(0, 0, 0, 0, 0);
 
 
+        // add pkg's classes to the total of all classes contained in pkg (recursive as well)
         pkg.addClassTotal(pkg.getClasses().size());
 
+        // pack the children of pkg before fitting pkg itself
         for (JavaPackage child : pkg.getChildPackages()) {
-            Bin temp = pack(child, localBin, openBins, recDepth + 1);
+            Bin childBin = pack(child, localBin, openBins, recDepth + 1);
+
+            // add the classes of the children to the total number of classes of pkg
             pkg.addClassTotal(child.getClassTotal());
-            localBin.mergeBin(temp);
+
+            // add the size of the child package to the size of pkg
+            localBin.mergeBin(childBin);
         }
 
-
-
+        // get the size to fit the classes of pkg into
         int minClassesSize = getMinClassesSize(pkg);
 
+        // put the classes either to the right or above the local Bin
         if (localBin.depth() > localBin.width()) {
             classesBin.setX1(localBin.getX2());
             classesBin.setX2(localBin.getX2() + minClassesSize);
@@ -129,69 +144,93 @@ public class RectanglePacking {
             classesBin.setX2(localBin.getX1() + minClassesSize);
         }
 
+        // update localBin with extra size of classesBin
         localBin.mergeBin(classesBin);
 
-        // makes localBin into a square
+        // make localBin into a square
         if (localBin.depth() > localBin.width()) {
             localBin.setX2(localBin.getX2() + localBin.depth() - localBin.width());
         } else if (localBin.width() > localBin.depth()) {
             localBin.setY2(localBin.getY2() + localBin.width() - localBin.depth());
         }
 
-        int k = padding * recDepth;
 
-        localBin.setX1(localBin.getX1() + k);
-        localBin.setY1(localBin.getY1() + k);
-        localBin.setX2(localBin.getX2() + k);
-        localBin.setY2(localBin.getY2() + k);
+        // shift localBin by padding, draw it, and shift it back (we don't want to draw on the padding)
+        addPaddingAndFit(localBin, pkg, padding, recDepth, true);
 
-//        localBin.setY1(localBin.getY1() + 100);
-
-        fitPackage(localBin, pkg);
-
-        localBin.setX1(localBin.getX1() - k);
-        localBin.setY1(localBin.getY1() - k);
-        localBin.setX2(localBin.getX2() - k);
-        localBin.setY2(localBin.getY2() - k);
-
-
-        // add padding to right/top of packages
-        localBin.setX2(localBin.getX2() + 2 * padding);
-        localBin.setY2(localBin.getY2() + 2 * padding);
-
-        // FIXME find better height for packages
-        // FIXME when changing this, also change height in recDraw
+        // TODO when changing this, also change height in recDraw
         // set the height of the package, depending on the depth of the recursion of the current package
         pkg.z = recDepth;
 
 
         //TODO interpolate between grey and red?
+        // set color of package depending on depth of recursion
         pkg.color = RGBtoInt(255 * recDepth / maxDepth, 100, 100);
 
-        classesBin.setX1(classesBin.getX1() + k);
-        classesBin.setY1(classesBin.getY1() + k);
-        classesBin.setX2(classesBin.getX2() + k);
-        classesBin.setY2(classesBin.getY2() + k);
+        // shift classesBin by padding, draw it, and shift it back (we don't want to draw on the padding)
+        addPaddingAndFit(classesBin, pkg, padding, recDepth, false);
 
-        fitClasses(classesBin, pkg);
-
-        classesBin.setX1(classesBin.getX1() - k);
-        classesBin.setY1(classesBin.getY1() - k);
-        classesBin.setX2(classesBin.getX2() - k);
-        classesBin.setY2(classesBin.getY2() - k);
-
-
-        // add padding to right/top of packages
-        classesBin.setX2(classesBin.getX2() + 2 * padding);
-        classesBin.setY2(classesBin.getY2() + 2 * padding);
-
-        Bin remainderBin = new Bin(localBin.getX1(), localBin.getX2(), localBin.getY2(), parentBin.getY2() - localBin.getY2(), localBin.getZ());
-        parentOpenBins.add(remainderBin);
-        Bin remainderBin2 = new Bin(localBin.getX2(), parentBin.getX2() - localBin.getX2(), localBin.getY1(), localBin.getY2(), localBin.getZ());
-        parentOpenBins.add(remainderBin2);
+        // make open bins for extra space that was left after fitting local bin, extra space both on top and on the right
+        Bin openBinTop = new Bin(localBin.getX1(), localBin.getX2(), localBin.getY2(), parentBin.getY2() - localBin.getY2(), localBin.getZ());
+        parentOpenBins.add(openBinTop);
+        Bin openBinRight = new Bin(localBin.getX2(), parentBin.getX2() - localBin.getX2(), localBin.getY1(), localBin.getY2(), localBin.getZ());
+        parentOpenBins.add(openBinRight);
 
         return localBin;
     }
+
+
+    /**
+     * adds bottom-left padding to the bin before we find the position for the pkg/classes.
+     * first we shift to clear space for the padding, then we fit in the bin, then we shift back so that the other packages
+     * don't get put on top of the padding of this package.
+     * then we add padding to the top right of the bin.
+     *
+     *          old local bin                                new local bin
+     *                                                     _____________________
+     *           ____________                             |       padding       |
+     *          |            |                            |     ____________    |
+     *          |            |                            |  p |            |   |
+     *          |            |                            |  a |            |   |
+     *          |            |                            |  d |  drawn     |   |
+     *          |            |                            |  d |  package   |   |
+     *          |            |                            |  i |            |   |
+     *          |____________|                            |  n |____________|   |
+     *                                                    |  g    padding       |
+     *                                                    |_____________________|
+     *
+     * @param bin the bin inside which we want to put the object
+     * @param pkg the package that we want to position (or its classes)
+     * @param padding the padding to be added on each side
+     * @param recDepth the depth of the recursion of current package
+     * @param drawPackage true if we want to draw the package, false for its classes
+     */
+    private void addPaddingAndFit(Bin bin, JavaPackage pkg, int padding, int recDepth, boolean drawPackage) {
+        // add padding on bottom left of package; times depth of recursion to account space for the surrounding packages
+        int pad = padding * recDepth;
+
+        bin.setX1(bin.getX1() + pad);
+        bin.setY1(bin.getY1() + pad);
+        bin.setX2(bin.getX2() + pad);
+        bin.setY2(bin.getY2() + pad);
+
+        // draw the package or the classes of the package
+        if(drawPackage) {
+            fitPackage(bin, pkg);
+        }else {
+            fitClasses(bin, pkg);
+        }
+
+        bin.setX1(bin.getX1() - pad);
+        bin.setY1(bin.getY1() - pad);
+        bin.setX2(bin.getX2() - pad);
+        bin.setY2(bin.getY2() - pad);
+
+        // add padding to right/top of packages
+        bin.setX2(bin.getX2() + 2 * padding);
+        bin.setY2(bin.getY2() + 2 * padding);
+    }
+
 
     /**
      * finds out a minimum edge size for the classes inside pkg to be drawn in.
@@ -217,6 +256,7 @@ public class RectanglePacking {
         return (int) Math.ceil(Math.sqrt((classes.get(0).getMethods()) * (classes.size()))) * (padding/2);
     }
 
+
     /**
      * sets the position of JavaPackage pkg to be contained inside the bin
      *
@@ -230,6 +270,7 @@ public class RectanglePacking {
         pkg.z = bin.getZ();
         pkg.w = bin.width();
     }
+
 
     /**
      * sets the position of the list of classes contained in pkg to be contained inside the bin
