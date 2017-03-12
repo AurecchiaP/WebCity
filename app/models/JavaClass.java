@@ -1,7 +1,7 @@
 package models;
 
 /**
- * A model for Java classes
+ * A model for Java classes. The attributes for the position will later be moved
  */
 public class JavaClass {
 
@@ -19,14 +19,23 @@ public class JavaClass {
         this.attributes = attributes;
     }
 
+    /**
+     * @return the name of the class
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @return the number of methods contained in the class
+     */
     public int getMethods() {
         return methods;
     }
 
+    /**
+     * @return the number of attributes contained in the class
+     */
     public int getAttributes() {
         return attributes;
     }

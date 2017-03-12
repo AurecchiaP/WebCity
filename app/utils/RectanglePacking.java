@@ -10,10 +10,11 @@ import java.util.ArrayList;
 import static utils.RGB.RGBtoInt;
 
 
-public class CubePacking {
+public class RectanglePacking {
 
 
     private int maxDepth = 0;
+    private final int padding = 100;
 
 
     /**
@@ -21,22 +22,16 @@ public class CubePacking {
      *
      * @param pkg the root JavaPackage of the repository we want to visualize
      */
-    public CubePacking(JavaPackage pkg) {
-
-
-        List<Bin> openBins = new ArrayList<>();
-        int recDepth = 0;
+    public RectanglePacking(JavaPackage pkg) {
 
         // traverse recursively the packages to find out the maximum size needed for the visualization and the maximum
         // depth of recursion
-        int maxWidth = getPackageMaxWidth(pkg, recDepth);
+        int recDepth = 0;
+        getPackageMaxWidth(pkg, recDepth);
 
-        // traverse again, this time to find the positions for packages and classes and their colors
+        // traverse again, this time to find the positions for packages and classes, using recDepth to set the color
         recDepth = 0;
-
-//        Bin localBin = new Bin(maxWidth/2, maxWidth/2, maxWidth/2, maxWidth/2, 0);
-        Bin localBin = new Bin(0,0,0,0, 0);
-        pack(pkg, localBin, openBins, recDepth);
+        pack(pkg, new Bin(0,0,0,0, 0), new ArrayList<>(), recDepth);
     }
 
 
@@ -53,15 +48,19 @@ public class CubePacking {
     // FIXME on top)
     // FIXME is this heuristic good enough?
     private int getPackageMaxWidth(JavaPackage pkg, int depth) {
+
+        // store maximum depth of packages reached
         if (depth > maxDepth) maxDepth = depth;
 
+        // recursively iterate on child packages
         for (JavaPackage child : pkg.getChildPackages()) {
             pkg.w += getPackageMaxWidth(child, depth + 1);
         }
 
-        // FIXME add 200 for the paddings (for now 2*paddings)
-        pkg.w += getMinClassesSize(pkg) + 200;
+        // store the width
+        pkg.w += getMinClassesSize(pkg) + (2 * padding);
 
+        // sort the children packages by their size, in descending order
         pkg.sortChildren();
 
         return pkg.w;
@@ -139,7 +138,7 @@ public class CubePacking {
             localBin.setY2(localBin.getY2() + localBin.width() - localBin.depth());
         }
 
-        int k = 100*recDepth;
+        int k = padding * recDepth;
 
         localBin.setX1(localBin.getX1() + k);
         localBin.setY1(localBin.getY1() + k);
@@ -157,13 +156,13 @@ public class CubePacking {
 
 
         // add padding to right/top of packages
-        localBin.setX2(localBin.getX2() + 200);
-        localBin.setY2(localBin.getY2() + 200);
+        localBin.setX2(localBin.getX2() + 2 * padding);
+        localBin.setY2(localBin.getY2() + 2 * padding);
 
         // FIXME find better height for packages
         // FIXME when changing this, also change height in recDraw
         // set the height of the package, depending on the depth of the recursion of the current package
-        pkg.z = recDepth * 50;
+        pkg.z = recDepth;
 
 
         //TODO interpolate between grey and red?
@@ -183,23 +182,16 @@ public class CubePacking {
 
 
         // add padding to right/top of packages
-        classesBin.setX2(classesBin.getX2() + 200);
-        classesBin.setY2(classesBin.getY2() + 200);
+        classesBin.setX2(classesBin.getX2() + 2 * padding);
+        classesBin.setY2(classesBin.getY2() + 2 * padding);
 
         Bin remainderBin = new Bin(localBin.getX1(), localBin.getX2(), localBin.getY2(), parentBin.getY2() - localBin.getY2(), localBin.getZ());
         parentOpenBins.add(remainderBin);
         Bin remainderBin2 = new Bin(localBin.getX2(), parentBin.getX2() - localBin.getX2(), localBin.getY1(), localBin.getY2(), localBin.getZ());
         parentOpenBins.add(remainderBin2);
 
-//        localBin.setX1(localBin.getX1() - 100);
-//        localBin.setY1(localBin.getY1() - 100);
-
         return localBin;
     }
-//
-//    private void printBin(String name, Bin bin) {
-//        System.out.println("x1:" + bin.x1 + " x2:" + bin.x2 + " y1:" + bin.y1 + " y2:" + bin.y2 + " " + name);
-//    }
 
     /**
      * finds out a minimum edge size for the classes inside pkg to be drawn in.
@@ -211,16 +203,18 @@ public class CubePacking {
      */
     private int getMinClassesSize(JavaPackage pkg) {
         List<JavaClass> classes = pkg.getClasses();
+
+        // if there are no classes, return 0
         if (classes.size() == 0) {
             return 0;
         }
 
+        // sort the classes by their number of methods, in descending order
         pkg.sortClasses();
 
-        // FIXME this isn't right, the second one should be right
         // FIXME find out why I have to scale it/ find the proper way to scale things
-//        return classes.get(0).getMethods() * (classes.size()) / 2;
-        return (int) Math.ceil(Math.sqrt(classes.get(0).getMethods() * (classes.size()))) * 40;
+        // heuristic; assume every class is as big as the biggest class to find a lower bound for the size of the package
+        return (int) Math.ceil(Math.sqrt((classes.get(0).getMethods()) * (classes.size()))) * (padding/2);
     }
 
     /**
@@ -230,10 +224,11 @@ public class CubePacking {
      * @param pkg the JavaPackage that will be put in bin
      */
     private void fitPackage(Bin bin, JavaPackage pkg) {
+        // set position of package to center of bin
         pkg.cx = bin.getX1() + bin.width() / 2;
         pkg.cy = bin.getY1() + bin.depth() / 2;
         pkg.z = bin.getZ();
-        pkg.w = bin.depth();
+        pkg.w = bin.width();
     }
 
     /**
@@ -243,14 +238,20 @@ public class CubePacking {
      * @param pkg the JavaPackage that contains the classes that will be put in bin
      */
     private void fitClasses(Bin bin, JavaPackage pkg) {
+
         List<JavaClass> classes = pkg.getClasses();
         int totalClasses = classes.size();
-        int cubesPerWidth = (int) Math.ceil(Math.sqrt(totalClasses)) + 2;
-        int gridSpacing = (bin.getX2() - bin.getX1()) / (cubesPerWidth);
+        // calculate how many classes we can fit on one edge of the bin
+        int classesPerWidth = (int) Math.ceil(Math.sqrt(totalClasses)) + 2;
+
+        // calculate how far apart each class has to be
+        int gridSpacing = (bin.getX2() - bin.getX1()) / (classesPerWidth);
+
+        // find the positions of the classes on the grid
         for (int i = 0; i < totalClasses; ++i) {
             JavaClass cls = classes.get(i);
-            int x = i % (cubesPerWidth - 1) + 1;
-            int y = i / (cubesPerWidth - 1) + 1;
+            int x = i % (classesPerWidth - 1) + 1;
+            int y = i / (classesPerWidth - 1) + 1;
             cls.cx = bin.getX1() + gridSpacing * x;
             cls.cy = bin.getY1() + gridSpacing * y;
             cls.cz = pkg.z;

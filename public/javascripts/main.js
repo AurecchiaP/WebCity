@@ -5,59 +5,8 @@ var pinnedObject, isPinned, pinnedColor;
 
 init();
 
-
 window.requestAnimationFrame(render);
 
-var frame = 0;
-var an;
-var upDown = false;
-
-function animate() {
-    an = requestAnimationFrame(animate);
-    if (frame < 10) {
-        var i = meshes.length;
-        while (i--) {
-            if (i % 2 == 0) {
-                if (upDown) {
-                    meshes[i].scale.z += 0.5;
-                }
-                else {
-                    meshes[i].scale.z -= 0.5;
-                }
-            } else {
-                if (!upDown) {
-                    meshes[i].scale.z += 0.5;
-                }
-                else {
-                    meshes[i].scale.z -= 0.5;
-                }
-            }
-        }
-        frame += 0.5;
-        renderer.render(scene, camera);
-    }
-    else {
-        cancelAnimationFrame(an);
-        frame = 0;
-        upDown = !upDown;
-    }
-}
-
-var btn = document.createElement("button");
-btn.style.position = "absolute";
-btn.style.top = "10px";
-btn.style.left = "10px";
-var t = document.createTextNode("transition");
-btn.style.display = "none";
-btn.appendChild(t);
-
-btn.onclick = function () {
-    animate();
-};
-
-
-// FIXME for now, no transition button
-// document.body.appendChild(btn);
 
 
 // Initialise the empty scene, with controls and camera
@@ -96,7 +45,7 @@ function init() {
 
             if (data) {
                 var json = JSON.parse(data);
-                draw(json, 3500, 3500);
+                draw(json);
                 console.log(json);
             }
         }, error: function () {
@@ -106,14 +55,11 @@ function init() {
 }
 
 var classesText = document.getElementById("classes");
-var packagesText = document.getElementById("packages");
 
 
-function loaded() {
+function loaded(data) {
     document.getElementById("loader-container").remove();
-    btn.style.display = "block";
-    classesText.innerText = "Total classes: 1000";
-    packagesText.innerText = "Total packages: 1001";
+    classesText.innerText = "Total classes: " + data.totalClasses;
     render();
 }
 
@@ -123,10 +69,6 @@ window.addEventListener('mousemove', onMouseMove, false);
 window.addEventListener('resize', onMouseMove, false);
 window.addEventListener("keydown", onKeyPress, false);
 window.addEventListener("click", onClick, false);
-
-
-function onClick(e) {
-}
 
 
 function onKeyPress(e) {
@@ -164,7 +106,7 @@ function onKeyPress(e) {
                 nameText.innerText = "Package name: " + hoveredCube.object.name;
 
                 statistic1Text.innerText = "Contained classes: " + hoveredCube.object.classes;
-                statistic1Text.innerText = "Total classes: " + hoveredCube.object.totalClasses;
+                statistic2Text.innerText = "Total classes: " + hoveredCube.object.totalClasses;
             }
             else if (hoveredCube.object.type == "class") {
                 nameText.innerText = "Class name: " + hoveredCube.object.name;
