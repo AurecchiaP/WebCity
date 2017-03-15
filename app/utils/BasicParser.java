@@ -30,7 +30,7 @@ import java.util.Optional;
 public class BasicParser {
 
     // FIXME change this to thesis/repository (?) when using the download feature
-    static String repoPath = "/Users/paolo/Documents/6th semester/thesis/";
+    private static String repoPath = "/Users/paolo/Documents/6th semester/thesis/";
 
     /**
      * Starts the recursive parsing of the repository corresponding to the given path.
@@ -40,17 +40,23 @@ public class BasicParser {
      * classes recursively
      */
     public static JavaPackage parseRepo(String path) {
-        Path p1 = Paths.get(path);
+        // look for the main folder
+        Path p = Paths.get(path);
         try {
-            Optional<Path> hit = Files.walk(p1)
+            Optional<Path> hit = Files.walk(p)
                     .filter(file -> file.getFileName().equals(Paths.get("main")))
                     .findAny();
 
+            // if we found the `main` folder, parse from there
             if (hit.isPresent()) {
-                return getPackage(hit.get().toString());
-            } else {
+                return makePackage(hit.get().toString());
+
+
+            }
+            // else parse from root of repository
+            else {
                 System.out.println("folder src/main not found");
-                return getPackage(path);
+                return makePackage(path);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -65,16 +71,18 @@ public class BasicParser {
      * @param path the path to a folder that represents a package
      * @return the new JavaPackage that corresponds to the given path
      */
-    private static JavaPackage getPackage(String path) {
+    private static JavaPackage makePackage(String path) {
+        // create a new JavaPackage for the given path
         JavaPackage currentPackage = new JavaPackage(path.replaceFirst(repoPath, ""));
-        List<JavaClass> clss = getClasses(path, currentPackage);
+        // find the list of classes contained directly in this package and add then to it
+        List<JavaClass> clss = findClasses(path, currentPackage);
         currentPackage.setClasses(new ArrayList<>(clss));
 
+        // for each sub-directory of pkg, recursively call makePackage, and then add them as children to this package
         for (File file : new File(path).listFiles()) {
             if (file.isDirectory()) {
-                JavaPackage pkg = getPackage(file.getPath());
+                JavaPackage pkg = makePackage(file.getPath());
                 currentPackage.addChildPackage(pkg);
-//                currentPackage.addClassTotal(pkg.getVisualizationData().size());
             }
         }
         return currentPackage;
@@ -89,10 +97,15 @@ public class BasicParser {
      * @param pkg  the JavaPackage that will contain the classes that we are parsing
      * @return a List of JavaClass contained in pkg
      */
-    private static List<JavaClass> getClasses(String path, JavaPackage pkg) {
+    private static List<JavaClass> findClasses(String path, JavaPackage pkg) {
+
+        // get the list of files contained in the given path
         File[] files = new File(path).listFiles();
         if (files != null) {
             for (File file : files) {
+
+                // if the file is not a directory and it is a .java file, parse it, and add its contained classes to
+                // the JavaPackage pkg
                 if (!file.isDirectory() && file.getPath().endsWith(".java")) {
                     FileInputStream in;
                     try {
@@ -127,10 +140,15 @@ public class BasicParser {
             this.pkg = pkg;
         }
 
+
+        // for each class found
         @Override
         public void visit(ClassOrInterfaceDeclaration n, Void arg) {
 
+
             n.accept(new VoidVisitorAdapter<Void>() {
+
+                // for each method found
                 @Override
                 public void visit(MethodDeclaration n, Void arg) {
                     methods += 1;
@@ -138,12 +156,15 @@ public class BasicParser {
             }, null);
 
             n.accept(new VoidVisitorAdapter<Void>() {
+
+                // for each attribute found
                 @Override
                 public void visit(FieldDeclaration n, Void arg) {
                     attributes += 1;
                 }
             }, null);
 
+            // create the new JavaClass with the given number of methods and attributes, and add it to the parent package
             cls = new JavaClass(n.getName().toString(), methods, attributes);
             pkg.addClass(cls);
             super.visit(n, arg);
