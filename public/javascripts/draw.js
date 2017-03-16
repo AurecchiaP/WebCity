@@ -1,5 +1,5 @@
 var meshes = [];
-const scale = .15;
+const scale = .1;
 const packageHeight = 100;
 
 
@@ -43,6 +43,8 @@ function draw(pkg) {
     controls.update();
 
     // add the mesh to the scene and notify that the visualization is ready
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
     scene.add(mesh);
     loaded(pkg);
 }
@@ -76,6 +78,9 @@ function drawClass(cls) {
     // var clsWidth = (cls.methods + 5) * scale;
     var clsHeight = (cls.methods + 5);
     var clsWidth = (cls.attributes + 5);
+
+    // var clsHeight = (cls.methods);
+    // var clsWidth = (cls.attributes);
 
     var posX = cls.cx * scale;
     var posY = cls.cy * scale;
