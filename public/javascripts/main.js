@@ -32,24 +32,28 @@ function init() {
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0xffffff);
 
-    // var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-    // directionalLight.position.set(1000,1000,5000);
-    // directionalLight.castShadow = true;
-    // directionalLight.shadow.camera.near = 1;
-    // directionalLight.shadow.camera.far = 500;
-    // scene.add( directionalLight );
-
-    var light = new THREE.PointLight( 0xffffff, 1, 0, 2 );
-    light.position.set( 500, 500, 500 );
+    // TODO try to make it better
+    // TODO try to fit it exactly and change direction by setting position and target
+    // TODO try different materials and stuff
+    var light = new THREE.DirectionalLight( 0xffffff, 0.5 );
+    light.position.set(500,500,1500);
     light.castShadow = true;
-    light.shadow.mapSize.width = 1024;
-    light.shadow.mapSize.height = 1024;
+    light.shadow.mapSize.width = 2048;
+    light.shadow.mapSize.height = 2048;
+    light.shadow.camera.near = 0.5;
+    light.shadow.camera.far = 1700;
+    light.shadow.camera.fov = 90;
+    light.shadow.camera.left = -500;
+    light.shadow.camera.right = 2500;
+    light.shadow.camera.top = 2500;
+    light.shadow.camera.bottom = -500;
+    light.shadow.bias = 0.0001;
 
-    light.shadow.camera.left = 500;
     scene.add( light );
 
-// var ambientLight = new THREE.AmbientLight( 0x151515 ); // soft white light
-// scene.add( ambientLight );
+    // helper to see bounding box and direction of shadow box
+    var helper = new THREE.CameraHelper( light.shadow.camera );
+    scene.add( helper );
 
     camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
     camera.position.z = 5000;
@@ -83,28 +87,6 @@ function init() {
             console.log("invalid server response");
         }
     });
-
-    //Creating box
-var boxGeometry = new THREE.BoxGeometry( 1, 1, 1 );
-var boxMaterial = new THREE.MeshPhongMaterial( { color: 0xdddddd, specular: 0x999999, shininess: 15, shading: THREE.FlatShading } );
-var box = new THREE.Mesh( boxGeometry, boxMaterial );
-box.castShadow = true;
-scene.add( box );
-
-
-
-    var planeGeometry = new THREE.PlaneGeometry( 20, 20, 32, 32 );
-    var planeMaterial = new THREE.MeshPhongMaterial( { color: 0x00dddd, specular: 0x009900, shininess: 10, shading: THREE.FlatShading } )
-    var plane = new THREE.Mesh( planeGeometry, planeMaterial );
-    plane.receiveShadow = true;
-    scene.add( plane );
-    plane.position.z = -2;
-    // plane.rotation.x = -Math.PI/2;
-
-//     camera.position.z = 5;
-// camera.position.y = 2;
-// camera.lookAt(box.position);
-
 }
 
 
