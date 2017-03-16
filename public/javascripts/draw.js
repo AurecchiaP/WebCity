@@ -18,19 +18,18 @@ function draw(pkg) {
     var geometry = mergeMeshes(meshes);
 
     // TODO best looking, but computationally expensive
-    var material = new THREE.MeshStandardMaterial({
-        color: 0xffffff,
-        shading: THREE.SmoothShading,
-        vertexColors: THREE.VertexColors,
-        visible: true
-    });
-
-    // var material = new THREE.MeshToonMaterial({
+    // var material = new THREE.MeshStandardMaterial({
     //     color: 0xffffff,
     //     shading: THREE.SmoothShading,
     //     vertexColors: THREE.VertexColors,
     //     visible: true
     // });
+
+    var material = new THREE.MeshPhongMaterial({
+        shading: THREE.SmoothShading,
+        vertexColors: THREE.VertexColors,
+        visible: true
+    });
 
     mesh = new THREE.Mesh(geometry, material);
 
@@ -170,7 +169,12 @@ function drawPackage(pkg) {
  */
 function loaded(data) {
     document.getElementById("loader-container").remove();
+    document.getElementById("main-content").remove();
+    document.getElementById("container").style.display = "block";
     classesText.innerText = "Total classes: " + data.totalClasses;
+
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+
     render();
 }
 

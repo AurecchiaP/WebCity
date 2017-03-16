@@ -6,6 +6,7 @@ body {
 }
 
 #container {
+    display: none;
     /*display: flex;*/
     /*flex-direction: column;*/
     /*width: 100vw;*/
@@ -32,7 +33,7 @@ body {
 #selected-statistics {
     padding: 1vw;
     position: absolute;
-    width: 98vw;
+    width: 100vw;
     height: 13vh;
     background-color: rgba(0, 0, 0, 0.1);
 }
@@ -42,9 +43,7 @@ body {
     position: absolute;
     right: 0;
     float: right;
-    /*width: 98vw;*/
     height: 13vh;
-    /*background-color: rgba(0, 0, 0, 0.1);*/
 }
 
 #version {
@@ -54,18 +53,9 @@ body {
     padding-right: 1vw;
 }
 
-#inputField {
-    margin: auto;
-    width: 100%;
-    text-align: center;
-    vertical-align: middle;
-    padding-top: 45vh;
-}
-
-
 #loader-container {
     position: absolute;
-    display: flex;
+    display: none;
     align-items: center;
     width: 100vw;
     height: 100vh;

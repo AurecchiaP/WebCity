@@ -15,14 +15,15 @@ var statistic2Text = document.getElementById("statistic2");
 var statistic3Text = document.getElementById("statistic3");
 
 
-init();
+// init();
 
 
 /**
  * takes care of initialising the visualisation
  */
-function init() {
+function init(json) {
 
+    console.log(json);
     window.requestAnimationFrame(render);
 
     canvas = document.getElementById('canvas');
@@ -37,9 +38,11 @@ function init() {
     // TODO try different materials and stuff
     var light = new THREE.DirectionalLight( 0xffffff, 0.5 );
     light.position.set(500,500,1500);
+
+    // shadow settings
     light.castShadow = true;
-    light.shadow.mapSize.width = 2048;
-    light.shadow.mapSize.height = 2048;
+    light.shadow.mapSize.width = 1024;
+    light.shadow.mapSize.height = 1024;
     light.shadow.camera.near = 0.5;
     light.shadow.camera.far = 1700;
     light.shadow.camera.fov = 90;
@@ -73,20 +76,8 @@ function init() {
 
     document.body.appendChild(renderer.domElement);
 
-
-    // call to server to get the data to draw
-    var r = jsRoutes.controllers.HomeController.getVisualizationData();
-    $.ajax({
-        url: r.url,
-        type: r.type,
-        success: function (data) {
-            var json = JSON.parse(data);
-            draw(json);
-            console.log(json);
-        }, error: function () {
-            console.log("invalid server response");
-        }
-    });
+    draw(json);
+    console.log(json);
 }
 
 

@@ -22,7 +22,7 @@ import static utils.FileUtils.deleteDir;
 public class HomeController extends Controller {
 
     private String currentRepo;
-    private boolean web = false;
+    private boolean web;
 
     @Inject
     FormFactory formFactory;
@@ -101,26 +101,31 @@ public class HomeController extends Controller {
      * route for the visualisation page; not yet used
      */
     public Result visualization() {
+        String repo = formFactory.form().bindFromRequest().get("repository");
+        System.out.println("input repository: " + repo);
 
-        if(!web) return ok(views.html.index2.render());
 
-
-        // get the link of the given repo
-        DynamicForm dynamicForm = formFactory.form().bindFromRequest();
-        String formRepo = dynamicForm.get("repo");
-
-        // see if the repository is available/can be downloaded
-        final LsRemoteCommand lsCmd = new LsRemoteCommand(null);
-            lsCmd.setRemote(formRepo);
-        try {
-            System.out.println(lsCmd.call().toString());
-            System.out.println("valid repo");
-            currentRepo = formRepo;
-            return ok(views.html.index2.render());
-        } catch (GitAPIException e) {
-            e.printStackTrace();
-            System.out.println("invalid repo");
-            return badRequest();
+        // empty input uses local repo, for debugging
+        if (repo.equals("")) {
+            web = false;
+            return getVisualizationData();
+        } else {
+            web = true;
+            currentRepo = repo;
+            final LsRemoteCommand lsCmd = new LsRemoteCommand(null);
+            lsCmd.setRemote(repo);
+            try {
+                // print for debugging
+//                System.out.println(lsCmd.call().toString());
+                lsCmd.call();
+                System.out.println("valid repo");
+                currentRepo = repo;
+                return getVisualizationData();
+            } catch (GitAPIException e) {
+                e.printStackTrace();
+                System.out.println("invalid repo");
+                return badRequest();
+            }
         }
     }
 }

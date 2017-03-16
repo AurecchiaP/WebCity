@@ -147,7 +147,6 @@ public class BasicParser {
 
             if(n.getBegin().isPresent() && n.getEnd().isPresent()) {
                 numberOfLines = n.getEnd().get().line - n.getBegin().get().line + 1;
-                System.out.println(numberOfLines);
             } else {
                 numberOfLines = 0;
             }
