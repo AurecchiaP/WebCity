@@ -158,14 +158,12 @@ public class RectanglePacking {
         // shift localBin by padding, draw it, and shift it back (we don't want to draw on the padding)
         addPaddingAndFit(localBin, pkg, padding, recDepth, true);
 
-        // TODO when changing this, also change height in recDraw
         // set the height of the package, depending on the depth of the recursion of the current package
         pkg.z = recDepth;
 
 
-        //TODO interpolate between grey and red?
         // set color of package depending on depth of recursion
-        pkg.color = RGBtoInt(255 * recDepth / maxDepth, 100, 100);
+        pkg.color = RGBtoInt(100 + (120 * recDepth / maxDepth), 100 + (120 * recDepth / maxDepth), 100 + (120 * recDepth / maxDepth));
 
         // shift classesBin by padding, draw it, and shift it back (we don't want to draw on the padding)
         addPaddingAndFit(classesBin, pkg, padding, recDepth, false);
@@ -296,6 +294,8 @@ public class RectanglePacking {
             cls.cx = bin.getX1() + gridSpacing * x;
             cls.cy = bin.getY1() + gridSpacing * y;
             cls.cz = pkg.z;
+            // FIXME find real maximum of lines of code
+            cls.color = RGBtoInt(55 + (200 * cls.getLinesOfCode() / 5000), 55 + (200 * cls.getLinesOfCode() / 5000), 255);
         }
     }
 

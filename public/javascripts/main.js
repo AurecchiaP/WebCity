@@ -12,6 +12,7 @@ var classesText = document.getElementById("classes");
 var nameText = document.getElementById("name");
 var statistic1Text = document.getElementById("statistic1");
 var statistic2Text = document.getElementById("statistic2");
+var statistic3Text = document.getElementById("statistic3");
 
 
 init();
@@ -88,11 +89,13 @@ function render() {
 
                 statistic1Text.innerText = "Contained classes: " + hoveredCube.object.classes;
                 statistic2Text.innerText = "Total classes: " + hoveredCube.object.totalClasses;
+                statistic3Text.innerText = "None";
             }
             else if (hoveredCube.object.type == "class") {
                 nameText.innerText = "Class name: " + hoveredCube.object.name;
                 statistic1Text.innerText = "Contained methods: " + hoveredCube.object.methods;
                 statistic2Text.innerText = "Contained attributes: " + hoveredCube.object.attributes;
+                statistic3Text.innerText = "Lines of code: " + hoveredCube.object.linesOfCode;
             }
         }
     }

@@ -1,7 +1,6 @@
 var meshes = [];
 const scale = .15;
 const packageHeight = 100;
-const clsColor = 0x00000ff;
 
 
 /**
@@ -73,20 +72,24 @@ function recDraw(pkg) {
  */
 function drawClass(cls) {
     // adding 5 to attributes and methods, to have a lower bound (else we won't see the class)
-    var clsHeight = (cls.attributes + 5) * scale * 30;
-    var clsWidth = (cls.methods + 5) * scale;
+    // var clsHeight = (cls.attributes + 5) * scale * 30;
+    // var clsWidth = (cls.methods + 5) * scale;
+    var clsHeight = (cls.methods + 5);
+    var clsWidth = (cls.attributes + 5);
 
     var posX = cls.cx * scale;
     var posY = cls.cy * scale;
     var posZ = (cls.cz * scale * 100) + ((clsHeight / 2) + 5);
 
+    var color = cls.color;
+
     // create geometry and material for this class
     geometry = new THREE.BoxGeometry(clsWidth, clsWidth, clsHeight);
     for (var i = 0; i < geometry.faces.length; i++) {
         var face = geometry.faces[i];
-        face.color.setHex(clsColor);
+        face.color.setHex(color);
     }
-    material = new THREE.MeshToonMaterial({color: clsColor, wireframe: false});
+    material = new THREE.MeshToonMaterial({color: color, wireframe: false});
 
     // invisible material allows raycasting invisible objects
     material.visible = false;
@@ -96,6 +99,7 @@ function drawClass(cls) {
     mesh.name = cls.name;
     mesh.methods = cls.methods;
     mesh.attributes = cls.attributes;
+    mesh.linesOfCode = cls.linesOfCode;
     mesh.type = "class";
 
     // position the mesh

@@ -8,15 +8,18 @@ public class JavaClass {
     private String name;
     private int methods;
     private int attributes;
+    private int linesOfCode;
 
     public int cx;
     public int cy;
     public int cz;
+    public int color;
 
-    public JavaClass(String name, int methods, int attributes) {
+    public JavaClass(String name, int methods, int attributes, int linesOfCode) {
         this.name = name;
         this.methods = methods;
         this.attributes = attributes;
+        this.linesOfCode = linesOfCode;
     }
 
     /**
@@ -24,6 +27,17 @@ public class JavaClass {
      */
     public String getName() {
         return name;
+    }
+
+
+    public void setLinesOfCode(int linesOfCode) {
+        this.linesOfCode = linesOfCode;
+    }
+
+
+
+    public int getLinesOfCode() {
+        return linesOfCode;
     }
 
     /**

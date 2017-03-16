@@ -9,10 +9,7 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import models.JavaClass;
 import models.JavaPackage;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -115,7 +112,7 @@ public class BasicParser {
                         ClassVisitor cv = new ClassVisitor(pkg);
                         cv.visit(cu, null);
 
-                    } catch (FileNotFoundException e) {
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
@@ -135,6 +132,7 @@ public class BasicParser {
         private JavaClass cls;
         private int methods = 0;
         private int attributes = 0;
+        private int numberOfLines = 0;
 
         private ClassVisitor(JavaPackage pkg) {
             this.pkg = pkg;
@@ -145,6 +143,14 @@ public class BasicParser {
         @Override
         public void visit(ClassOrInterfaceDeclaration n, Void arg) {
 
+
+
+            if(n.getBegin().isPresent() && n.getEnd().isPresent()) {
+                numberOfLines = n.getEnd().get().line - n.getBegin().get().line + 1;
+                System.out.println(numberOfLines);
+            } else {
+                numberOfLines = 0;
+            }
 
             n.accept(new VoidVisitorAdapter<Void>() {
 
@@ -165,7 +171,7 @@ public class BasicParser {
             }, null);
 
             // create the new JavaClass with the given number of methods and attributes, and add it to the parent package
-            cls = new JavaClass(n.getName().toString(), methods, attributes);
+            cls = new JavaClass(n.getName().toString(), methods, attributes, numberOfLines);
             pkg.addClass(cls);
             super.visit(n, arg);
         }
