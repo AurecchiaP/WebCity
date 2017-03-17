@@ -1,5 +1,5 @@
 var meshes = [];
-const scale = .5;
+const scale = .2;
 const packageHeight = 100 * scale;
 
 
@@ -44,6 +44,7 @@ function draw(pkg) {
     // add the mesh to the scene and notify that the visualization is ready
     mesh.castShadow = true;
     mesh.receiveShadow = true;
+    mesh.shadowMap
     scene.add(mesh);
     loaded(pkg);
 }
@@ -88,7 +89,7 @@ function drawClass(cls) {
         var face = geometry.faces[i];
         face.color.setHex(color);
     }
-    material = new THREE.MeshToonMaterial({color: color, wireframe: false});
+    material = new THREE.MeshBasicMaterial({color: color, wireframe: false});
 
     // invisible material allows raycasting invisible objects
     material.visible = false;
@@ -135,7 +136,7 @@ function drawPackage(pkg) {
         var face = geometry.faces[i];
         face.color.setHex(color);
     }
-    material = new THREE.MeshToonMaterial({color: color, wireframe: false});
+    material = new THREE.MeshBasicMaterial({color: color, wireframe: false});
 
     // invisible material allows raycasting invisible objects
     material.visible = false;
@@ -168,8 +169,11 @@ function loaded(data) {
     document.getElementById("container").style.display = "block";
     classesText.innerText = "Total classes: " + data.totalClasses;
 
+    // notify the renderer that our html canvas has appeared
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
+    // update shadows only once
+    renderer.shadowMap.needsUpdate = true;
     render();
 }
 

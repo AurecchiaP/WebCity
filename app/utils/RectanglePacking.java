@@ -14,6 +14,7 @@ public class RectanglePacking {
 
 
     private int maxDepth = 0;
+    private int maxLines = 0;
     private final int padding = 25;
 
 
@@ -58,6 +59,10 @@ public class RectanglePacking {
 
         // store the width
         pkg.w += getMinClassesSize(pkg) + (2 * padding);
+
+        for (JavaClass cls : pkg.getClasses()) {
+            if(cls.getLinesOfCode() > maxLines) maxLines = cls.getLinesOfCode();
+        }
 
         // sort the children packages by their size, in descending order
         pkg.sortChildren();
@@ -294,7 +299,7 @@ public class RectanglePacking {
             cls.cy = bin.getY1() + gridSpacing * y;
             cls.cz = pkg.z;
             // FIXME find real maximum of lines of code
-            cls.color = RGBtoInt(55 + (200 * cls.getLinesOfCode() / 5000), 55 + (200 * cls.getLinesOfCode() / 5000), 255);
+            cls.color = RGBtoInt(55 + (200 * cls.getLinesOfCode() / maxLines), 55 + (200 * cls.getLinesOfCode() / maxLines), 255);
         }
     }
 
