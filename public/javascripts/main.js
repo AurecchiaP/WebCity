@@ -73,8 +73,8 @@ function init(json) {
     scene.add( ambientLight );
 
     // helper to see bounding box and direction of shadow box
-    var helper = new THREE.CameraHelper( light.shadow.camera );
-    scene.add( helper );
+    // var helper = new THREE.CameraHelper( light.shadow.camera );
+    // scene.add( helper );
 
     camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
     camera.position.z = 2000;

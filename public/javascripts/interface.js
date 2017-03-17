@@ -7,6 +7,9 @@ var inputField = document.getElementById("inputField");
  * sends a request to the server with the repository linked in the input field; if valid, visualizes it
  */
 submitButton.onclick = function() {
+    console.log(document.getElementById("progressBar").style.width);
+    document.getElementById("progressBar").style.width = "100%";
+
     var r = jsRoutes.controllers.HomeController.visualization();
     $.ajax({
         url: r.url,
