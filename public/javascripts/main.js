@@ -35,40 +35,46 @@ function init(json) {
     // scene.background = new THREE.Color(0xffffff);
 
     // TODO try to make it better
-    // TODO try to fit it exactly and change direction by setting position and target
     // TODO try different materials and stuff
     var light = new THREE.DirectionalLight( 0xffffff, 0.5 );
-    light.position.set(-100,-100,200);
+    // light.position.set(-100,-100,200);
+    light.position.set(0,0,1);
 
     // shadow settings
     light.castShadow = true;
 
+    var pkgWidth = json.w*scale;
+
     // TODO high map size vs shadowMap type
     light.shadow.mapSize.width = 4096;
     light.shadow.mapSize.height = 4096;
-    light.shadow.camera.near = 125;
+    light.shadow.camera.near = -pkgWidth*0.05;
 
-    // z of light position + margin of 5
-    light.shadow.camera.far = 1205;
+    // change values depending on angle of light
+    light.shadow.camera.far = pkgWidth*0.82;
     light.shadow.camera.fov = 90;
 
+    // hardcoded for this light position and light target
+    var pkgWidth = json.w*scale;
     light.shadow.camera.left = 0;
-    light.shadow.camera.right = 900;
-    light.shadow.camera.top = 900;
-    light.shadow.camera.bottom = -200;
+    light.shadow.camera.right = pkgWidth*0.9;
+    light.shadow.camera.top = pkgWidth*0.95;
+    light.shadow.camera.bottom = -pkgWidth*0.19;
 
     light.shadow.bias = 0.00001;
 
     light.shadow.shadowDarkness = 1;
 
+    light.target.position.set(1, 1,-1);
+    scene.add( light.target );
     scene.add( light );
 
     var ambientLight = new THREE.AmbientLight( 0x505050 ); // soft white light
     scene.add( ambientLight );
 
     // helper to see bounding box and direction of shadow box
-    // var helper = new THREE.CameraHelper( light.shadow.camera );
-    // scene.add( helper );
+    var helper = new THREE.CameraHelper( light.shadow.camera );
+    scene.add( helper );
 
     camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
     camera.position.z = 2000;
