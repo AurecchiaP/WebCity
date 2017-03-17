@@ -1,7 +1,6 @@
 /**
  * handles key-press events
  */
-window.addEventListener("keydown", onKeyPress, false);
 function onKeyPress(e) {
     // key: e, zoom in
     if (e.keyCode == 69) {
@@ -58,7 +57,6 @@ function onKeyPress(e) {
 /**
  * updates the visualization when we move the mouse
  */
-window.addEventListener('mousemove', onMouseMove, false);
 function onMouseMove(event) {
     mouse.x = ( ( event.clientX - renderer.domElement.offsetLeft ) / renderer.domElement.clientWidth ) * 2 - 1;
     mouse.y = -( ( event.clientY - renderer.domElement.offsetTop ) / renderer.domElement.clientHeight ) * 2 + 1;
@@ -69,7 +67,6 @@ function onMouseMove(event) {
 /**
  * updates the visualization when we resize the window
  */
-window.addEventListener('resize', onWindowResize, false);
 function onWindowResize(event) {
 
     camera.aspect = canvas.clientWidth / canvas.clientHeight;

@@ -25,7 +25,6 @@ var statistic3Text = document.getElementById("statistic3");
 //TODO parameterize sizes
 function init(json) {
 
-    console.log(json);
     window.requestAnimationFrame(render);
 
     canvas = document.getElementById('canvas');

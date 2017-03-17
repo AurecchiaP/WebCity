@@ -174,6 +174,12 @@ function loaded(data) {
 
     // update shadows only once
     renderer.shadowMap.needsUpdate = true;
+
+
+    window.addEventListener('resize', onWindowResize, false);
+    window.addEventListener('mousemove', onMouseMove, false);
+    window.addEventListener("keydown", onKeyPress, false);
+
     render();
 }
 
