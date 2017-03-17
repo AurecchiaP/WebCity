@@ -1,6 +1,7 @@
 package utils;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
@@ -38,6 +39,8 @@ public class BasicParser {
      */
     public static JavaPackage parseRepo(String path) {
         // look for the main folder
+//        return makePackage(path);
+        // FIXME how to find the right main folder?
         Path p = Paths.get(path);
         try {
             Optional<Path> hit = Files.walk(p)
@@ -113,7 +116,8 @@ public class BasicParser {
                         cv.visit(cu, null);
 
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        System.out.println(file.getName());
+//                        e.printStackTrace();
                     }
                 }
             }

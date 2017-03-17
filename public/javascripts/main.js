@@ -32,7 +32,7 @@ function init(json) {
     raycaster = new THREE.Raycaster();
 
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xffffff);
+    // scene.background = new THREE.Color(0xffffff);
 
     // TODO try to make it better
     // TODO try to fit it exactly and change direction by setting position and target
@@ -81,7 +81,7 @@ function init(json) {
     controls.minDistance = 0;
     controls.addEventListener('change', render);
 
-    renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
     renderer.shadowMap.enabled = true;
 
     // quality vs performance

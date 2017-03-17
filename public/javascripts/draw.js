@@ -163,7 +163,7 @@ function drawPackage(pkg) {
  * readies the page when the visualization is loaded
  */
 function loaded(data) {
-    document.getElementById("loader-container").remove();
+    // document.getElementById("loader-container").remove();
     document.getElementById("main-content").remove();
     document.getElementById("container").style.display = "block";
     classesText.innerText = "Total classes: " + data.totalClasses;

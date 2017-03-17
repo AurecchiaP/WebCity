@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.TextProgressMonitor;
 import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -16,6 +17,7 @@ import models.JavaPackage;
 import utils.RectanglePacking;
 
 import java.io.File;
+import java.io.PrintWriter;
 
 import static utils.FileUtils.deleteDir;
 
@@ -69,6 +71,7 @@ public class HomeController extends Controller {
             // try to download the given repository
             try {
                 Git git = Git.cloneRepository()
+                        .setProgressMonitor(new TextProgressMonitor(new PrintWriter(System.out)))
                         .setURI(currentRepo)
                         .setDirectory(new File("/Users/paolo/Documents/6th semester/thesis/webcity/repository"))
                         .call();
