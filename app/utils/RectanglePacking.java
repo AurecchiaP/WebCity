@@ -14,7 +14,7 @@ public class RectanglePacking {
 
 
     private int maxDepth = 0;
-    private final int padding = 100;
+    private final int padding = 25;
 
 
     /**
@@ -249,9 +249,8 @@ public class RectanglePacking {
         // sort the classes by their number of methods, in descending order
         pkg.sortClasses();
 
-        // FIXME find out why I have to scale it/ find the proper way to scale things
         // heuristic; assume every class is as big as the biggest class to find a lower bound for the size of the package
-        return (int) Math.ceil(Math.sqrt((classes.get(0).getMethods()) * (classes.size()))) * (padding/2);
+        return (classes.get(0).getAttributes() + padding) * ((int) Math.ceil(Math.sqrt(classes.size())));
     }
 
 

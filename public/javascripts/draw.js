@@ -1,6 +1,6 @@
 var meshes = [];
-const scale = .1;
-const packageHeight = 100;
+const scale = .5;
+const packageHeight = 100 * scale;
 
 
 /**
@@ -72,18 +72,13 @@ function recDraw(pkg) {
  * @param {object} cls - the object representing the class to be drawn
  */
 function drawClass(cls) {
-    // adding 5 to attributes and methods, to have a lower bound (else we won't see the class)
-    // var clsHeight = (cls.attributes + 5) * scale * 30;
-    // var clsWidth = (cls.methods + 5) * scale;
-    var clsHeight = (cls.methods + 5);
-    var clsWidth = (cls.attributes + 5);
-
-    // var clsHeight = (cls.methods);
-    // var clsWidth = (cls.attributes);
+    // adding 10 to attributes and methods, to have a lower bound (else we won't see the class)
+    var clsHeight = (cls.methods + 10) * scale;
+    var clsWidth = (cls.attributes) * scale;
 
     var posX = cls.cx * scale;
     var posY = cls.cy * scale;
-    var posZ = (cls.cz * scale * 100) + ((clsHeight / 2) + 5);
+    var posZ = (cls.cz * scale * packageHeight) + (((clsHeight / 2) + (packageHeight/2)*scale));
 
     var color = cls.color;
 
