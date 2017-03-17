@@ -170,6 +170,8 @@ function loaded(data) {
 
     // notify the renderer that our html canvas has appeared
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    camera.aspect = canvas.clientWidth / canvas.clientHeight;
+    camera.updateProjectionMatrix();
 
     // update shadows only once
     renderer.shadowMap.needsUpdate = true;
