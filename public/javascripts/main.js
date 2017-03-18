@@ -100,8 +100,6 @@ function init(json) {
 
     controls.enableDamping = true;
     controls.dampingFactor = 0.25;
-    // controls.addEventListener('change', render);
-
 
     draw(json);
     console.log(json);

@@ -1,9 +1,11 @@
 package controllers;
 
+import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.lib.TextProgressMonitor;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -23,6 +25,8 @@ public class HomeController extends Controller {
 
     private String currentRepo;
     private boolean web;
+    private double percentage = 0;
+    private int taskNumber = 0;
 
     @Inject
     FormFactory formFactory;
@@ -36,7 +40,8 @@ public class HomeController extends Controller {
         return ok(
                 JavaScriptReverseRouter.create("jsRoutes",
                         routes.javascript.HomeController.getVisualizationData(),
-                        routes.javascript.HomeController.visualization()
+                        routes.javascript.HomeController.visualization(),
+                        routes.javascript.HomeController.poll()
                 )
         ).as("text/javascript");
     }
@@ -50,7 +55,6 @@ public class HomeController extends Controller {
     }
 
 
-
     /**
      * downloads the linked repository, parses it, does the rectangle packing, and returns the data to be visualized
      */
@@ -59,17 +63,52 @@ public class HomeController extends Controller {
 
     // FIXME add a token sent from javascript, which javascript received from the server from `visualization`
     public Result getVisualizationData() {
-
         JavaPackage pkg;
 
-        if(web) {
+        if (web) {
             // remove the old downloaded repository
             deleteDir(new File("/Users/paolo/Documents/6th semester/thesis/webcity/repository"));
 
             // try to download the given repository
             try {
                 Git git = Git.cloneRepository()
+                        // prints data nicely in System.out
                         .setProgressMonitor(new TextProgressMonitor(new PrintWriter(System.out)))
+                        // saves download progress information to send to client
+                        .setProgressMonitor(new ProgressMonitor() {
+                            int downloadedData = 1;
+                            int totalData = 1;
+
+                            @Override
+                            public void start(int totalTasks) {}
+
+                            @Override
+                            public void beginTask(String title, int totalWork) {
+                                // new task has started; reset downloaded data for this task to 0
+                                downloadedData = 0;
+
+                                // increase task number
+                                ++taskNumber;
+                                totalData = totalWork;
+                            }
+
+                            @Override
+                            public void update(int completed) {
+                                // update the number of total downloaded data
+                                downloadedData += completed;
+
+                                //update downloaded percentage
+                                if (totalData != 0) {
+                                    percentage = ((double) downloadedData / (double) totalData) * 100;
+                                }
+                            }
+
+                            @Override
+                            public void endTask() {}
+
+                            @Override
+                            public boolean isCancelled() { return false; }
+                        })
                         .setURI(currentRepo)
                         .setDirectory(new File("/Users/paolo/Documents/6th semester/thesis/webcity/repository"))
                         .call();
@@ -81,8 +120,7 @@ public class HomeController extends Controller {
 
             // parse the .java files of the repository
             pkg = BasicParser.parseRepo("/Users/paolo/Documents/6th semester/thesis/webcity/repository");
-        }
-        else {
+        } else {
             pkg = BasicParser.parseRepo("/Users/paolo/Documents/6th semester/thesis/commons-math");
         }
 
@@ -104,7 +142,6 @@ public class HomeController extends Controller {
         String repo = formFactory.form().bindFromRequest().get("repository");
         System.out.println("input repository: " + repo);
 
-
         // empty input uses local repo, for debugging
         if (repo.equals("")) {
             web = false;
@@ -117,15 +154,24 @@ public class HomeController extends Controller {
             try {
                 // print for debugging
 //                System.out.println(lsCmd.call().toString());
+
                 lsCmd.call();
                 System.out.println("valid repo");
                 currentRepo = repo;
-                return getVisualizationData();
+                return ok();
+
             } catch (GitAPIException e) {
                 e.printStackTrace();
                 System.out.println("invalid repo");
                 return badRequest();
             }
         }
+    }
+
+    public Result poll() {
+        JsonObject obj = new JsonObject();
+        obj.addProperty("percentage", percentage);
+        obj.addProperty("task", taskNumber);
+        return ok(obj.toString());
     }
 }
