@@ -14,7 +14,8 @@ public class RectanglePacking {
 
 
     private int maxDepth = 0;
-    private final int padding = 100;
+    private int maxLines = 0;
+    private final int padding = 25;
 
 
     /**
@@ -58,6 +59,10 @@ public class RectanglePacking {
 
         // store the width
         pkg.w += getMinClassesSize(pkg) + (2 * padding);
+
+        for (JavaClass cls : pkg.getClasses()) {
+            if(cls.getLinesOfCode().getValue() > maxLines) maxLines = cls.getLinesOfCode().getValue();
+        }
 
         // sort the children packages by their size, in descending order
         pkg.sortChildren();
@@ -109,10 +114,8 @@ public class RectanglePacking {
             }
         }
 
-
         // bin that will contain the classes of the current package
         Bin classesBin = new Bin(0, 0, 0, 0, 0);
-
 
         // add pkg's classes to the total of all classes contained in pkg (recursive as well)
         pkg.addClassTotal(pkg.getClasses().size());
@@ -154,18 +157,14 @@ public class RectanglePacking {
             localBin.setY2(localBin.getY2() + localBin.width() - localBin.depth());
         }
 
-
         // shift localBin by padding, draw it, and shift it back (we don't want to draw on the padding)
         addPaddingAndFit(localBin, pkg, padding, recDepth, true);
 
-        // TODO when changing this, also change height in recDraw
         // set the height of the package, depending on the depth of the recursion of the current package
         pkg.z = recDepth;
 
-
-        //TODO interpolate between grey and red?
         // set color of package depending on depth of recursion
-        pkg.color = RGBtoInt(255 * recDepth / maxDepth, 100, 100);
+        pkg.color = RGBtoInt(100 + (120 * recDepth / maxDepth), 100 + (120 * recDepth / maxDepth), 100 + (120 * recDepth / maxDepth));
 
         // shift classesBin by padding, draw it, and shift it back (we don't want to draw on the padding)
         addPaddingAndFit(classesBin, pkg, padding, recDepth, false);
@@ -251,9 +250,8 @@ public class RectanglePacking {
         // sort the classes by their number of methods, in descending order
         pkg.sortClasses();
 
-        // FIXME find out why I have to scale it/ find the proper way to scale things
         // heuristic; assume every class is as big as the biggest class to find a lower bound for the size of the package
-        return (int) Math.ceil(Math.sqrt((classes.get(0).getMethods()) * (classes.size()))) * (padding/2);
+        return (classes.get(0).getAttributes().getValue() + 5 + padding*2) * ((int) Math.ceil(Math.sqrt(classes.size())));
     }
 
 
@@ -296,6 +294,8 @@ public class RectanglePacking {
             cls.cx = bin.getX1() + gridSpacing * x;
             cls.cy = bin.getY1() + gridSpacing * y;
             cls.cz = pkg.z;
+            // FIXME find real maximum of lines of code
+            cls.color = RGBtoInt(55 + (200 * cls.getLinesOfCode().getValue() / maxLines), 55 + (200 * cls.getLinesOfCode().getValue() / maxLines), 255);
         }
     }
 

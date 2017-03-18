@@ -57,7 +57,7 @@ public class JavaPackage {
     }
 
     /**
-     * sorts the child packages by their number of methods, in descending order
+     * sorts the child packages by their size, in descending order
      */
     public void sortChildren() {
         this.childPackages.sort((c1, c2) -> {
@@ -68,13 +68,13 @@ public class JavaPackage {
     }
 
     /**
-     * sorts the classes by their number of methods, in descending order
+     * sorts the classes by their number of attributes, in descending order
      */
     public void sortClasses() {
         this.classes.sort((c1, c2) -> {
-            if (c1.getMethods() == c2.getMethods())
+            if (c1.getAttributes().getValue().equals(c2.getAttributes().getValue()))
                 return 0;
-            return c1.getMethods() > c2.getMethods() ? -1 : 1;
+            return c1.getAttributes().getValue() > c2.getAttributes().getValue() ? -1 : 1;
         });
     }
 

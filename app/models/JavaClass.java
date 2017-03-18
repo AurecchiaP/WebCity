@@ -1,22 +1,31 @@
 package models;
 
+import models.metrics.LinesOfCode;
+import models.metrics.Metric;
+import models.metrics.NumberOfAttributes;
+import models.metrics.NumberOfMethods;
+
 /**
  * A model for Java classes. The attributes for the position will later be moved
  */
 public class JavaClass {
 
     private String name;
-    private int methods;
-    private int attributes;
+
+    private Metric<Integer> methods;
+    private Metric<Integer> attributes;
+    private Metric<Integer> linesOfCode;
 
     public int cx;
     public int cy;
     public int cz;
+    public int color;
 
-    public JavaClass(String name, int methods, int attributes) {
+    public JavaClass(String name, Metric<Integer> methods, Metric<Integer> attributes, Metric<Integer> linesOfCode) {
         this.name = name;
         this.methods = methods;
         this.attributes = attributes;
+        this.linesOfCode = linesOfCode;
     }
 
     /**
@@ -27,16 +36,33 @@ public class JavaClass {
     }
 
     /**
-     * @return the number of methods contained in the class
+     * @param linesOfCode the new Metric that we will set to the class
      */
-    public int getMethods() {
-        return methods;
+    // TODO check right type of metric?
+    public void setLinesOfCode(Metric<Integer> linesOfCode) {
+        this.linesOfCode = linesOfCode;
+    }
+
+
+    /**
+     * @return a Metric object representing the number of lines of code
+     */
+    public Metric<Integer> getLinesOfCode() {
+        return new LinesOfCode(linesOfCode.getValue());
     }
 
     /**
-     * @return the number of attributes contained in the class
+     * @return a Metric object representing the number of methods
      */
-    public int getAttributes() {
-        return attributes;
+    public Metric<Integer> getMethods() {
+        return new NumberOfMethods(methods.getValue());
+
+    }
+
+    /**
+     * @return a Metric object representing the number of attributes
+     */
+    public Metric<Integer> getAttributes() {
+        return new NumberOfAttributes(attributes.getValue());
     }
 }

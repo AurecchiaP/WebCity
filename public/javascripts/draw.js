@@ -1,7 +1,6 @@
 var meshes = [];
-const scale = .15;
-const packageHeight = 100;
-const clsColor = 0x00000ff;
+const scale = .2;
+const packageHeight = 75 * scale;
 
 
 /**
@@ -26,8 +25,7 @@ function draw(pkg) {
     //     visible: true
     // });
 
-    var material = new THREE.MeshToonMaterial({
-        color: 0xffffff,
+    var material = new THREE.MeshPhongMaterial({
         shading: THREE.SmoothShading,
         vertexColors: THREE.VertexColors,
         visible: true
@@ -44,6 +42,8 @@ function draw(pkg) {
     controls.update();
 
     // add the mesh to the scene and notify that the visualization is ready
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
     scene.add(mesh);
     loaded(pkg);
 }
@@ -72,21 +72,23 @@ function recDraw(pkg) {
  * @param {object} cls - the object representing the class to be drawn
  */
 function drawClass(cls) {
-    // adding 5 to attributes and methods, to have a lower bound (else we won't see the class)
-    var clsHeight = (cls.attributes + 5) * scale * 30;
-    var clsWidth = (cls.methods + 5) * scale;
+    // adding 10 to attributes and methods, to have a lower bound (else we won't see the class)
+    var clsHeight = (cls.methods + 5) * scale;
+    var clsWidth = (cls.attributes + 5) * scale;
 
     var posX = cls.cx * scale;
     var posY = cls.cy * scale;
-    var posZ = (cls.cz * scale * 100) + ((clsHeight / 2) + 5);
+    var posZ = (cls.cz * scale * packageHeight) + (((clsHeight / 2) + (packageHeight/2)*scale));
+
+    var color = cls.color;
 
     // create geometry and material for this class
     geometry = new THREE.BoxGeometry(clsWidth, clsWidth, clsHeight);
     for (var i = 0; i < geometry.faces.length; i++) {
         var face = geometry.faces[i];
-        face.color.setHex(clsColor);
+        face.color.setHex(color);
     }
-    material = new THREE.MeshToonMaterial({color: clsColor, wireframe: false});
+    material = new THREE.MeshBasicMaterial({color: color, wireframe: false});
 
     // invisible material allows raycasting invisible objects
     material.visible = false;
@@ -96,6 +98,7 @@ function drawClass(cls) {
     mesh.name = cls.name;
     mesh.methods = cls.methods;
     mesh.attributes = cls.attributes;
+    mesh.linesOfCode = cls.linesOfCode;
     mesh.type = "class";
 
     // position the mesh
@@ -132,7 +135,7 @@ function drawPackage(pkg) {
         var face = geometry.faces[i];
         face.color.setHex(color);
     }
-    material = new THREE.MeshToonMaterial({color: color, wireframe: false});
+    material = new THREE.MeshBasicMaterial({color: color, wireframe: false});
 
     // invisible material allows raycasting invisible objects
     material.visible = false;
@@ -160,8 +163,24 @@ function drawPackage(pkg) {
  * readies the page when the visualization is loaded
  */
 function loaded(data) {
-    document.getElementById("loader-container").remove();
+    // document.getElementById("loader-container").remove();
+    document.getElementById("main-content").remove();
+    document.getElementById("container").style.display = "block";
     classesText.innerText = "Total classes: " + data.totalClasses;
+
+    // notify the renderer that our html canvas has appeared
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    camera.aspect = canvas.clientWidth / canvas.clientHeight;
+    camera.updateProjectionMatrix();
+
+    // update shadows only once
+    renderer.shadowMap.needsUpdate = true;
+
+
+    window.addEventListener('resize', onWindowResize, false);
+    window.addEventListener('mousemove', onMouseMove, false);
+    window.addEventListener("keydown", onKeyPress, false);
+
     render();
 }
 

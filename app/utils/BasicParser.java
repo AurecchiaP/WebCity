@@ -6,13 +6,13 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import models.JavaClass;
-import models.JavaPackage;
+import com.google.gson.Gson;
+import models.*;
+import models.metrics.LinesOfCode;
+import models.metrics.NumberOfAttributes;
+import models.metrics.NumberOfMethods;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -41,6 +41,8 @@ public class BasicParser {
      */
     public static JavaPackage parseRepo(String path) {
         // look for the main folder
+//        return makePackage(path);
+        // FIXME how to find the right main folder?
         Path p = Paths.get(path);
         try {
             Optional<Path> hit = Files.walk(p)
@@ -115,8 +117,9 @@ public class BasicParser {
                         ClassVisitor cv = new ClassVisitor(pkg);
                         cv.visit(cu, null);
 
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
+                    } catch (IOException e) {
+                        System.out.println(file.getName());
+//                        e.printStackTrace();
                     }
                 }
             }
@@ -135,6 +138,7 @@ public class BasicParser {
         private JavaClass cls;
         private int methods = 0;
         private int attributes = 0;
+        private int numberOfLines = 0;
 
         private ClassVisitor(JavaPackage pkg) {
             this.pkg = pkg;
@@ -145,6 +149,13 @@ public class BasicParser {
         @Override
         public void visit(ClassOrInterfaceDeclaration n, Void arg) {
 
+
+
+            if(n.getBegin().isPresent() && n.getEnd().isPresent()) {
+                numberOfLines = n.getEnd().get().line - n.getBegin().get().line + 1;
+            } else {
+                numberOfLines = 0;
+            }
 
             n.accept(new VoidVisitorAdapter<Void>() {
 
@@ -165,7 +176,7 @@ public class BasicParser {
             }, null);
 
             // create the new JavaClass with the given number of methods and attributes, and add it to the parent package
-            cls = new JavaClass(n.getName().toString(), methods, attributes);
+            cls = new JavaClass(n.getName().toString(), new NumberOfMethods(methods), new NumberOfAttributes(attributes), new LinesOfCode(numberOfLines));
             pkg.addClass(cls);
             super.visit(n, arg);
         }
