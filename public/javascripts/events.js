@@ -1,24 +1,35 @@
 /**
+ * handles wheel scrolls/zoom
+ */
+function onWheel(e) {
+    controls.update();
+    render();
+}
+
+
+/**
  * handles key-press events
  */
 function onKeyPress(e) {
-    // key: e, zoom in
-    if (e.keyCode == 69) {
-        camera.position.z -= 200;
-        controls.update();
-        render();
+    var keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
+    switch ( event.keyCode ) {
 
-    }
-    // key: f, zoom out
-    else if (e.keyCode == 70) {
-        camera.position.z += 200;
-        controls.update();
-        render();
-    }
+        // directional keys, pan
+        case keys.UP:
+            render();
+            break;
+        case keys.BOTTOM:
+            render();
+            break;
+        case keys.LEFT:
+            render();
+            break;
+        case keys.RIGHT:
+            render();
+            break;
 
     // key g, pin object
-    else if (e.keyCode == 71) {
-
+        case 71:
         intersects = raycaster.intersectObjects(meshes);
 
         if (pinnedObject) {

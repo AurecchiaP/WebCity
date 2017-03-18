@@ -32,7 +32,6 @@ function init(json) {
     raycaster = new THREE.Raycaster();
 
     scene = new THREE.Scene();
-    // scene.background = new THREE.Color(0xffffff);
 
     // TODO try to make it better
     // TODO try different materials and stuff
@@ -45,7 +44,7 @@ function init(json) {
 
     var pkgWidth = json.w*scale;
 
-    // TODO high map size vs shadowMap type
+    // TODO high map size vs shadowMap type; 4096 THREE.PCFSoftShadowMap or 8192 THREE.PCFShadowMap
     light.shadow.mapSize.width = 4096;
     light.shadow.mapSize.height = 4096;
     light.shadow.camera.near = -pkgWidth*0.05;
@@ -55,7 +54,6 @@ function init(json) {
     light.shadow.camera.fov = 90;
 
     // hardcoded for this light position and light target
-    var pkgWidth = json.w*scale;
     light.shadow.camera.left = 0;
     light.shadow.camera.right = pkgWidth*0.9;
     light.shadow.camera.top = pkgWidth*0.95;
@@ -76,18 +74,6 @@ function init(json) {
     // var helper = new THREE.CameraHelper( light.shadow.camera );
     // scene.add( helper );
 
-    camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
-    camera.position.z = 2000;
-
-    // OrbitControls to move around the visualization
-    controls = new THREE.OrbitControls(camera);
-
-    // max and min distance on z axis
-    controls.maxDistance = 7000;
-    controls.minDistance = 0;
-    controls.addEventListener('change', render);
-
-
     renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
     renderer.shadowMap.enabled = true;
 
@@ -101,6 +87,19 @@ function init(json) {
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
     document.body.appendChild(renderer.domElement);
+
+    camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
+    camera.position.z = 2000;
+
+    // OrbitControls to move around the visualization
+    controls = new THREE.OrbitControls(camera);
+
+    // max and min distance on z axis
+    controls.maxDistance = 7000;
+    controls.minDistance = 0;
+
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.25;
 
     draw(json);
     console.log(json);

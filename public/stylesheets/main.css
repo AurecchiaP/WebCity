@@ -46,6 +46,10 @@ body {
     transition: 0.2s all;
 }
 
+.progress-bar {
+    transition: 0.2s all;
+}
+
 #version {
     position: absolute;
     bottom: 0;

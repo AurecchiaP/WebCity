@@ -2,10 +2,12 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# An example controller showing a sample home page
 GET     /                           controllers.HomeController.index
 GET     /visualization              controllers.HomeController.visualization
+GET     /poll                       controllers.HomeController.poll
 GET     /getVisualizationData       controllers.HomeController.getVisualizationData
+
+
 GET     /javascriptRoutes           controllers.HomeController.javascriptRoutes
 
 # Map static resources from the /public folder to the /assets URL path
