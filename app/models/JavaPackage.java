@@ -72,9 +72,9 @@ public class JavaPackage {
      */
     public void sortClasses() {
         this.classes.sort((c1, c2) -> {
-            if (c1.getAttributes() == c2.getAttributes())
+            if (c1.getAttributes().getValue().equals(c2.getAttributes().getValue()))
                 return 0;
-            return c1.getAttributes() > c2.getAttributes() ? -1 : 1;
+            return c1.getAttributes().getValue() > c2.getAttributes().getValue() ? -1 : 1;
         });
     }
 

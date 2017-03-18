@@ -1,13 +1,10 @@
 package controllers;
 
-import com.google.gson.Gson;
-
 import com.google.inject.Inject;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.TextProgressMonitor;
-import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -20,6 +17,7 @@ import java.io.File;
 import java.io.PrintWriter;
 
 import static utils.FileUtils.deleteDir;
+import static utils.JSON.toJSON;
 
 public class HomeController extends Controller {
 
@@ -91,13 +89,12 @@ public class HomeController extends Controller {
         System.out.println("Done downloading repo");
 
         // do the rectangle packing
-        Gson gson = new Gson();
         new RectanglePacking(pkg);
         System.out.println("Done packing");
-        String json = gson.toJson(pkg);
+
 
         // return the data to be drawn
-        return ok(json);
+        return ok(toJSON(pkg));
     }
 
     /**

@@ -1,14 +1,16 @@
 package utils;
 
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import models.JavaClass;
-import models.JavaPackage;
+import com.google.gson.Gson;
+import models.*;
+import models.metrics.LinesOfCode;
+import models.metrics.NumberOfAttributes;
+import models.metrics.NumberOfMethods;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -174,7 +176,7 @@ public class BasicParser {
             }, null);
 
             // create the new JavaClass with the given number of methods and attributes, and add it to the parent package
-            cls = new JavaClass(n.getName().toString(), methods, attributes, numberOfLines);
+            cls = new JavaClass(n.getName().toString(), new NumberOfMethods(methods), new NumberOfAttributes(attributes), new LinesOfCode(numberOfLines));
             pkg.addClass(cls);
             super.visit(n, arg);
         }

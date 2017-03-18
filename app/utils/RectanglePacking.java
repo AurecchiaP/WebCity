@@ -61,7 +61,7 @@ public class RectanglePacking {
         pkg.w += getMinClassesSize(pkg) + (2 * padding);
 
         for (JavaClass cls : pkg.getClasses()) {
-            if(cls.getLinesOfCode() > maxLines) maxLines = cls.getLinesOfCode();
+            if(cls.getLinesOfCode().getValue() > maxLines) maxLines = cls.getLinesOfCode().getValue();
         }
 
         // sort the children packages by their size, in descending order
@@ -114,10 +114,8 @@ public class RectanglePacking {
             }
         }
 
-
         // bin that will contain the classes of the current package
         Bin classesBin = new Bin(0, 0, 0, 0, 0);
-
 
         // add pkg's classes to the total of all classes contained in pkg (recursive as well)
         pkg.addClassTotal(pkg.getClasses().size());
@@ -159,13 +157,11 @@ public class RectanglePacking {
             localBin.setY2(localBin.getY2() + localBin.width() - localBin.depth());
         }
 
-
         // shift localBin by padding, draw it, and shift it back (we don't want to draw on the padding)
         addPaddingAndFit(localBin, pkg, padding, recDepth, true);
 
         // set the height of the package, depending on the depth of the recursion of the current package
         pkg.z = recDepth;
-
 
         // set color of package depending on depth of recursion
         pkg.color = RGBtoInt(100 + (120 * recDepth / maxDepth), 100 + (120 * recDepth / maxDepth), 100 + (120 * recDepth / maxDepth));
@@ -255,7 +251,7 @@ public class RectanglePacking {
         pkg.sortClasses();
 
         // heuristic; assume every class is as big as the biggest class to find a lower bound for the size of the package
-        return (classes.get(0).getAttributes() + padding) * ((int) Math.ceil(Math.sqrt(classes.size())));
+        return (classes.get(0).getAttributes().getValue() + 5 + padding*2) * ((int) Math.ceil(Math.sqrt(classes.size())));
     }
 
 
@@ -299,7 +295,7 @@ public class RectanglePacking {
             cls.cy = bin.getY1() + gridSpacing * y;
             cls.cz = pkg.z;
             // FIXME find real maximum of lines of code
-            cls.color = RGBtoInt(55 + (200 * cls.getLinesOfCode() / maxLines), 55 + (200 * cls.getLinesOfCode() / maxLines), 255);
+            cls.color = RGBtoInt(55 + (200 * cls.getLinesOfCode().getValue() / maxLines), 55 + (200 * cls.getLinesOfCode().getValue() / maxLines), 255);
         }
     }
 
