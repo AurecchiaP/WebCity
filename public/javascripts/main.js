@@ -87,12 +87,13 @@ function init(json) {
     controls.minDistance = 0;
     controls.addEventListener('change', render);
 
+
     renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
     renderer.shadowMap.enabled = true;
 
     // quality vs performance
+    renderer.shadowMap.type = THREE.PCFShadowMap; // default
     // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.shadowMap.type = THREE.PCFShadowMap;
     // renderer.shadowMap.type = THREE.BasicShadowMap;
 
     // render shadows only when needed
