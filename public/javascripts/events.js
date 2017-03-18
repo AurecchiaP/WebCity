@@ -1,17 +1,28 @@
 /**
+ * handles wheel scrolls/zoom
+ */
+function onWheel(e) {
+    controls.update();
+    render();
+}
+
+
+/**
  * handles key-press events
  */
 function onKeyPress(e) {
     // key: e, zoom in
     if (e.keyCode == 69) {
-        camera.position.z -= 200;
+        // camera.position.z -= 200;
+        controls.dollyIn(2);
         controls.update();
         render();
 
     }
     // key: f, zoom out
     else if (e.keyCode == 70) {
-        camera.position.z += 200;
+        // camera.position.z += 200;
+        controls.dollyOut(2);
         controls.update();
         render();
     }

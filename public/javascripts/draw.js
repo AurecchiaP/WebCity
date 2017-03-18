@@ -180,6 +180,8 @@ function loaded(data) {
     window.addEventListener('resize', onWindowResize, false);
     window.addEventListener('mousemove', onMouseMove, false);
     window.addEventListener("keydown", onKeyPress, false);
+    window.addEventListener( 'mousewheel', onWheel, false );
+    // window.addEventListener( 'touchmove', touchmove, false );
 
     render();
 }

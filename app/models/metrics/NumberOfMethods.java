@@ -1,6 +1,8 @@
 package models.metrics;
 
-
+/**
+ * metric class that represents the number of methods in a class
+ */
 public class NumberOfMethods extends Metric<Integer> {
 
     private int nom;

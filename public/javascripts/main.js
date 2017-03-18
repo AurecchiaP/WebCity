@@ -76,18 +76,6 @@ function init(json) {
     // var helper = new THREE.CameraHelper( light.shadow.camera );
     // scene.add( helper );
 
-    camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
-    camera.position.z = 2000;
-
-    // OrbitControls to move around the visualization
-    controls = new THREE.OrbitControls(camera);
-
-    // max and min distance on z axis
-    controls.maxDistance = 7000;
-    controls.minDistance = 0;
-    controls.addEventListener('change', render);
-
-
     renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
     renderer.shadowMap.enabled = true;
 
@@ -101,6 +89,21 @@ function init(json) {
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
     document.body.appendChild(renderer.domElement);
+
+    camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
+    camera.position.z = 2000;
+
+    // OrbitControls to move around the visualization
+    controls = new THREE.OrbitControls(camera);
+
+    // max and min distance on z axis
+    controls.maxDistance = 7000;
+    controls.minDistance = 0;
+
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.25;
+    // controls.addEventListener('change', render);
+
 
     draw(json);
     console.log(json);

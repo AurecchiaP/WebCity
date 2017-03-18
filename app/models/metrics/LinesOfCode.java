@@ -1,8 +1,8 @@
 package models.metrics;
 
-
-import models.metrics.Metric;
-
+/**
+ * metric class that represents the number of lines of code in a class
+ */
 public class LinesOfCode extends Metric<Integer> {
 
     private int loc;
