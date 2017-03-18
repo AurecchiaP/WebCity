@@ -56,7 +56,6 @@ public class JavaClass {
      */
     public Metric<Integer> getMethods() {
         return new NumberOfMethods(methods.getValue());
-
     }
 
     /**

@@ -19,6 +19,7 @@ submitButton.onclick = function() {
             repository: inputField.value
         },
         success: function (data) {
+
             var json = JSON.parse(data);
             init(json);
             console.log("success");
