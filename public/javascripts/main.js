@@ -32,7 +32,6 @@ function init(json) {
     raycaster = new THREE.Raycaster();
 
     scene = new THREE.Scene();
-    // scene.background = new THREE.Color(0xffffff);
 
     // TODO try to make it better
     // TODO try different materials and stuff
@@ -45,7 +44,7 @@ function init(json) {
 
     var pkgWidth = json.w*scale;
 
-    // TODO high map size vs shadowMap type
+    // TODO high map size vs shadowMap type; 4096 THREE.PCFSoftShadowMap or 8192 THREE.PCFShadowMap
     light.shadow.mapSize.width = 4096;
     light.shadow.mapSize.height = 4096;
     light.shadow.camera.near = -pkgWidth*0.05;
@@ -55,7 +54,6 @@ function init(json) {
     light.shadow.camera.fov = 90;
 
     // hardcoded for this light position and light target
-    var pkgWidth = json.w*scale;
     light.shadow.camera.left = 0;
     light.shadow.camera.right = pkgWidth*0.9;
     light.shadow.camera.top = pkgWidth*0.95;
