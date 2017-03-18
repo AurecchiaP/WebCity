@@ -70,7 +70,7 @@ function getData(id) {
 
             // stop polling
             clearInterval(id);
-            console.log("get data success");
+            console.log("data fetch succesful");
 
             // initialize th visualization
             var json = JSON.parse(data);
@@ -79,7 +79,7 @@ function getData(id) {
 
             // stop polling
             clearInterval(id);
-            console.log("get data error");
+            console.log("data fetch error");
         }
     });
 }

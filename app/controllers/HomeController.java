@@ -72,8 +72,9 @@ public class HomeController extends Controller {
             // try to download the given repository
             try {
                 Git git = Git.cloneRepository()
-                        // prints data nicely in System.out
-                        .setProgressMonitor(new TextProgressMonitor(new PrintWriter(System.out)))
+                        // for debugging, prints data nicely in System.out
+                        // .setProgressMonitor(new TextProgressMonitor(new PrintWriter(System.out)))
+
                         // saves download progress information to send to client
                         .setProgressMonitor(new ProgressMonitor() {
                             int downloadedData = 1;
