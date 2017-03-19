@@ -55,7 +55,7 @@ public class HomeController extends Controller {
             Git git = new Git(localRepo);
             String version = git.log().call().iterator().next().getName();
             git.close();
-            return ok(views.html.main.render("pro name", version, null));
+            return ok(views.html.main.render("Web City", version, null));
 
         } catch (IOException | GitAPIException e) {
             e.printStackTrace();
