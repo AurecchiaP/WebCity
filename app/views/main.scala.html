@@ -6,6 +6,9 @@
     <head>
         @* Here's where we render the page title `String`. *@
         <title>@title</title>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/sidebar.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("bootstrap-4.0.0-alpha.6-dist/css/bootstrap.min.css")">
@@ -17,7 +20,7 @@
 
         <div id="main-content">
 
-                <!---------------- Input and submit button ----------------->
+            @* Input and submit button *@
             <div class="col-lg-6">
                 <div class="input-group">
                     <input type="text" id="inputField" class="form-control" size="35" name="repo" placeholder="Paste repository">
@@ -25,20 +28,34 @@
                         <button id="submitButton" class="btn btn-secondary" type="button">Submit</button>
                     </span>
                 </div>
-                    <!---------------- Progress bar ----------------->
 
+                @* Progress bar *@
                 <div id="progressBar" class="progress">
                     <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="10" aria-valuemin="10" aria-valuemax="100" style="width: 0%">
                     </div>
                 </div>
+
+                @* Alert messages *@
+                <div class="alertMessages">
+                    <div id="successMessage" class="alert alert-info fade show" role="alert">
+                        <strong>Success!</strong> Download starting
+                    </div>
+                    <div id="errorMessage" class="alert alert-danger fade show" role="alert">
+                        <strong>Error!</strong> Unable to download
+                    </div>
+                </div>
             </div>
+            @* Content *@
             @content
         </div>
 
-            <!---------------- Visualisation ----------------->
+        @* Visualization *@
         <div id="container">
 
-                <!---------------- Sidebar ----------------->
+            @* Canvas *@
+            <div id="canvas"></div>
+
+            @* Sidebar *@
             <div id="sidebar">
 
                 <div class="col-md-12">
@@ -52,9 +69,9 @@
                 </div>
             </div>
 
+            @* Version *@
             <p id="version">@version</p>
 
-            <div id="canvas"></div>
         </div>
 
 

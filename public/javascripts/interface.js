@@ -1,12 +1,14 @@
 
 
 var submitButton = document.getElementById("submitButton");
+var btn = document.getElementById("testBtn");
 var inputField = document.getElementById("inputField");
 
 
 /**
  * sends a request to the server with the repository linked in the input field; if valid, visualizes it
  */
+
 submitButton.onclick = function() {
 
     // send repo link to server
@@ -20,6 +22,10 @@ submitButton.onclick = function() {
         },
         success: function () {
 
+            // show success message
+            $("#successMessage").css('opacity', '1');
+            setTimeout(function() {$("#successMessage").css('opacity', '0');}, 2000);
+
             // the linked repo is valid
             document.getElementById("progressBar").style.width = "100%";
 
@@ -27,9 +33,15 @@ submitButton.onclick = function() {
             var id = setInterval(poll, 2000);
             getData(id);
 
+
+
             console.log("valid repository");
 
         }, error: function () {
+
+            // show error message
+            $("#errorMessage").css('opacity', '1');
+            setTimeout(function() {$("#errorMessage").css('opacity', '0');}, 2000);
             console.log("invalid repository");
         }
     });

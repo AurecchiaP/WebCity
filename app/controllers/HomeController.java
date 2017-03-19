@@ -5,6 +5,8 @@ import com.google.inject.Inject;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.lib.TextProgressMonitor;
 import play.data.FormFactory;
@@ -81,7 +83,8 @@ public class HomeController extends Controller {
                             int totalData = 1;
 
                             @Override
-                            public void start(int totalTasks) {}
+                            public void start(int totalTasks) {
+                            }
 
                             @Override
                             public void beginTask(String title, int totalWork) {
@@ -105,10 +108,13 @@ public class HomeController extends Controller {
                             }
 
                             @Override
-                            public void endTask() {}
+                            public void endTask() {
+                            }
 
                             @Override
-                            public boolean isCancelled() { return false; }
+                            public boolean isCancelled() {
+                                return false;
+                            }
                         })
                         .setURI(currentRepo)
                         .setDirectory(new File("/Users/paolo/Documents/6th semester/thesis/webcity/repository"))
@@ -155,14 +161,12 @@ public class HomeController extends Controller {
             try {
                 // print for debugging
 //                System.out.println(lsCmd.call().toString());
-
                 lsCmd.call();
                 System.out.println("valid repo");
                 currentRepo = repo;
                 return ok();
 
             } catch (GitAPIException e) {
-                e.printStackTrace();
                 System.out.println("invalid repo");
                 return badRequest();
             }
