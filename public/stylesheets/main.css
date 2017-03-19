@@ -42,6 +42,7 @@ body {
 
 #progressBar {
     margin-top: 1vh;
+    margin-bottom: 1vh;
     width: 0;
     transition: 0.2s all;
 }
@@ -55,29 +56,19 @@ body {
     bottom: 0;
     right: 0;
     padding-right: 1vw;
+    width: 14vw;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-#loader-container {
+.alertMessages {
+    position: relative;
+}
+
+#errorMessage, #successMessage {
     position: absolute;
-    display: none;
-    align-items: center;
-    width: 100vw;
-    height: 100vh;
-}
-#loader {
-    margin: auto;
-    border-bottom: 10px solid #111111;
-    border-top: 10px solid #111111;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-radius: 50%;
-    /*background-color:  #f3f3f3;*/
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    width: 100%;
+    opacity: 0;
+    transition: all 0.2s;
 }

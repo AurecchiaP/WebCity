@@ -5,8 +5,8 @@ import com.google.inject.Inject;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.ProgressMonitor;
-import org.eclipse.jgit.lib.TextProgressMonitor;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -16,7 +16,7 @@ import models.JavaPackage;
 import utils.RectanglePacking;
 
 import java.io.File;
-import java.io.PrintWriter;
+import java.io.IOException;
 
 import static utils.FileUtils.deleteDir;
 import static utils.JSON.toJSON;
@@ -50,6 +50,16 @@ public class HomeController extends Controller {
      * default route for index page
      */
     public Result index() {
+        try {
+            FileRepository localRepo = new FileRepository("/Users/paolo/Documents/6th semester/thesis/webcity/.git");
+            Git git = new Git(localRepo);
+            String version = git.log().call().iterator().next().getName();
+            git.close();
+            return ok(views.html.main.render("pro name", version, null));
+
+        } catch (IOException | GitAPIException e) {
+            e.printStackTrace();
+        }
 
         return ok(views.html.index.render());
     }
@@ -81,7 +91,8 @@ public class HomeController extends Controller {
                             int totalData = 1;
 
                             @Override
-                            public void start(int totalTasks) {}
+                            public void start(int totalTasks) {
+                            }
 
                             @Override
                             public void beginTask(String title, int totalWork) {
@@ -105,14 +116,18 @@ public class HomeController extends Controller {
                             }
 
                             @Override
-                            public void endTask() {}
+                            public void endTask() {
+                            }
 
                             @Override
-                            public boolean isCancelled() { return false; }
+                            public boolean isCancelled() {
+                                return false;
+                            }
                         })
                         .setURI(currentRepo)
                         .setDirectory(new File("/Users/paolo/Documents/6th semester/thesis/webcity/repository"))
                         .call();
+                git.close();
             } catch (GitAPIException e) {
                 System.out.println("failed to download repo");
                 e.printStackTrace();
@@ -155,14 +170,12 @@ public class HomeController extends Controller {
             try {
                 // print for debugging
 //                System.out.println(lsCmd.call().toString());
-
                 lsCmd.call();
                 System.out.println("valid repo");
                 currentRepo = repo;
                 return ok();
 
             } catch (GitAPIException e) {
-                e.printStackTrace();
                 System.out.println("invalid repo");
                 return badRequest();
             }
