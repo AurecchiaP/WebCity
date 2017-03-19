@@ -53,7 +53,10 @@ public class HomeController extends Controller {
         try {
             FileRepository localRepo = new FileRepository("/Users/paolo/Documents/6th semester/thesis/webcity/.git");
             Git git = new Git(localRepo);
-            String version = git.log().call().iterator().next().getName();
+            String version = "";
+            if(git.tagList().call().iterator().hasNext()) {
+                version = git.tagList().call().iterator().next().getName().replace("refs/tags/","");
+            }
             git.close();
             return ok(views.html.main.render("Web City", version, null));
 

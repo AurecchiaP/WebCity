@@ -51,12 +51,15 @@ body {
     transition: 0.2s all;
 }
 
+#name {
+    min-height: 11vh;
+}
+
 #version {
     position: absolute;
     bottom: 0;
     right: 0;
     padding-right: 1vw;
-    width: 14vw;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
