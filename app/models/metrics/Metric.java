@@ -1,6 +1,5 @@
 package models.metrics;
 
-
 /**
  * abstract class that will be extended by specific metric types
  */

@@ -8,6 +8,20 @@ function onWheel(e) {
 
 
 /**
+ * handles right click
+ */
+function onContextMenu(e) {
+
+    intersects = raycaster.intersectObjects(meshes);
+    if (intersects.length > 0 && intersects[0].object.type == "class") {
+        var cls = intersects[0].object;
+        console.log(cls);
+
+        // TODO find a way to get the code, then maybe use bootrstrap popovers
+    }
+}
+
+/**
  * handles key-press events
  */
 function onKeyPress(e) {
@@ -30,7 +44,7 @@ function onKeyPress(e) {
 
     // key g, pin object
         case 71:
-        intersects = raycaster.intersectObjects(meshes);
+        var intersects = raycaster.intersectObjects(meshes);
 
         if (pinnedObject) {
             pinnedObject.object.material.visible = false;
