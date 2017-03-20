@@ -120,6 +120,8 @@ function drawPackage(pkg) {
 
     // size of the package
     var width = pkg.w * scale;
+    var depth = pkg.d * scale;
+    // if(width == 0 || depth == 0) return;
     var height = packageHeight * scale;
 
     // position of package
@@ -146,6 +148,7 @@ function drawPackage(pkg) {
     mesh.classes = pkg.classes.length;
     mesh.totalClasses = pkg.totalClasses;
     mesh.width = width;
+    mesh.depth = depth;
     mesh.type = "package";
 
     // position the mesh
