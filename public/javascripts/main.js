@@ -10,9 +10,9 @@ var hoveredCube;
 // the texts that contain statistics on the objects
 var classesText = document.getElementById("classes");
 var nameText = document.getElementById("name");
-var statistic1Text = document.getElementById("statistic1");
-var statistic2Text = document.getElementById("statistic2");
-var statistic3Text = document.getElementById("statistic3");
+var statistic1 = document.getElementById("statistic1");
+var statistic2 = document.getElementById("statistic2");
+var statistic3 = document.getElementById("statistic3");
 
 // init();
 
@@ -123,15 +123,22 @@ function render() {
             if (hoveredCube.object.type == "package") {
                 nameText.innerText = reverse(hoveredCube.object.name);
 
-                statistic1Text.innerText = hoveredCube.object.classes;
-                statistic2Text.innerText = hoveredCube.object.totalClasses;
-                statistic3Text.innerText = "0";
+                statistic1.firstElementChild.innerText = "contained classes";
+                statistic1.firstElementChild.nextElementSibling.innerText = hoveredCube.object.classes;
+                statistic2.firstElementChild.innerText = "total classes";
+                statistic2.firstElementChild.nextElementSibling.innerText = hoveredCube.object.totalClasses;
+                statistic3.firstElementChild.innerText = "";
+                statistic3.firstElementChild.nextElementSibling.innerText = "";
             }
             else if (hoveredCube.object.type == "class") {
                 nameText.innerText = reverse(hoveredCube.object.name);
-                statistic1Text.innerText = hoveredCube.object.methods;
-                statistic2Text.innerText = hoveredCube.object.attributes;
-                statistic3Text.innerText = hoveredCube.object.linesOfCode;
+
+                statistic1.firstElementChild.innerText = "methods";
+                statistic1.firstElementChild.nextElementSibling.innerText = hoveredCube.object.methods;
+                statistic2.firstElementChild.innerText = "attributes";
+                statistic2.firstElementChild.nextElementSibling.innerText = hoveredCube.object.attributes;
+                statistic3.firstElementChild.innerText = "lines of code";
+                statistic3.firstElementChild.nextElementSibling.innerText = hoveredCube.object.linesOfCode;
             }
         }
     }
@@ -139,8 +146,8 @@ function render() {
         if (!isPinned) {
             nameText.innerText = "";
 
-            statistic1Text.innerText = "0";
-            statistic2Text.innerText = "0";
+            statistic1.firstElementChild.nextElementSibling.innerText = "0";
+            statistic2.firstElementChild.nextElementSibling.innerText = "0";
         }
     }
 

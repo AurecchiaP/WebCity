@@ -62,15 +62,21 @@ function onKeyPress(e) {
             if (hoveredCube.object.type == "package") {
                 nameText.innerText = reverse(hoveredCube.object.name);
 
-                statistic1Text.innerText = hoveredCube.object.classes;
-                statistic2Text.innerText = hoveredCube.object.totalClasses;
-                statistic3Text.innerText = "0";
+                statistic1.firstElementChild.innerText = "contained classes";
+                statistic1.firstElementChild.nextElementSibling.innerText = hoveredCube.object.classes;
+                statistic2.firstElementChild.innerText = "total classes";
+                statistic2.firstElementChild.nextElementSibling.innerText = hoveredCube.object.totalClasses;
+                statistic3.firstElementChild.innerText = "";
+                statistic3.firstElementChild.nextElementSibling.innerText = "";
             }
             else if (hoveredCube.object.type == "class") {
                 nameText.innerText = reverse(hoveredCube.object.name);
-                statistic1Text.innerText = hoveredCube.object.methods;
-                statistic2Text.innerText = hoveredCube.object.attributes;
-                statistic3Text.innerText = hoveredCube.object.linesOfCode;
+                statistic1.firstElementChild.innerText = "methods";
+                statistic1.firstElementChild.nextElementSibling.innerText = hoveredCube.object.methods;
+                statistic2.firstElementChild.innerText = "attributes";
+                statistic2.firstElementChild.nextElementSibling.innerText = hoveredCube.object.attributes;
+                statistic3.firstElementChild.innerText = "lines of code";
+                statistic3.firstElementChild.nextElementSibling.innerText = hoveredCube.object.linesOfCode;
             }
         }
         renderer.render(scene, camera);
