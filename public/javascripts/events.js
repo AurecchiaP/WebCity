@@ -60,17 +60,17 @@ function onKeyPress(e) {
             pinnedObject.object.material.color.set(0xF1BB4E);
             isPinned = true;
             if (hoveredCube.object.type == "package") {
-                nameText.innerText = "Package name: " + hoveredCube.object.name;
+                nameText.innerText = reverse(hoveredCube.object.name);
 
-                statistic1Text.innerText = "Contained classes: " + hoveredCube.object.classes;
-                statistic2Text.innerText = "Total classes: " + hoveredCube.object.totalClasses;
-                statistic3Text.innerText = "None";
+                statistic1Text.innerText = hoveredCube.object.classes;
+                statistic2Text.innerText = hoveredCube.object.totalClasses;
+                statistic3Text.innerText = "0";
             }
             else if (hoveredCube.object.type == "class") {
-                nameText.innerText = "Class name: " + hoveredCube.object.name;
-                statistic1Text.innerText = "Contained methods: " + hoveredCube.object.methods;
-                statistic2Text.innerText = "Contained attributes: " + hoveredCube.object.attributes;
-                statistic3Text.innerText = "Lines of code: " + hoveredCube.object.linesOfCode;
+                nameText.innerText = reverse(hoveredCube.object.name);
+                statistic1Text.innerText = hoveredCube.object.methods;
+                statistic2Text.innerText = hoveredCube.object.attributes;
+                statistic3Text.innerText = hoveredCube.object.linesOfCode;
             }
         }
         renderer.render(scene, camera);

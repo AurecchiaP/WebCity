@@ -166,7 +166,7 @@ function loaded(data) {
     // document.getElementById("loader-container").remove();
     document.getElementById("main-content").remove();
     document.getElementById("container").style.display = "block";
-    classesText.innerText = "Total classes: " + data.totalClasses;
+    classesText.innerText = data.totalClasses;
 
     // notify the renderer that our html canvas has appeared
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);

@@ -2,26 +2,33 @@
     width: 15vw;
     height: 100vh;
     float: right;
-    background-color: #231F1F;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    background-color: rgba(0,0,0,0);
     position: absolute;
     top: 0;
     right: 0;
 }
 
-#sidebar li {
-    /*font-size: 14px;*/
-    color: rgba(255,255,255,0.8);
-    white-space: initial;
-    word-wrap: break-word;
-    padding: 1vw;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+.statistic {
+    padding-bottom: 2vh;
 }
 
-#version {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    padding-right: 1vw;
-    color: rgba(255,255,255,0.8);
+.statistic-name {
+    font-weight: lighter;
+    text-align: center;
+    text-transform: uppercase;
+    margin: 0;
+}
 
+.statistic-name::before {
+}
+
+
+.statistic-value {
+    font-size: 20pt;
+    text-align: center;
+    font-weight: bolder;
 }

@@ -14,7 +14,6 @@ var statistic1Text = document.getElementById("statistic1");
 var statistic2Text = document.getElementById("statistic2");
 var statistic3Text = document.getElementById("statistic3");
 
-
 // init();
 
 
@@ -86,7 +85,7 @@ function init(json) {
     renderer.shadowMap.autoUpdate = false;
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
-    document.body.appendChild(renderer.domElement);
+    canvas.appendChild(renderer.domElement);
 
     camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
     camera.position.z = 2000;
@@ -122,26 +121,26 @@ function render() {
         if (!isPinned) {
 
             if (hoveredCube.object.type == "package") {
-                nameText.innerText = "Package name: " + hoveredCube.object.name;
+                nameText.innerText = reverse(hoveredCube.object.name);
 
-                statistic1Text.innerText = "Contained classes: " + hoveredCube.object.classes;
-                statistic2Text.innerText = "Total classes: " + hoveredCube.object.totalClasses;
-                statistic3Text.innerText = "None";
+                statistic1Text.innerText = hoveredCube.object.classes;
+                statistic2Text.innerText = hoveredCube.object.totalClasses;
+                statistic3Text.innerText = "0";
             }
             else if (hoveredCube.object.type == "class") {
-                nameText.innerText = "Class name: " + hoveredCube.object.name;
-                statistic1Text.innerText = "Contained methods: " + hoveredCube.object.methods;
-                statistic2Text.innerText = "Contained attributes: " + hoveredCube.object.attributes;
-                statistic3Text.innerText = "Lines of code: " + hoveredCube.object.linesOfCode;
+                nameText.innerText = reverse(hoveredCube.object.name);
+                statistic1Text.innerText = hoveredCube.object.methods;
+                statistic2Text.innerText = hoveredCube.object.attributes;
+                statistic3Text.innerText = hoveredCube.object.linesOfCode;
             }
         }
     }
     else {
         if (!isPinned) {
-            nameText.innerText = "None";
+            nameText.innerText = "";
 
-            statistic1Text.innerText = "None";
-            statistic2Text.innerText = "None";
+            statistic1Text.innerText = "0";
+            statistic2Text.innerText = "0";
         }
     }
 
