@@ -120,6 +120,7 @@ function drawPackage(pkg) {
 
     // size of the package
     var width = pkg.w * scale;
+    var depth = pkg.d * scale;
     var height = packageHeight * scale;
 
     // position of package
@@ -130,7 +131,7 @@ function drawPackage(pkg) {
     var color = pkg.color;
 
     // create geometry and material for this package
-    geometry = new THREE.BoxGeometry(width, width, height);
+    geometry = new THREE.BoxGeometry(width, depth, height);
     for (var i = 0; i < geometry.faces.length; i++) {
         var face = geometry.faces[i];
         face.color.setHex(color);

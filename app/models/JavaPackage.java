@@ -17,6 +17,7 @@ public class JavaPackage {
     public int cx;
     public int cy;
     public int w;
+    public int d;
     public int z;
     public int color;
 
