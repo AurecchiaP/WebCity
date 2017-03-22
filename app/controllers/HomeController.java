@@ -2,6 +2,9 @@ package controllers;
 
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
+import models.JavaClass;
+import models.drawables.DrawableClass;
+import models.drawables.DrawablePackage;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -17,6 +20,7 @@ import utils.RectanglePacking;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import static utils.FileUtils.deleteDir;
 import static utils.JSON.toJSON;
@@ -145,13 +149,35 @@ public class HomeController extends Controller {
 
         System.out.println("Done downloading repo");
 
+
+        DrawablePackage drw = toDrawable(pkg);
+
         // do the rectangle packing
-        new RectanglePacking(pkg);
+        new RectanglePacking(drw);
         System.out.println("Done packing");
 
 
         // return the data to be drawn
-        return ok(toJSON(pkg));
+        return ok(toJSON(drw));
+    }
+
+
+    public DrawablePackage toDrawable(JavaPackage pkg) {
+
+        DrawablePackage drw = new DrawablePackage(0,0,0,0, pkg);
+        List<DrawablePackage> childDrawablePackages = drw.getDrawablePackages();
+        List<DrawableClass> childDrawableClasses = drw.getDrawableClasses();
+
+        for(JavaPackage child : pkg.getChildPackages()) {
+            childDrawablePackages.add(toDrawable(child));
+        }
+
+        for(JavaClass cls : pkg.getClasses()) {
+            DrawableClass drwCls = new DrawableClass(0,0,0,0, cls);
+            childDrawableClasses.add(drwCls);
+        }
+
+        return drw;
     }
 
     /**

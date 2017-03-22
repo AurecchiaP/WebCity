@@ -16,11 +16,6 @@ public class JavaClass {
     private Metric<Integer> attributes;
     private Metric<Integer> linesOfCode;
 
-    public int cx;
-    public int cy;
-    public int cz;
-    public int color;
-
     public JavaClass(String name, Metric<Integer> methods, Metric<Integer> attributes, Metric<Integer> linesOfCode) {
         this.name = name;
         this.methods = methods;

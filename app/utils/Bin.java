@@ -89,6 +89,11 @@ class Bin {
             this.z = other.z;
             return;
         }
+
+        if (other.width() == 0 || other.depth() == 0) {
+            return;
+        }
+
         if (other.x2 > this.x2) {
             this.x2 = other.x2;
         }
@@ -108,5 +113,15 @@ class Bin {
         if (other.z > this.z) {
             this.z = other.z;
         }
+    }
+
+    /**
+     * Checks if 2 bins overlap, by checking if they are not overlapping and then negating it.
+     *
+     * @param other the Bin to be compared to
+     */
+    boolean overlap(final Bin other) {
+        return !(this.getX2() < other.getX1() || this.getX1() > other.getX2() ||
+                    this.getY2() < other.getY1() || this.getY1() > other.getY2());
     }
 }

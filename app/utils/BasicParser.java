@@ -118,8 +118,8 @@ public class BasicParser {
                         cv.visit(cu, null);
 
                     } catch (IOException e) {
-                        System.out.println(file.getName());
-//                        e.printStackTrace();
+//                        System.out.println(file.getName());
+                        e.printStackTrace();
                     }
                 }
             }

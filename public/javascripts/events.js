@@ -25,8 +25,8 @@ function onContextMenu(e) {
  * handles key-press events
  */
 function onKeyPress(e) {
-    var keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
-    switch ( event.keyCode ) {
+    var keys = {LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40};
+    switch (event.keyCode) {
 
         // directional keys, pan
         case keys.UP:
@@ -42,45 +42,44 @@ function onKeyPress(e) {
             render();
             break;
 
-    // key g, pin object
+        // key g, pin object
         case 71:
-        var intersects = raycaster.intersectObjects(meshes);
+            var intersects = raycaster.intersectObjects(meshes);
 
-        if (pinnedObject) {
-            pinnedObject.object.material.visible = false;
-            pinnedObject.object.material.color.set(pinnedColor);
-            pinnedObject = null;
-            isPinned = false;
-        }
-
-        if (intersects.length > 0) {
-            pinnedObject = intersects[0];
-            pinnedColor = pinnedObject.object.material.color;
-            pinnedObject.object.material.visible = true;
-            pinnedObject.object.material.color.set(0xF1BB4E);
-            isPinned = true;
-            if (hoveredCube.object.type == "package") {
-                nameText.innerText = reverse(hoveredCube.object.name);
-
-                statistic1.firstElementChild.innerText = "contained classes";
-                statistic1.firstElementChild.nextElementSibling.innerText = hoveredCube.object.classes;
-                statistic2.firstElementChild.innerText = "total classes";
-                statistic2.firstElementChild.nextElementSibling.innerText = hoveredCube.object.totalClasses;
-                statistic3.firstElementChild.innerText = "";
-                statistic3.firstElementChild.nextElementSibling.innerText = "";
+            if (pinnedObject) {
+                pinnedObject.object.material.visible = false;
+                pinnedObject.object.material.color.set(pinnedColor);
+                pinnedObject = null;
+                isPinned = false;
             }
-            else if (hoveredCube.object.type == "class") {
-                nameText.innerText = reverse(hoveredCube.object.name);
-                statistic1.firstElementChild.innerText = "methods";
-                statistic1.firstElementChild.nextElementSibling.innerText = hoveredCube.object.methods;
-                statistic2.firstElementChild.innerText = "attributes";
-                statistic2.firstElementChild.nextElementSibling.innerText = hoveredCube.object.attributes;
-                statistic3.firstElementChild.innerText = "lines of code";
-                statistic3.firstElementChild.nextElementSibling.innerText = hoveredCube.object.linesOfCode;
+
+            if (intersects.length > 0) {
+                pinnedObject = intersects[0];
+                pinnedColor = pinnedObject.object.material.color;
+                pinnedObject.object.material.visible = true;
+                pinnedObject.object.material.color.set(0xF1BB4E);
+                isPinned = true;
+                if (hoveredCube.object.type == "package") {
+                    nameText.innerText = reverse(hoveredCube.object.name);
+                    statistic1.firstElementChild.innerText = "contained classes";
+                    statistic1.firstElementChild.nextElementSibling.innerText = hoveredCube.object.classes;
+                    statistic2.firstElementChild.innerText = "total classes";
+                    statistic2.firstElementChild.nextElementSibling.innerText = hoveredCube.object.totalClasses;
+                    statistic3.firstElementChild.innerText = "";
+                    statistic3.firstElementChild.nextElementSibling.innerText = "";
+                }
+                else if (hoveredCube.object.type == "class") {
+                    nameText.innerText = reverse(hoveredCube.object.name);
+                    statistic1.firstElementChild.innerText = "methods";
+                    statistic1.firstElementChild.nextElementSibling.innerText = hoveredCube.object.methods;
+                    statistic2.firstElementChild.innerText = "attributes";
+                    statistic2.firstElementChild.nextElementSibling.innerText = hoveredCube.object.attributes;
+                    statistic3.firstElementChild.innerText = "lines of code";
+                    statistic3.firstElementChild.nextElementSibling.innerText = hoveredCube.object.linesOfCode;
+                }
             }
-        }
-        renderer.render(scene, camera);
-        renderer.render(scene, camera);
+            renderer.render(scene, camera);
+            renderer.render(scene, camera);
     }
 }
 
