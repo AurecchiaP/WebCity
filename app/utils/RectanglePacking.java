@@ -16,7 +16,7 @@ public class RectanglePacking {
 
     private int maxDepth = 0;
     private int maxLines = 0;
-    private final int padding = 10;
+    private final int padding = 25;
 
 
     /**
@@ -86,27 +86,42 @@ public class RectanglePacking {
         List<Bin> openBins = new ArrayList<>();
 
         // the Bin occupied by pkg
-        Bin localBin = new Bin(0, 0, 0, 0, 0);
-
-        // found: if we have found an open Bin to fit pkg into
-        boolean found = false;
+        Bin localBin;
 
         // see if there is an open Bin in which pkg can fit into
+        int minimumWaste = 999999999;
+        Bin bestBin = null;
+
+        System.out.println(drwPkg.getPkg().getName());
+        System.out.printf("parent %d %d %d %d\n", parentBin.getX1(), parentBin.getX2(), parentBin.getY1(), parentBin.getY2());
         for (Bin bin : parentOpenBins) {
             // if can fit in openBin
             if (bin.width() > drwPkg.getWidth() && bin.depth() > drwPkg.getDepth()) {
-
-                localBin = new Bin(bin.getX1(), bin.getX1(), bin.getY1(), bin.getY1(), bin.getZ());
-//                System.out.printf("bin %d %d %d %d \n", bin.getX1(), bin.getX2(), bin.getY1(), bin.getY2());
-                parentOpenBins.remove(bin);
-                found = true;
-                break;
+                // implement copy
+                Bin dummyParentBin = new Bin(parentBin.getX1(), parentBin.getX2(), parentBin.getY1(), parentBin.getY2(), parentBin.getZ());
+                // FIXME I'm using pkg.width, which is not actually its size, heuristic
+                Bin dummyBinBin = new Bin(bin.getX1(), bin.getX1() + drwPkg.getWidth(), bin.getY1(), bin.getY1() +drwPkg.getWidth(), bin.getZ());
+                dummyParentBin.mergeBin(dummyBinBin);
+                int area = ((dummyParentBin.getX2() - dummyParentBin.getX1()) * 2) + ((dummyParentBin.getY2() - dummyParentBin.getY1())* 2);
+                System.out.printf("bin %d %d %d %d\n", bin.getX1(), bin.getX2(), bin.getY1(), bin.getY2());
+                System.out.printf("dummybin %d %d %d %d\n", dummyBinBin.getX1(), dummyBinBin.getX2(), dummyBinBin.getY1(), dummyBinBin.getY2());
+                System.out.printf("merged %d %d %d %d %d\n", dummyParentBin.getX1(), dummyParentBin.getX2(), dummyParentBin.getY1(), dummyParentBin.getY2(), area);
+                if(area < minimumWaste) {
+                    minimumWaste = area;
+                    bestBin = bin;
+                }
             }
         }
+        System.out.println("");
 
-        // if no valid open Bin, put local Bin either to the right or above of parentBin
-        if (!found) {
-            // decide in which direction to "grow" the representation to keep it as square as possible
+//        System.out.println("");
+        if(bestBin != null) {
+            localBin = new Bin(bestBin.getX1(), bestBin.getX1(), bestBin.getY1(), bestBin.getY1(), bestBin.getZ());
+            parentOpenBins.remove(bestBin);
+        }
+        // if no valid open Bin (e.g. first child of package), put local Bin either to the right or above of parentBin
+        else {
+//             decide in which direction to "grow" the representation to keep it as square as possible
             if (parentBin.depth() > parentBin.width()) {
                 localBin = new Bin(parentBin.getX2(), parentBin.getX2(), parentBin.getY1(), parentBin.getY2(), parentBin.getZ());
             } else {
@@ -139,28 +154,36 @@ public class RectanglePacking {
         // get the size to fit the classes of pkg into
         int minClassesSize = getMinClassesSize(drwPkg);
 
-        // put the classes either to the right or above the local Bin
-        if (localBin.depth() > localBin.width()) {
-            classesBin.setX1(localBin.getX2());
-            classesBin.setX2(localBin.getX2() + minClassesSize);
-            classesBin.setY1(localBin.getY1());
-            classesBin.setY2(localBin.getY1() + minClassesSize);
-        } else {
-            classesBin.setY1(localBin.getY2());
-            classesBin.setY2(localBin.getY2() + minClassesSize);
-            classesBin.setX1(localBin.getX1());
-            classesBin.setX2(localBin.getX1() + minClassesSize);
-        }
+//        boolean clsFound = false;
+//        for (Bin bin : parentOpenBins) {
+//            // if can fit in openBin
+//            if (bin.width() > minClassesSize && bin.depth() >  minClassesSize) {
+//
+//                classesBin = new Bin(bin.getX1(), bin.getX1() + minClassesSize, bin.getY1(), bin.getY1() + minClassesSize, bin.getZ());
+//                parentOpenBins.remove(bin);
+//                clsFound = true;
+//                break;
+//            }
+//        }
+//
+//        if (!clsFound) {
+
+            // put the classes either to the right or above the local Bin
+            if (localBin.depth() > localBin.width()) {
+                classesBin.setX1(localBin.getX2());
+                classesBin.setX2(localBin.getX2() + minClassesSize);
+                classesBin.setY1(localBin.getY1());
+                classesBin.setY2(localBin.getY1() + minClassesSize);
+            } else {
+                classesBin.setY1(localBin.getY2());
+                classesBin.setY2(localBin.getY2() + minClassesSize);
+                classesBin.setX1(localBin.getX1());
+                classesBin.setX2(localBin.getX1() + minClassesSize);
+            }
+//        }
 
         // update localBin with extra size of classesBin
         localBin.mergeBin(classesBin);
-
-        // make localBin into a square
-//        if (localBin.depth() > localBin.width()) {
-//            localBin.setX2(localBin.getX2() + localBin.depth() - localBin.width());
-//        } else if (localBin.width() > localBin.depth()) {
-//            localBin.setY2(localBin.getY2() + localBin.width() - localBin.depth());
-//        }
 
         // shift localBin by padding, draw it, and shift it back (we don't want to draw on the padding)
 //        System.out.printf("%s %d %d %d %d \n", drwPkg.getPkg().getName(), localBin.getX1(), localBin.getX2(), localBin.getY1(), localBin.getY2());
@@ -175,19 +198,30 @@ public class RectanglePacking {
         // shift classesBin by padding, draw it, and shift it back (we don't want to draw on the padding)
         addPaddingAndFit(classesBin, drwPkg, padding, recDepth, false);
 
+
+        // FIXME don't just remove, update
         Iterator<Bin> it = parentOpenBins.iterator();
         while (it.hasNext()) {
             Bin bin = it.next();
             if (bin.overlap(localBin)) {
+                // FIXME update is wrong, but it's important
                 it.remove();
+//                System.out.printf("bin %d %d %d %d\n", bin.getX1(), bin.getX2(), bin.getY1(), bin.getY2());
+//                System.out.printf("local %d %d %d %d\n", localBin.getX1(), localBin.getX2(), localBin.getY1(), localBin.getY2());
+////                bin.update(localBin);
+//                System.out.printf("bin %d %d %d %d\n", bin.getX1(), bin.getX2(), bin.getY1(), bin.getY2());
+//                System.out.printf("local %d %d %d %d\n", localBin.getX1(), localBin.getX2(), localBin.getY1(), localBin.getY2());
+//                System.out.println("");
             }
         }
 
         // make open bins for extra space that was left after fitting local bin, extra space both on top and on the right
-        Bin openBinTop = new Bin(localBin.getX1(), localBin.getX2(), localBin.getY2(), parentBin.getY2() - localBin.getY2(), localBin.getZ());
+        // FIXME make all the possible new bins
+        Bin openBinTop = new Bin(localBin.getX1(), 9999, localBin.getY2(), 9999, localBin.getZ());
         parentOpenBins.add(openBinTop);
-        Bin openBinRight = new Bin(localBin.getX2(), parentBin.getX2() - localBin.getX2(), localBin.getY1(), localBin.getY2(), localBin.getZ());
+        Bin openBinRight = new Bin(localBin.getX2(), 9999, localBin.getY1(), 9999, localBin.getZ());
         parentOpenBins.add(openBinRight);
+
 
         return localBin;
     }
