@@ -33,11 +33,7 @@ public class RectanglePacking {
 
         // traverse again, this time to find the positions for packages and classes, using recDepth to set the color
         recDepth = 0;
-
-        List<Bin> openBins = new ArrayList<>();
-        openBins.add(new Bin(0,9999,0,9999,0));
-
-        pack(drwPkg, new Bin(0, 0, 0, 0, 0), openBins, recDepth);
+        pack(drwPkg, new Bin(0, 0, 0, 0, 0), new ArrayList<>(), recDepth);
     }
 
 
@@ -71,8 +67,7 @@ public class RectanglePacking {
         }
 
         // sort the children packages by their size, in descending order
-//        drwPkg.sortChildren();
-
+        drwPkg.sortChildren();
         return drwPkg.getWidth();
     }
 
@@ -96,17 +91,26 @@ public class RectanglePacking {
         // found: if we have found an open Bin to fit pkg into
         boolean found = false;
 
-        // FIXME try to put classesBin in openBins as well
-
         // see if there is an open Bin in which pkg can fit into
         for (Bin bin : parentOpenBins) {
             // if can fit in openBin
             if (bin.width() > drwPkg.getWidth() && bin.depth() > drwPkg.getDepth()) {
 
                 localBin = new Bin(bin.getX1(), bin.getX1(), bin.getY1(), bin.getY1(), bin.getZ());
-                System.out.printf("bin %d %d %d %d \n", bin.getX1(), bin.getX2(), bin.getY1(), bin.getY2());
+//                System.out.printf("bin %d %d %d %d \n", bin.getX1(), bin.getX2(), bin.getY1(), bin.getY2());
                 parentOpenBins.remove(bin);
+                found = true;
                 break;
+            }
+        }
+
+        // if no valid open Bin, put local Bin either to the right or above of parentBin
+        if (!found) {
+            // decide in which direction to "grow" the representation to keep it as square as possible
+            if (parentBin.depth() > parentBin.width()) {
+                localBin = new Bin(parentBin.getX2(), parentBin.getX2(), parentBin.getY1(), parentBin.getY2(), parentBin.getZ());
+            } else {
+                localBin = new Bin(parentBin.getX1(), parentBin.getX2(), parentBin.getY2(), parentBin.getY2(), parentBin.getZ());
             }
         }
 
@@ -151,6 +155,13 @@ public class RectanglePacking {
         // update localBin with extra size of classesBin
         localBin.mergeBin(classesBin);
 
+        // make localBin into a square
+//        if (localBin.depth() > localBin.width()) {
+//            localBin.setX2(localBin.getX2() + localBin.depth() - localBin.width());
+//        } else if (localBin.width() > localBin.depth()) {
+//            localBin.setY2(localBin.getY2() + localBin.width() - localBin.depth());
+//        }
+
         // shift localBin by padding, draw it, and shift it back (we don't want to draw on the padding)
 //        System.out.printf("%s %d %d %d %d \n", drwPkg.getPkg().getName(), localBin.getX1(), localBin.getX2(), localBin.getY1(), localBin.getY2());
         addPaddingAndFit(localBin, drwPkg, padding, recDepth, true);
@@ -173,9 +184,9 @@ public class RectanglePacking {
         }
 
         // make open bins for extra space that was left after fitting local bin, extra space both on top and on the right
-        Bin openBinTop = new Bin(localBin.getX2(), 9999, localBin.getY1(), 9999, localBin.getZ());
+        Bin openBinTop = new Bin(localBin.getX1(), localBin.getX2(), localBin.getY2(), parentBin.getY2() - localBin.getY2(), localBin.getZ());
         parentOpenBins.add(openBinTop);
-        Bin openBinRight = new Bin(localBin.getX1(), 9999, localBin.getY2(), 9999, localBin.getZ());
+        Bin openBinRight = new Bin(localBin.getX2(), parentBin.getX2() - localBin.getX2(), localBin.getY1(), localBin.getY2(), localBin.getZ());
         parentOpenBins.add(openBinRight);
 
         return localBin;
