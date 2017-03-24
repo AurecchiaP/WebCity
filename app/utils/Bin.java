@@ -138,7 +138,7 @@ class Bin {
      * @param local the Bin to be compared to
      */
     void update(final Bin local) {
-
+//        new Bin();
         if (this.getX2() > local.getX1()) this.setX1(local.getX2());
         else if (this.getX1() < local.getX2()) this.setX2(local.getX1());
         if (this.getY2() > local.getY1()) this.setY1(local.getY2());
