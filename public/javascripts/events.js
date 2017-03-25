@@ -2,6 +2,7 @@
  * handles wheel scrolls/zoom
  */
 function onWheel(e) {
+    // console.log(e.target.id);
     controls.update();
     render();
 }

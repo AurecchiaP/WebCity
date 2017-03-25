@@ -1,5 +1,11 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import models.JavaClass;
@@ -10,18 +16,23 @@ import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.ProgressMonitor;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import play.api.libs.json.Json;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.routing.JavaScriptReverseRouter;
+import scala.util.parsing.json.JSONObject;
 import utils.BasicParser;
 import models.JavaPackage;
 import utils.RectanglePacking;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static utils.DrawableUtils.toDrawable;
 import static utils.FileUtils.deleteDir;
@@ -65,25 +76,27 @@ public class HomeController extends Controller {
 
             }
             git.close();
-            return ok(views.html.main.render("Web City", version, null));
+
+            return ok(views.html.main.render("Web City", version,null));
 
         } catch (IOException | GitAPIException e) {
             e.printStackTrace();
         }
 
-        return ok(views.html.index.render());
+        return badRequest();
     }
 
 
     /**
      * downloads the linked repository, parses it, does the rectangle packing, and returns the data to be visualized
      */
-    // FIXME should there be option to authenticate and use private repos?though then they
+    // FIXME should there be option to authenticate and use private repos? though then they
     // FIXME would be on the server
 
     // FIXME add a token sent from javascript, which javascript received from the server from `visualization`
     public Result getVisualizationData() {
         JavaPackage pkg;
+        List<String> versions = new ArrayList<>();
 
         if (web) {
             // remove the old downloaded repository
@@ -144,6 +157,8 @@ public class HomeController extends Controller {
                     System.out.println(git.tagList().call().get(i).getName());
                 }
 
+                versions = git.tagList().call().stream().map(Ref::getName).collect(Collectors.toList());
+
                 // TODO use this to set the version to visualise
 //                git.checkout().setCreateBranch( true ).setName( "test" ).setStartPoint( git.tagList().call().get( git.tagList().call().size() -1 ).getName() ).call();
                 git.close();
@@ -169,8 +184,16 @@ public class HomeController extends Controller {
         System.out.println("Done packing");
 
 
-        // return the data to be drawn
-        return ok(toJSON(drw));
+        // create json object
+        Gson gson = new Gson();
+        final JsonObject jsonObject = new JsonObject();
+        // add visualization data
+        jsonObject.add("visualization", gson.fromJson(toJSON(drw), JsonElement.class));
+        // add list of versions
+        jsonObject.add("versions", gson.fromJson(new Gson().toJson(versions), JsonElement.class));
+
+        // send data to client
+        return ok(gson.toJson(jsonObject));
     }
 
 

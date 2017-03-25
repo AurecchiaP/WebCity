@@ -48,6 +48,19 @@
     right: 0;
 }
 
+#versions {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 1em 1em 0 0;
+    z-index: 100;
+}
+
+.dropdownItems {
+    overflow-y: scroll;
+    max-height: 10vh;
+}
+
 .statistic {
     padding-bottom: 2vh;
     min-height: 8em;
