@@ -59,7 +59,8 @@ public class HomeController extends Controller {
             Git git = new Git(localRepo);
             String version = "";
             if(git.tagList().call().iterator().hasNext()) {
-                version = git.tagList().call().iterator().next().getName().replace("refs/tags/","");
+                version = git.tagList().call().get( git.tagList().call().size() - 1 ).getName().replace("refs/tags/","");
+
             }
             git.close();
             return ok(views.html.main.render("Web City", version, null));
