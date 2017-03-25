@@ -41,7 +41,8 @@ function init(json) {
     // shadow settings
     light.castShadow = true;
 
-    var pkgWidth = json.w * scale;
+    // TODO max between width and depth?
+    var pkgWidth = Math.max(json.width * scale, json.depth * scale);
 
     // TODO high map size vs shadowMap type; 4096 THREE.PCFSoftShadowMap or 8192 THREE.PCFShadowMap
     light.shadow.mapSize.width = 4096;

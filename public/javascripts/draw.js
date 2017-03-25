@@ -119,9 +119,11 @@ function drawClass(cls) {
  */
 function drawPackage(pkg) {
 
+
     // size of the package
     var width = pkg.width * scale;
     var depth = pkg.depth * scale;
+    if(width == 0 || depth == 0) return;
     var height = packageHeight * scale;
 
     // position of package

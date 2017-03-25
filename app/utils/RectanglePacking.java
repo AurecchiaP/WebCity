@@ -40,15 +40,13 @@ public class RectanglePacking {
 
     /**
      * recursively iterate from pkg, to find out the sizes of its children packages to find out the space needed to draw
-     * the package pkg
+     * the package pkg (it's a heuristic, we stack them in a line, which gives a value that is bigger than the ideal size;
+     * we don't know the size of a package before we do the rectangle packing)
      *
      * @param drwPkg the JavaPackage of which we want to find out the size
      * @param depth  the current depth of recursion
      * @return the maximum edge size that pkg will occupy
      */
-    // FIXME it doesn't give exact ordering, but its close enough
-    // FIXME (by doing += width, we assume we're stacking them in one direction, not considering we could put them also
-    // FIXME on top)
     private int getPackageMaxWidth(DrawablePackage drwPkg, int depth) {
 
         // store maximum depth of packages reached
@@ -61,6 +59,7 @@ public class RectanglePacking {
 
         // store the width
         drwPkg.setWidth(drwPkg.getWidth() + getMinClassesSize(drwPkg) + (2 * padding));
+        drwPkg.setDepth(drwPkg.getWidth() + getMinClassesSize(drwPkg) + (2 * padding));
 
         for (DrawableClass cls : drwPkg.getDrawableClasses()) {
             if (cls.getCls().getLinesOfCode().getValue() > maxLines)
@@ -71,6 +70,7 @@ public class RectanglePacking {
         drwPkg.sortChildren();
         return drwPkg.getWidth();
     }
+
 
     /**
      * takes care of positioning the JavaPackage pkg and its children and classes
@@ -94,37 +94,26 @@ public class RectanglePacking {
         int minimumWaste = 999999999;
         Bin bestBin = null;
 
-        System.out.println(drwPkg.getPkg().getName());
         for (Bin bin : parentOpenBins) {
+
             // if can fit in openBin
-            if (bin.width() > drwPkg.getWidth() && bin.depth() > drwPkg.getWidth()) {
+            if (bin.width() > drwPkg.getWidth() && bin.depth() > drwPkg.getDepth()) {
 
-
-                if(drwPkg.getPkg().getName().equals("commons-math/src/test/java/org/apache/commons/math4/geometry")) {
-                    System.out.printf("WUT %d %d %d %d\n", bin.width(), drwPkg.getWidth(), bin.depth(), drwPkg.getDepth());
-                }
-                // implement copy
-                Bin dummyParentBin = new Bin(parentBin.getX1(), parentBin.getX2(), parentBin.getY1(), parentBin.getY2(), parentBin.getZ());
-                // FIXME I'm using pkg.width, which is not actually its size, heuristic
+                Bin dummyParentBin = parentBin.copy();
                 Bin dummyBinBin = new Bin(bin.getX1(), bin.getX1() + drwPkg.getWidth(), bin.getY1(), bin.getY1() + drwPkg.getWidth(), bin.getZ());
                 dummyParentBin.mergeBin(dummyBinBin);
-                int area = ((dummyParentBin.getX2() - dummyParentBin.getX1()) * 2) + ((dummyParentBin.getY2() - dummyParentBin.getY1()) * 2);
-//                System.out.printf("bin %d %d %d %d\n", bin.getX1(), bin.getX2(), bin.getY1(), bin.getY2());
-//                System.out.printf("dummybin %d %d %d %d\n", dummyBinBin.getX1(), dummyBinBin.getX2(), dummyBinBin.getY1(), dummyBinBin.getY2());
-//                System.out.printf("merged %d %d %d %d %d\n", dummyParentBin.getX1(), dummyParentBin.getX2(), dummyParentBin.getY1(), dummyParentBin.getY2(), area);
-                if (area < minimumWaste) {
-                    minimumWaste = area;
+                int perimeter = ((dummyParentBin.getX2() - dummyParentBin.getX1()) * 2) + ((dummyParentBin.getY2() - dummyParentBin.getY1()) * 2);
+                if (perimeter < minimumWaste) {
+                    minimumWaste = perimeter;
                     bestBin = bin;
                 }
             }
         }
-        if(drwPkg.getPkg().getName().equals("commons-math/src/test/java/org/apache/commons/math4/geometry")) {
-            System.out.printf("LUL geo %d %d %d %d\n", bestBin.getX1(), bestBin.getX2(), bestBin.getY1(), bestBin.getY2());
-        }
+
         if (bestBin != null) {
             localBin = new Bin(bestBin.getX1(), bestBin.getX1(), bestBin.getY1(), bestBin.getY1(), bestBin.getZ());
-            parentOpenBins.remove(bestBin);
         }
+
         // if no valid open Bin (e.g. first child of package), put local Bin either to the right or above of parentBin
         else {
 //             decide in which direction to "grow" the representation to keep it as square as possible
@@ -135,8 +124,6 @@ public class RectanglePacking {
             }
         }
 
-        // bin that will contain the classes of the current package
-        Bin classesBin = new Bin(0, 0, 0, 0, 0);
 
         // add pkg's classes to the total of all classes contained in pkg (recursive as well)
         drwPkg.getPkg().addClassTotal(drwPkg.getDrawableClasses().size());
@@ -158,24 +145,13 @@ public class RectanglePacking {
             return new Bin(0, 0, 0, 0, 0);
         }
 
-        // get the size to fit the classes of pkg into
+        // FIXME make classes into rectangles and/or put them in bins
+        // TODO to put them in bins: try to put them in a bin, and check for overlaps with all the other children
+
+        // bin that will contain the classes of the current package
+        Bin classesBin = new Bin(0, 0, 0, 0, 0);
         int minClassesSize = getMinClassesSize(drwPkg);
 
-//        boolean clsFound = false;
-//        for (Bin bin : parentOpenBins) {
-//            // if can fit in openBin
-//            if (bin.width() > minClassesSize && bin.depth() >  minClassesSize) {
-//
-//                classesBin = new Bin(bin.getX1(), bin.getX1() + minClassesSize, bin.getY1(), bin.getY1() + minClassesSize, bin.getZ());
-//                parentOpenBins.remove(bin);
-//                clsFound = true;
-//                break;
-//            }
-//        }
-//
-//        if (!clsFound) {
-
-        // put the classes either to the right or above the local Bin
         if (localBin.depth() > localBin.width()) {
             classesBin.setX1(localBin.getX2());
             classesBin.setX2(localBin.getX2() + minClassesSize);
@@ -187,7 +163,7 @@ public class RectanglePacking {
             classesBin.setX1(localBin.getX1());
             classesBin.setX2(localBin.getX1() + minClassesSize);
         }
-//        }
+
 
         // update localBin with extra size of classesBin
         localBin.mergeBin(classesBin);
@@ -204,21 +180,23 @@ public class RectanglePacking {
         // shift classesBin by padding, draw it, and shift it back (we don't want to draw on the padding)
         addPaddingAndFit(classesBin, drwPkg, padding, recDepth, false);
 
+        // free spots on left and right of local bin
         Bin openBinTop = new Bin(localBin.getX1(), 9999, localBin.getY2(), 9999, localBin.getZ());
         parentOpenBins.add(openBinTop);
         Bin openBinRight = new Bin(localBin.getX2(), 9999, localBin.getY1(), 9999, localBin.getZ());
         parentOpenBins.add(openBinRight);
-        siblingBins.add(localBin);
 
-        for(Bin sibling : siblingBins) {
+        siblingBins.add(localBin);
+        // check if any sibling overlaps an open bin, and if that happens 'cut' the bin in 4 new valid bins
+        for (Bin sibling : siblingBins) {
 
             Iterator<Bin> it = parentOpenBins.iterator();
             List<Bin> temp = new ArrayList<>();
             while (it.hasNext()) {
                 Bin bin = it.next();
 
+                // if a sibling overlaps an open bin (=> bin is invalid)
                 if (bin.overlap(sibling)) {
-                    // FIXME update is wrong, but it's important
                     it.remove();
 
                     // top open bin
@@ -241,16 +219,10 @@ public class RectanglePacking {
                 }
             }
 
+            // add all the new bins to the list of open bins
             parentOpenBins.addAll(temp);
         }
 
-        if(drwPkg.getPkg().getName().equals("commons-math/src/test/java/org/apache/commons/math4/ode")) {
-            System.out.printf("ASD ode %d %d %d %d\n", localBin.getX1(), localBin.getX2(), localBin.getY1(), localBin.getY2());
-        }
-
-        if(drwPkg.getPkg().getName().equals("commons-math/src/test/java/org/apache/commons/math4/geometry")) {
-            System.out.printf("ASD geo %d %d %d %d\n", localBin.getX1(), localBin.getX2(), localBin.getY1(), localBin.getY2());
-        }
         return localBin;
     }
 
@@ -345,7 +317,7 @@ public class RectanglePacking {
         List<DrawableClass> classes = drwPkg.getDrawableClasses();
         int totalClasses = classes.size();
         // calculate how many classes we can fit on one edge of the bin
-        int classesPerWidth = (int) Math.ceil(Math.sqrt(totalClasses)) + 2;
+        int classesPerWidth = (int) Math.ceil(Math.sqrt(totalClasses)) + 1;
 
         // calculate how far apart each class has to be
         int gridSpacing = (bin.getX2() - bin.getX1()) / (classesPerWidth);

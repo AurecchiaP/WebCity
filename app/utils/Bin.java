@@ -165,4 +165,11 @@ class Bin {
 
         return total;
     }
+
+    /**
+     * @return returns a new Bin of the same size of other
+     */
+    Bin copy() {
+        return new Bin(this.getX1(), this.getX2(), this.getY1(), this.getY2(), this.getZ());
+    }
 }
