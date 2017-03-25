@@ -41,29 +41,29 @@ public class BasicParser {
      */
     public static JavaPackage parseRepo(String path) {
         // look for the main folder
-//        return makePackage(path);
+        return makePackage(path);
         // FIXME how to find the right main folder?
-        Path p = Paths.get(path);
-        try {
-            Optional<Path> hit = Files.walk(p)
-                    .filter(file -> file.getFileName().equals(Paths.get("main")))
-                    .findAny();
-
-            // if we found the `main` folder, parse from there
-            if (hit.isPresent()) {
-                return makePackage(hit.get().toString());
-
-
-            }
-            // else parse from root of repository
-            else {
-                System.out.println("folder src/main not found");
-                return makePackage(path);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+//        Path p = Paths.get(path);
+//        try {
+//            Optional<Path> hit = Files.walk(p)
+//                    .filter(file -> file.getFileName().equals(Paths.get("main")))
+//                    .findAny();
+//
+//            // if we found the `main` folder, parse from there
+//            if (hit.isPresent()) {
+//                return makePackage(hit.get().toString());
+//
+//
+//            }
+//            // else parse from root of repository
+//            else {
+//                System.out.println("folder src/main not found");
+//                return makePackage(path);
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return null;
     }
 
     /**
@@ -118,8 +118,8 @@ public class BasicParser {
                         cv.visit(cu, null);
 
                     } catch (IOException e) {
-                        System.out.println(file.getName());
-//                        e.printStackTrace();
+//                        System.out.println(file.getName());
+                        e.printStackTrace();
                     }
                 }
             }

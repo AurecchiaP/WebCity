@@ -7,15 +7,22 @@
         @* Here's where we render the page title `String`. *@
         <title>@title</title>
 
+        <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
-        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/sidebar.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/visualization.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("bootstrap-4.0.0-alpha.6-dist/css/bootstrap.min.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("font-awesome-4.7.0/css/font-awesome.min.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
 
     </head>
     <body>
+
+        @* Logo *@
+        <p id="logo">logo</p>
+        @* Version *@
+        <p id="version">@version</p>
 
 
         <div id="main-content">
@@ -55,23 +62,41 @@
             @* Canvas *@
             <div id="canvas"></div>
 
+            @* Hovered element name *@
+            <p id="name"></p>
+
             @* Sidebar *@
             <div id="sidebar">
 
                 <div class="col-md-12">
                     <ul class="list-unstyled">
-                        <li id="name">0</li>
-                        <li id="statistic1">0</li>
-                        <li id="statistic2">0</li>
-                        <li id="statistic3">0</li>
-                        <li id="classes">0</li>
+                        <li>
+                            <div id="statistic1" class="statistic">
+                                <p class="statistic-name">methods</p>
+                                <p class="statistic-value">0</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div id="statistic2" class="statistic">
+                                <p class="statistic-name">attributes</p>
+                                <p class="statistic-value">0</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div id="statistic3" class="statistic">
+                                <p class="statistic-name">lines of code</p>
+                                <p class="statistic-value">0</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="statistic">
+                                <p class="statistic-name">total classes</p>
+                                <p id="classes" class="statistic-value">0</p>
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </div>
-
-            @* Version *@
-            <p id="version">@version</p>
-
         </div>
 
 
@@ -81,6 +106,7 @@
         <script src="@routes.Assets.versioned("bootstrap-4.0.0-alpha.6-dist/js/bootstrap.min.js")" type="text/javascript"></script>
         <script src="@routes.Assets.versioned("javascripts/three.min.js")" type="text/javascript"></script>
         <script src="@routes.Assets.versioned("javascripts/OrbitControls.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.versioned("javascripts/utils.js")" type="text/javascript"></script>
         <script src="@routes.Assets.versioned("javascripts/interface.js")" type="text/javascript"></script>
         <script src="@routes.Assets.versioned("javascripts/draw.js")" type="text/javascript"></script>
         <script src="@routes.Assets.versioned("javascripts/events.js")" type="text/javascript"></script>

@@ -54,13 +54,13 @@ function draw(pkg) {
  */
 function recDraw(pkg) {
     // recursion on the child packages, to be drawn first
-    for (var i = 0; i < pkg.childPackages.length; ++i) {
-        recDraw(pkg.childPackages[i]);
+    for (var i = 0; i < pkg.drawablePackages.length; ++i) {
+        recDraw(pkg.drawablePackages[i]);
     }
 
     // draw the classes of pkg
-    for (var j = 0; j < pkg.classes.length; ++j) {
-        drawClass(pkg.classes[j]);
+    for (var j = 0; j < pkg.drawableClasses.length; ++j) {
+        drawClass(pkg.drawableClasses[j]);
     }
 
     drawPackage(pkg);
@@ -72,13 +72,14 @@ function recDraw(pkg) {
  * @param {object} cls - the object representing the class to be drawn
  */
 function drawClass(cls) {
+
     // adding 10 to attributes and methods, to have a lower bound (else we won't see the class)
-    var clsHeight = (cls.methods + 5) * scale;
-    var clsWidth = (cls.attributes + 5) * scale;
+    var clsHeight = (cls.cls.methods + 5) * scale;
+    var clsWidth = (cls.cls.attributes + 5) * scale;
 
     var posX = cls.cx * scale;
     var posY = cls.cy * scale;
-    var posZ = (cls.cz * scale * packageHeight) + (((clsHeight / 2) + (packageHeight/2)*scale));
+    var posZ = (cls.z * scale * packageHeight) + (((clsHeight / 2) + (packageHeight / 2) * scale));
 
     var color = cls.color;
 
@@ -95,10 +96,10 @@ function drawClass(cls) {
 
     // create the mash with the needed data
     mesh = new THREE.Mesh(geometry, material);
-    mesh.name = cls.name;
-    mesh.methods = cls.methods;
-    mesh.attributes = cls.attributes;
-    mesh.linesOfCode = cls.linesOfCode;
+    mesh.name = cls.cls.name;
+    mesh.methods = cls.cls.methods;
+    mesh.attributes = cls.cls.attributes;
+    mesh.linesOfCode = cls.cls.linesOfCode;
     mesh.type = "class";
 
     // position the mesh
@@ -118,8 +119,11 @@ function drawClass(cls) {
  */
 function drawPackage(pkg) {
 
+
     // size of the package
-    var width = pkg.w * scale;
+    var width = pkg.width * scale;
+    var depth = pkg.depth * scale;
+    if(width == 0 || depth == 0) return;
     var height = packageHeight * scale;
 
     // position of package
@@ -130,7 +134,7 @@ function drawPackage(pkg) {
     var color = pkg.color;
 
     // create geometry and material for this package
-    geometry = new THREE.BoxGeometry(width, width, height);
+    geometry = new THREE.BoxGeometry(width, depth, height);
     for (var i = 0; i < geometry.faces.length; i++) {
         var face = geometry.faces[i];
         face.color.setHex(color);
@@ -142,10 +146,11 @@ function drawPackage(pkg) {
 
     // create the mash with the needed data
     mesh = new THREE.Mesh(geometry, material);
-    mesh.name = pkg.name;
-    mesh.classes = pkg.classes.length;
-    mesh.totalClasses = pkg.totalClasses;
+    mesh.name = pkg.pkg.name;
+    mesh.classes = pkg.drawableClasses.length;
+    mesh.totalClasses = pkg.pkg.totalClasses;
     mesh.width = width;
+    mesh.depth = depth;
     mesh.type = "package";
 
     // position the mesh
@@ -166,7 +171,7 @@ function loaded(data) {
     // document.getElementById("loader-container").remove();
     document.getElementById("main-content").remove();
     document.getElementById("container").style.display = "block";
-    classesText.innerText = "Total classes: " + data.totalClasses;
+    classesText.innerText = data.pkg.totalClasses;
 
     // notify the renderer that our html canvas has appeared
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
@@ -176,12 +181,12 @@ function loaded(data) {
     // update shadows only once
     renderer.shadowMap.needsUpdate = true;
 
-
+    // add events for visualization callbacks
     window.addEventListener('resize', onWindowResize, false);
     window.addEventListener('mousemove', onMouseMove, false);
     window.addEventListener("keydown", onKeyPress, false);
-    window.addEventListener( 'mousewheel', onWheel, false );
-    // window.addEventListener( 'touchmove', touchmove, false );
+    window.addEventListener('mousewheel', onWheel, false);
+    window.addEventListener('contextmenu', onContextMenu, false);
 
     render();
 }

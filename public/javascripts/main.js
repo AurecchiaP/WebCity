@@ -10,10 +10,9 @@ var hoveredCube;
 // the texts that contain statistics on the objects
 var classesText = document.getElementById("classes");
 var nameText = document.getElementById("name");
-var statistic1Text = document.getElementById("statistic1");
-var statistic2Text = document.getElementById("statistic2");
-var statistic3Text = document.getElementById("statistic3");
-
+var statistic1 = document.getElementById("statistic1");
+var statistic2 = document.getElementById("statistic2");
+var statistic3 = document.getElementById("statistic3");
 
 // init();
 
@@ -35,40 +34,41 @@ function init(json) {
 
     // TODO try to make it better
     // TODO try different materials and stuff
-    var light = new THREE.DirectionalLight( 0xffffff, 0.5 );
+    var light = new THREE.DirectionalLight(0xffffff, 0.5);
     // light.position.set(-100,-100,200);
-    light.position.set(0,0,1);
+    light.position.set(0, 0, 1);
 
     // shadow settings
     light.castShadow = true;
 
-    var pkgWidth = json.w*scale;
+    // TODO max between width and depth?
+    var pkgWidth = Math.max(json.width * scale, json.depth * scale);
 
     // TODO high map size vs shadowMap type; 4096 THREE.PCFSoftShadowMap or 8192 THREE.PCFShadowMap
     light.shadow.mapSize.width = 4096;
     light.shadow.mapSize.height = 4096;
-    light.shadow.camera.near = -pkgWidth*0.05;
+    light.shadow.camera.near = -pkgWidth * 0.05;
 
     // change values depending on angle of light
-    light.shadow.camera.far = pkgWidth*0.82;
+    light.shadow.camera.far = pkgWidth * 0.82;
     light.shadow.camera.fov = 90;
 
     // hardcoded for this light position and light target
     light.shadow.camera.left = 0;
-    light.shadow.camera.right = pkgWidth*0.9;
-    light.shadow.camera.top = pkgWidth*0.95;
-    light.shadow.camera.bottom = -pkgWidth*0.19;
+    light.shadow.camera.right = pkgWidth * 0.9;
+    light.shadow.camera.top = pkgWidth * 0.95;
+    light.shadow.camera.bottom = -pkgWidth * 0.19;
 
     light.shadow.bias = 0.00001;
 
     light.shadow.shadowDarkness = 1;
 
-    light.target.position.set(1, 1,-1);
-    scene.add( light.target );
-    scene.add( light );
+    light.target.position.set(1, 1, -1);
+    scene.add(light.target);
+    scene.add(light);
 
-    var ambientLight = new THREE.AmbientLight( 0x505050 ); // soft white light
-    scene.add( ambientLight );
+    var ambientLight = new THREE.AmbientLight(0x505050); // soft white light
+    scene.add(ambientLight);
 
     // helper to see bounding box and direction of shadow box
     // var helper = new THREE.CameraHelper( light.shadow.camera );
@@ -86,7 +86,7 @@ function init(json) {
     renderer.shadowMap.autoUpdate = false;
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
-    document.body.appendChild(renderer.domElement);
+    canvas.appendChild(renderer.domElement);
 
     camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
     camera.position.z = 2000;
@@ -122,26 +122,33 @@ function render() {
         if (!isPinned) {
 
             if (hoveredCube.object.type == "package") {
-                nameText.innerText = "Package name: " + hoveredCube.object.name;
+                nameText.innerText = reverse(hoveredCube.object.name);
 
-                statistic1Text.innerText = "Contained classes: " + hoveredCube.object.classes;
-                statistic2Text.innerText = "Total classes: " + hoveredCube.object.totalClasses;
-                statistic3Text.innerText = "None";
+                statistic1.firstElementChild.innerText = "contained classes";
+                statistic1.firstElementChild.nextElementSibling.innerText = hoveredCube.object.classes;
+                statistic2.firstElementChild.innerText = "total classes";
+                statistic2.firstElementChild.nextElementSibling.innerText = hoveredCube.object.totalClasses;
+                statistic3.firstElementChild.innerText = "";
+                statistic3.firstElementChild.nextElementSibling.innerText = "";
             }
             else if (hoveredCube.object.type == "class") {
-                nameText.innerText = "Class name: " + hoveredCube.object.name;
-                statistic1Text.innerText = "Contained methods: " + hoveredCube.object.methods;
-                statistic2Text.innerText = "Contained attributes: " + hoveredCube.object.attributes;
-                statistic3Text.innerText = "Lines of code: " + hoveredCube.object.linesOfCode;
+                nameText.innerText = reverse(hoveredCube.object.name);
+
+                statistic1.firstElementChild.innerText = "methods";
+                statistic1.firstElementChild.nextElementSibling.innerText = hoveredCube.object.methods;
+                statistic2.firstElementChild.innerText = "attributes";
+                statistic2.firstElementChild.nextElementSibling.innerText = hoveredCube.object.attributes;
+                statistic3.firstElementChild.innerText = "lines of code";
+                statistic3.firstElementChild.nextElementSibling.innerText = hoveredCube.object.linesOfCode;
             }
         }
     }
     else {
         if (!isPinned) {
-            nameText.innerText = "None";
+            nameText.innerText = "";
 
-            statistic1Text.innerText = "None";
-            statistic2Text.innerText = "None";
+            statistic1.firstElementChild.nextElementSibling.innerText = "0";
+            statistic2.firstElementChild.nextElementSibling.innerText = "0";
         }
     }
 

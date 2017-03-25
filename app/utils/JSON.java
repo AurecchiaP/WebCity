@@ -2,6 +2,7 @@ package utils;
 
 import com.google.gson.*;
 import models.*;
+import models.drawables.DrawablePackage;
 
 import java.lang.reflect.Type;
 
@@ -22,10 +23,6 @@ public abstract class JSON {
         public JsonElement serialize(final JavaClass cls, final Type typeOfSrc, final JsonSerializationContext context) {
             final JsonObject jsonObject = new JsonObject();
             jsonObject.add("name", context.serialize(cls.getName()));
-            jsonObject.add("color", context.serialize(cls.color));
-            jsonObject.add("cx", context.serialize(cls.cx));
-            jsonObject.add("cy", context.serialize(cls.cy));
-            jsonObject.add("cz", context.serialize(cls.cz));
             jsonObject.add("attributes", context.serialize(cls.getAttributes().getValue()));
             jsonObject.add("methods", context.serialize(cls.getMethods().getValue()));
             jsonObject.add("linesOfCode", context.serialize(cls.getLinesOfCode().getValue()));
@@ -43,10 +40,10 @@ public abstract class JSON {
      * utility method that takes a JavaPackage and returns it in a json String format, following
      * the serialisation rules defined (aka rules for the structure of the json)
      *
-     * @param pkg the package that we want to serialise to a json String
+     * @param drwPkg the package that we want to serialise to a json String
      * @return a json String representing the given package
      */
-    public static String toJSON(JavaPackage pkg) {
+    public static String toJSON(DrawablePackage drwPkg) {
         final GsonBuilder gsonBuilder = new GsonBuilder();
 
         // define how to serialise JavaClass objects
@@ -55,7 +52,7 @@ public abstract class JSON {
         final Gson gson = gsonBuilder.create();
 
 
-        return gson.toJson(pkg);
+        return gson.toJson(drwPkg);
     }
 }
 

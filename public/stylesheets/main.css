@@ -5,10 +5,6 @@ body {
     overflow-y: hidden;
 }
 
-#container {
-    display: none;
-}
-
 #main-content {
     display: flex;
     align-items: center;
@@ -24,22 +20,6 @@ body {
     background: radial-gradient(rgba(0,0,0,0),rgba(0,0,0,0), rgba(0,0,0, 0.3));
 }
 
-#canvas {
-    margin: auto;
-    padding: 0;
-    position: absolute;
-    top: 0;
-    left: 0;
-    /* 100vw minus sidebar*/
-    width: 85vw;
-    height: 100vh;
-    background: -webkit-radial-gradient(rgba(0,0,0,0),rgba(0,0,0,0), rgba(0,0,0, 0.3));
-    background: -o-radial-gradient(rgba(0,0,0,0),rgba(0,0,0,0), rgba(0,0,0, 0.3));
-    background: -moz-radial-gradient(rgba(0,0,0,0),rgba(0,0,0,0), rgba(0,0,0, 0.3));
-    background: radial-gradient(rgba(0,0,0,0),rgba(0,0,0,0), rgba(0,0,0, 0.3));
-}
-
-
 #progressBar {
     margin-top: 1vh;
     margin-bottom: 1vh;
@@ -51,18 +31,25 @@ body {
     transition: 0.2s all;
 }
 
-#name {
-    min-height: 11vh;
+#logo {
+    color: rgba(0,0,0,0.7);
+    position: absolute;
+    padding: 1em 0 0 1em;
+    top: 0;
+    left: 0;
 }
 
+#logo::before {
+    content: '@';
+}
+
+
 #version {
+    color: rgba(0,0,0,0.7);
     position: absolute;
     bottom: 0;
     right: 0;
-    padding-right: 1vw;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    padding: 0 1em 0 0;
 }
 
 .alertMessages {

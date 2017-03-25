@@ -89,6 +89,11 @@ class Bin {
             this.z = other.z;
             return;
         }
+
+        if (other.width() == 0 || other.depth() == 0) {
+            return;
+        }
+
         if (other.x2 > this.x2) {
             this.x2 = other.x2;
         }
@@ -108,5 +113,63 @@ class Bin {
         if (other.z > this.z) {
             this.z = other.z;
         }
+    }
+
+    /**
+     * Checks if 2 bins overlap, by checking if they are not overlapping and then negating it.
+     *
+     * @param other the Bin to be compared to
+     */
+    boolean overlap(final Bin other) {
+                // overlap X
+        return (this.getX2() > other.getX1() && this.getX1() < other.getX2()
+                        ||
+                        other.getX2() > this.getX1() && other.getX1() < this.getX2())
+                        // overlap Y
+                        &&
+                        (this.getY2() > other.getY1() && this.getY1() < other.getY2()
+                        ||
+                        other.getY2() > this.getY1() && other.getY1() < this.getY2());
+    }
+
+    /**
+     * shrink this after having place the local bin; called only after 'overlap'
+     *
+     * @param local the Bin to be compared to
+     */
+    void update(final Bin local) {
+//        new Bin();
+        if (this.getX2() > local.getX1()) this.setX1(local.getX2());
+        else if (this.getX1() < local.getX2()) this.setX2(local.getX1());
+        if (this.getY2() > local.getY1()) this.setY1(local.getY2());
+        else if (this.getY1() < local.getY2()) this.setY2(local.getY1());
+    }
+
+
+    /**
+     * @param other the bin to be compared with; ideal if this is inside other
+     * @return the area difference between the bins
+     */
+    int getDifference(final Bin other) {
+        // FIXME do it better, real area
+        int total = 0;
+        int temp;
+        temp = other.getX1() - this.getX1();
+        if (temp > 0) total += temp;
+        temp = this.getX2() - other.getX2();
+        if (temp > 0) total += temp;
+        temp = other.getY1() - this.getY1();
+        if (temp > 0) total += temp;
+        temp = this.getY2() - other.getY2();
+        if (temp > 0) total += temp;
+
+        return total;
+    }
+
+    /**
+     * @return returns a new Bin of the same size of other
+     */
+    Bin copy() {
+        return new Bin(this.getX1(), this.getX2(), this.getY1(), this.getY2(), this.getZ());
     }
 }

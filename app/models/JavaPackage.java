@@ -14,12 +14,6 @@ public class JavaPackage {
     private List<JavaClass> classes;
     private int totalClasses = 0;
 
-    public int cx;
-    public int cy;
-    public int w;
-    public int z;
-    public int color;
-
     public JavaPackage(String name) {
         this.name = name;
         this.childPackages = new ArrayList<>();
@@ -55,29 +49,6 @@ public class JavaPackage {
         this.childPackages.clear();
         this.childPackages.addAll(childPackages);
     }
-
-    /**
-     * sorts the child packages by their size, in descending order
-     */
-    public void sortChildren() {
-        this.childPackages.sort((c1, c2) -> {
-            if (c1.w == c2.w)
-                return 0;
-            return c1.w > c2.w ? -1 : 1;
-        });
-    }
-
-    /**
-     * sorts the classes by their number of attributes, in descending order
-     */
-    public void sortClasses() {
-        this.classes.sort((c1, c2) -> {
-            if (c1.getAttributes().getValue().equals(c2.getAttributes().getValue()))
-                return 0;
-            return c1.getAttributes().getValue() > c2.getAttributes().getValue() ? -1 : 1;
-        });
-    }
-
 
     /**
      * @return the list of packages contained in this package
