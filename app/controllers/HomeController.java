@@ -138,6 +138,14 @@ public class HomeController extends Controller {
                         .setURI(currentRepo)
                         .setDirectory(new File("/Users/paolo/Documents/6th semester/thesis/webcity/repository"))
                         .call();
+
+                // TODO to print tags
+                for(int i = 0; i < git.tagList().call().size(); ++i) {
+                    System.out.println(git.tagList().call().get(i).getName());
+                }
+
+                // TODO use this to set the version to visualise
+//                git.checkout().setCreateBranch( true ).setName( "test" ).setStartPoint( git.tagList().call().get( git.tagList().call().size() -1 ).getName() ).call();
                 git.close();
             } catch (GitAPIException e) {
                 System.out.println("failed to download repo");
@@ -181,7 +189,9 @@ public class HomeController extends Controller {
             web = true;
             currentRepo = repo;
             final LsRemoteCommand lsCmd = new LsRemoteCommand(null)
-                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider("AurecchiaP", "VHv5yeB2IxOu"))
+
+                    // FIXME to download private repo
+//                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider("account name", "password"))
                     .setRemote(repo);
             try {
                 // print for debugging
