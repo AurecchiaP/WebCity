@@ -10,6 +10,7 @@ import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.ProgressMonitor;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -22,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import static utils.DrawableUtils.toDrawable;
 import static utils.FileUtils.deleteDir;
 import static utils.JSON.toJSON;
 
@@ -90,6 +92,7 @@ public class HomeController extends Controller {
             // try to download the given repository
             try {
                 Git git = Git.cloneRepository()
+                        .setCredentialsProvider(new UsernamePasswordCredentialsProvider("AurecchiaP", "VHv5yeB2IxOu"))
                         // for debugging, prints data nicely in System.out
                         // .setProgressMonitor(new TextProgressMonitor(new PrintWriter(System.out)))
 
@@ -163,24 +166,6 @@ public class HomeController extends Controller {
     }
 
 
-    public DrawablePackage toDrawable(JavaPackage pkg) {
-
-        DrawablePackage drw = new DrawablePackage(0,0,0,0, pkg);
-        List<DrawablePackage> childDrawablePackages = drw.getDrawablePackages();
-        List<DrawableClass> childDrawableClasses = drw.getDrawableClasses();
-
-        for(JavaPackage child : pkg.getChildPackages()) {
-            childDrawablePackages.add(toDrawable(child));
-        }
-
-        for(JavaClass cls : pkg.getClasses()) {
-            DrawableClass drwCls = new DrawableClass(0,0,0,0, cls);
-            childDrawableClasses.add(drwCls);
-        }
-
-        return drw;
-    }
-
     /**
      * route for the visualisation page; not yet used
      */
@@ -195,8 +180,9 @@ public class HomeController extends Controller {
         } else {
             web = true;
             currentRepo = repo;
-            final LsRemoteCommand lsCmd = new LsRemoteCommand(null);
-            lsCmd.setRemote(repo);
+            final LsRemoteCommand lsCmd = new LsRemoteCommand(null)
+                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider("AurecchiaP", "VHv5yeB2IxOu"))
+                    .setRemote(repo);
             try {
                 // print for debugging
 //                System.out.println(lsCmd.call().toString());
@@ -207,6 +193,7 @@ public class HomeController extends Controller {
 
             } catch (GitAPIException e) {
                 System.out.println("invalid repo");
+                e.printStackTrace();
                 return badRequest();
             }
         }
