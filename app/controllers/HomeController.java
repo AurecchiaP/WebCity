@@ -157,7 +157,6 @@ public class HomeController extends Controller {
                 for(int i = 0; i < git.tagList().call().size(); ++i) {
                     System.out.println(git.tagList().call().get(i).getName());
                 }
-
                 versions = git.tagList().call().stream().map(Ref::getName).collect(Collectors.toList());
 
                 // TODO use this to set the version to visualise
@@ -184,6 +183,7 @@ public class HomeController extends Controller {
         new RectanglePacking(drw);
         System.out.println("Done packing");
 
+        taskNumber = 0;
 
         // create json object
         Gson gson = new Gson();
