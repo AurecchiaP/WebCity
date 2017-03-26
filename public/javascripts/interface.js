@@ -30,7 +30,7 @@ submitButton.onclick = function() {
             document.getElementById("progressBar").style.width = "100%";
 
             // start downloading
-            var id = setInterval(poll, 2000);
+            var id = setInterval(poll, 1000);
             getData(id);
 
 
