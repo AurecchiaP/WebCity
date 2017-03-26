@@ -17,6 +17,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import play.api.libs.json.Json;
 import play.data.FormFactory;
@@ -211,10 +212,11 @@ public class HomeController extends Controller {
         } else {
             web = true;
             currentRepo = repo;
+
             final LsRemoteCommand lsCmd = new LsRemoteCommand(null)
 
                     // FIXME to download private repo
-//                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider("account name", "password"))
+//                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider( "AurecchiaP", "" ))
                     .setRemote(repo);
             try {
                 // print for debugging
