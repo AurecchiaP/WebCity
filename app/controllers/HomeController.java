@@ -1,5 +1,11 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import models.JavaClass;
@@ -10,18 +16,26 @@ import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.ProgressMonitor;
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.transport.CredentialsProvider;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import play.api.libs.json.Json;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.routing.JavaScriptReverseRouter;
+import scala.util.parsing.json.JSONObject;
 import utils.BasicParser;
 import models.JavaPackage;
 import utils.RectanglePacking;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static utils.DrawableUtils.toDrawable;
 import static utils.FileUtils.deleteDir;
 import static utils.JSON.toJSON;
 
@@ -63,25 +77,27 @@ public class HomeController extends Controller {
 
             }
             git.close();
-            return ok(views.html.main.render("Web City", version, null));
+
+            return ok(views.html.main.render("Web City", version,null));
 
         } catch (IOException | GitAPIException e) {
             e.printStackTrace();
         }
 
-        return ok(views.html.index.render());
+        return badRequest();
     }
 
 
     /**
      * downloads the linked repository, parses it, does the rectangle packing, and returns the data to be visualized
      */
-    // FIXME should there be option to authenticate and use private repos?though then they
+    // FIXME should there be option to authenticate and use private repos? though then they
     // FIXME would be on the server
 
     // FIXME add a token sent from javascript, which javascript received from the server from `visualization`
     public Result getVisualizationData() {
         JavaPackage pkg;
+        List<String> versions = new ArrayList<>();
 
         if (web) {
             // remove the old downloaded repository
@@ -90,6 +106,7 @@ public class HomeController extends Controller {
             // try to download the given repository
             try {
                 Git git = Git.cloneRepository()
+                        .setCredentialsProvider(new UsernamePasswordCredentialsProvider("AurecchiaP", "VHv5yeB2IxOu"))
                         // for debugging, prints data nicely in System.out
                         // .setProgressMonitor(new TextProgressMonitor(new PrintWriter(System.out)))
 
@@ -135,6 +152,16 @@ public class HomeController extends Controller {
                         .setURI(currentRepo)
                         .setDirectory(new File("/Users/paolo/Documents/6th semester/thesis/webcity/repository"))
                         .call();
+
+                // TODO to print tags
+                for(int i = 0; i < git.tagList().call().size(); ++i) {
+                    System.out.println(git.tagList().call().get(i).getName());
+                }
+
+                versions = git.tagList().call().stream().map(Ref::getName).collect(Collectors.toList());
+
+                // TODO use this to set the version to visualise
+//                git.checkout().setCreateBranch( true ).setName( "test" ).setStartPoint( git.tagList().call().get( git.tagList().call().size() -1 ).getName() ).call();
                 git.close();
             } catch (GitAPIException e) {
                 System.out.println("failed to download repo");
@@ -158,28 +185,18 @@ public class HomeController extends Controller {
         System.out.println("Done packing");
 
 
-        // return the data to be drawn
-        return ok(toJSON(drw));
+        // create json object
+        Gson gson = new Gson();
+        final JsonObject jsonObject = new JsonObject();
+        // add visualization data
+        jsonObject.add("visualization", gson.fromJson(toJSON(drw), JsonElement.class));
+        // add list of versions
+        jsonObject.add("versions", gson.fromJson(new Gson().toJson(versions), JsonElement.class));
+
+        // send data to client
+        return ok(gson.toJson(jsonObject));
     }
 
-
-    public DrawablePackage toDrawable(JavaPackage pkg) {
-
-        DrawablePackage drw = new DrawablePackage(0,0,0,0, pkg);
-        List<DrawablePackage> childDrawablePackages = drw.getDrawablePackages();
-        List<DrawableClass> childDrawableClasses = drw.getDrawableClasses();
-
-        for(JavaPackage child : pkg.getChildPackages()) {
-            childDrawablePackages.add(toDrawable(child));
-        }
-
-        for(JavaClass cls : pkg.getClasses()) {
-            DrawableClass drwCls = new DrawableClass(0,0,0,0, cls);
-            childDrawableClasses.add(drwCls);
-        }
-
-        return drw;
-    }
 
     /**
      * route for the visualisation page; not yet used
@@ -195,8 +212,12 @@ public class HomeController extends Controller {
         } else {
             web = true;
             currentRepo = repo;
-            final LsRemoteCommand lsCmd = new LsRemoteCommand(null);
-            lsCmd.setRemote(repo);
+
+            final LsRemoteCommand lsCmd = new LsRemoteCommand(null)
+
+                    // FIXME to download private repo
+//                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider( "AurecchiaP", "" ))
+                    .setRemote(repo);
             try {
                 // print for debugging
 //                System.out.println(lsCmd.call().toString());
@@ -207,6 +228,7 @@ public class HomeController extends Controller {
 
             } catch (GitAPIException e) {
                 System.out.println("invalid repo");
+                e.printStackTrace();
                 return badRequest();
             }
         }

@@ -1,3 +1,4 @@
+@import java.util
 @(title: String, version: String)(content: Html)
 
 
@@ -67,6 +68,17 @@
 
             @* Sidebar *@
             <div id="sidebar">
+
+                @* Versions dropdown *@
+                <div id="versions" class="btn-group">
+                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Versions
+                    </button>
+
+                    <div id="dropdownList" class="dropdownItems dropdown-menu dropdown-menu-right">
+
+                    </div>
+                </div>
 
                 <div class="col-md-12">
                     <ul class="list-unstyled">

@@ -85,7 +85,9 @@ function getData(id) {
 
             // initialize th visualization
             var json = JSON.parse(data);
-            init(json);
+            console.log(json);
+            addVersions(json.versions);
+            init(json.visualization);
         }, error: function () {
 
             // stop polling

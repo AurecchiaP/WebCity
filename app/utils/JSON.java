@@ -51,7 +51,6 @@ public abstract class JSON {
         gsonBuilder.setPrettyPrinting();
         final Gson gson = gsonBuilder.create();
 
-
         return gson.toJson(drwPkg);
     }
 }

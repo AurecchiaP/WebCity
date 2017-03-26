@@ -102,7 +102,6 @@ function init(json) {
     controls.dampingFactor = 0.25;
 
     draw(json);
-    console.log(json);
 }
 
 

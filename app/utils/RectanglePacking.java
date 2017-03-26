@@ -152,16 +152,42 @@ public class RectanglePacking {
         Bin classesBin = new Bin(0, 0, 0, 0, 0);
         int minClassesSize = getMinClassesSize(drwPkg);
 
-        if (localBin.depth() > localBin.width()) {
-            classesBin.setX1(localBin.getX2());
-            classesBin.setX2(localBin.getX2() + minClassesSize);
-            classesBin.setY1(localBin.getY1());
-            classesBin.setY2(localBin.getY1() + minClassesSize);
-        } else {
-            classesBin.setY1(localBin.getY2());
-            classesBin.setY2(localBin.getY2() + minClassesSize);
-            classesBin.setX1(localBin.getX1());
-            classesBin.setX2(localBin.getX1() + minClassesSize);
+        minimumWaste = 999999999;
+        bestBin = null;
+
+        for (Bin bin : openBins) {
+
+            // if can fit in openBin
+            if (bin.width() > minClassesSize && bin.depth() > minClassesSize) {
+
+                Bin dummyLocalBin = localBin.copy();
+                Bin dummyBinBin = new Bin(bin.getX1(), bin.getX1() + minClassesSize, bin.getY1(), bin.getY1() + minClassesSize, bin.getZ());
+                dummyLocalBin.mergeBin(dummyBinBin);
+                int perimeter = ((dummyLocalBin.getX2() - dummyLocalBin.getX1()) * 2) + ((dummyLocalBin.getY2() - dummyLocalBin.getY1()) * 2);
+                if (perimeter < minimumWaste) {
+                    minimumWaste = perimeter;
+                    bestBin = bin;
+                }
+            }
+        }
+
+        if (bestBin != null) {
+            classesBin = new Bin(bestBin.getX1(), bestBin.getX1() + minClassesSize, bestBin.getY1(), bestBin.getY1() + minClassesSize, bestBin.getZ());
+        }
+
+        // if no valid open Bin (e.g. first child of package), put local Bin either to the right or above of parentBin
+        else {
+            if (localBin.depth() > localBin.width()) {
+                classesBin.setX1(localBin.getX2());
+                classesBin.setX2(localBin.getX2() + minClassesSize);
+                classesBin.setY1(localBin.getY1());
+                classesBin.setY2(localBin.getY1() + minClassesSize);
+            } else {
+                classesBin.setY1(localBin.getY2());
+                classesBin.setY2(localBin.getY2() + minClassesSize);
+                classesBin.setX1(localBin.getX1());
+                classesBin.setX2(localBin.getX1() + minClassesSize);
+            }
         }
 
 

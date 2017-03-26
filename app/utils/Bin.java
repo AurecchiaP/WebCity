@@ -147,23 +147,11 @@ class Bin {
 
 
     /**
-     * @param other the bin to be compared with; ideal if this is inside other
-     * @return the area difference between the bins
+     * @param other the Bin to compare to
+     * @return true if the bins are touching each others, else false
      */
-    int getDifference(final Bin other) {
-        // FIXME do it better, real area
-        int total = 0;
-        int temp;
-        temp = other.getX1() - this.getX1();
-        if (temp > 0) total += temp;
-        temp = this.getX2() - other.getX2();
-        if (temp > 0) total += temp;
-        temp = other.getY1() - this.getY1();
-        if (temp > 0) total += temp;
-        temp = this.getY2() - other.getY2();
-        if (temp > 0) total += temp;
-
-        return total;
+    boolean neighbors(final Bin other) {
+        return this.getX1() == other.getX2() || this.getX2() == other.getX1() || this.getY1() == other.getY2() || this.getY2() == other.getY1();
     }
 
     /**
