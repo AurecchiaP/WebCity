@@ -91,7 +91,7 @@ public class RectanglePacking {
         Bin localBin;
 
         // see if there is an open Bin in which pkg can fit into
-        int minimumWaste = 999999999;
+        int minimumWaste = Integer.MAX_VALUE;
         Bin bestBin = null;
 
         for (Bin bin : parentOpenBins) {
@@ -152,7 +152,7 @@ public class RectanglePacking {
         Bin classesBin = new Bin(0, 0, 0, 0, 0);
         int minClassesSize = getMinClassesSize(drwPkg);
 
-        minimumWaste = 999999999;
+        minimumWaste = Integer.MAX_VALUE;
         bestBin = null;
 
         for (Bin bin : openBins) {
@@ -207,9 +207,9 @@ public class RectanglePacking {
         addPaddingAndFit(classesBin, drwPkg, padding, recDepth, false);
 
         // free spots on left and right of local bin
-        Bin openBinTop = new Bin(localBin.getX1(), 9999, localBin.getY2(), 9999, localBin.getZ());
+        Bin openBinTop = new Bin(localBin.getX1(), Integer.MAX_VALUE, localBin.getY2(), Integer.MAX_VALUE, localBin.getZ());
         parentOpenBins.add(openBinTop);
-        Bin openBinRight = new Bin(localBin.getX2(), 9999, localBin.getY1(), 9999, localBin.getZ());
+        Bin openBinRight = new Bin(localBin.getX2(), Integer.MAX_VALUE, localBin.getY1(), Integer.MAX_VALUE, localBin.getZ());
         parentOpenBins.add(openBinRight);
 
         siblingBins.add(localBin);

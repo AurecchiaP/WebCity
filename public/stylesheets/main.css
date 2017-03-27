@@ -28,17 +28,27 @@ body {
     transition: .8s all ease-in-out;
 }
 
-#logo {
-    color: rgba(0,0,0,0.7);
-    position: absolute;
-    padding: 1em 0 0 1em;
-    top: 0;
-    left: 0;
-    z-index: 100;
-}
 
 #logo::before {
     content: '@';
+}
+
+.navbar {
+    z-index: 50;
+    background-color: rgba(52,54,66,1) !important;
+}
+
+.navbar-brand {
+    color: rgba(255,255,255,0.75) !important;
+}
+
+.btn-secondary {
+    background-color: rgba(52,54,66,1) !important;
+    color: rgba(255,255,255,0.75) !important;
+}
+
+.btn-secondary:hover {
+    background-color: rgba(82,84,96,1) !important;
 }
 
 
@@ -48,6 +58,7 @@ body {
     bottom: 0;
     right: 0;
     padding: 0 1em 0 0;
+    z-index: 60;
 }
 
 .alertMessages {
@@ -59,4 +70,8 @@ body {
     width: 100%;
     opacity: 0;
     transition: all 0.2s;
+}
+
+.progress {
+    background-color: rgba(82,84,96,.3) !important;
 }

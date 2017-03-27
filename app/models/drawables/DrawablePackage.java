@@ -5,16 +5,28 @@ package models.drawables;
 import models.JavaPackage;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+
+/**
+ * class that wraps a JavaPackage to add information like position and color for the visualization
+ */
 public class DrawablePackage extends Drawable {
 
+    /**
+     * the center of the position of the drawable in the visualization, and its z "height"
+     */
     private int cx;
     private int cy;
+    private int z;
+
     private int width;
     private int depth;
-    private int z;
     private int color;
+    /**
+     * the JavaPackage that this drawable refers to
+     */
     private JavaPackage pkg;
     private List<DrawablePackage> drawablePackages;
     private List<DrawableClass> drawableClasses;
@@ -86,20 +98,32 @@ public class DrawablePackage extends Drawable {
     }
 
     public List<DrawablePackage> getDrawablePackages() {
-        return drawablePackages;
+        return Collections.unmodifiableList(drawablePackages);
     }
 
     public void setDrawablePackages(List<DrawablePackage> drawablePackages) {
-        this.drawablePackages = drawablePackages;
+        this.drawablePackages.clear();
+        this.drawablePackages.addAll(drawablePackages);
     }
 
     public List<DrawableClass> getDrawableClasses() {
-        return drawableClasses;
+        return Collections.unmodifiableList(drawableClasses);
     }
 
     public void setDrawableClasses(List<DrawableClass> drawableClasses) {
-        this.drawableClasses = drawableClasses;
+        this.drawableClasses.clear();
+        this.drawableClasses.addAll(drawableClasses);
     }
+
+    public void addDrawablePackage(DrawablePackage drw) {
+        this.drawablePackages.add(drw);
+    }
+
+
+    public void addDrawableClass(DrawableClass cls) {
+        this.drawableClasses.add(cls);
+    }
+
 
     /**
      * sorts the child packages by their size, in descending order
@@ -123,6 +147,4 @@ public class DrawablePackage extends Drawable {
             return c1.getCls().getAttributes().getValue() > c2.getCls().getAttributes().getValue() ? -1 : 1;
         });
     }
-
-
 }
