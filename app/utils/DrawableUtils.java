@@ -5,23 +5,29 @@ import models.JavaPackage;
 import models.drawables.DrawableClass;
 import models.drawables.DrawablePackage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class DrawableUtils {
 
+    /**
+     * takes a JavaPackage, and returns a (recursive) Drawable package that wraps the JavaPackage with additional
+     * information like position and color used for the visualization
+     *
+     * @param pkg the root package of the structure to be transformed into drawables
+     * @return the corresponding drawable structure
+     */
     public static DrawablePackage toDrawable(JavaPackage pkg) {
 
         DrawablePackage drw = new DrawablePackage(0,0,0,0, pkg);
-        List<DrawablePackage> childDrawablePackages = drw.getDrawablePackages();
-        List<DrawableClass> childDrawableClasses = drw.getDrawableClasses();
 
         for(JavaPackage child : pkg.getChildPackages()) {
-            childDrawablePackages.add(toDrawable(child));
+            drw.addDrawablePackage(toDrawable(child));
         }
 
         for(JavaClass cls : pkg.getClasses()) {
             DrawableClass drwCls = new DrawableClass(0,0,0,0, cls);
-            childDrawableClasses.add(drwCls);
+            drw.addDrawableClass(drwCls);
         }
 
         return drw;

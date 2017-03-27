@@ -6,54 +6,41 @@
 }
 
 #canvas {
-    /*margin: auto;*/
     padding: 0;
     position: absolute;
     top: 0;
     left: 0;
-    /* 100vw minus sidebar*/
     width: 100vw;
     height: 100vh;
 }
 
 #name {
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    position: relative;
-    direction: rtl;
-    unicode-bidi: bidi-override;
-    height: 4em;
-    margin: 0;
-    padding: 2vh 0 2vh 0;
-    z-index: 100;
-    background-color: rgba(240,240,240,1);
-
+    font-weight: lighter;
+    min-height: 10vh;
+    word-break: break-all;
 }
 
 /* SIDEBAR */
-
 #sidebar {
     width: 15vw;
-    height: 100vh;
-    float: right;
+    height: 75vh;
     display: flex;
     align-items: center;
+    flex-direction: column;
     text-align: center;
-    justify-content: center;
     position: absolute;
-    top: 0;
     right: 0;
+    bottom: 0;
     background-color: rgba(240,240,240,1);
+    outline: 10px solid rgba(255,255,255, 0.5);
+    z-index: 10;
+     color: rgba(0,0,0,0.8);
+    margin: 2vh 10vh 10vh 2vh;
+    padding: 5vh 1vh 1vh 1vh;
 }
 
 #versions {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 1em 1em 0 0;
-    z-index: 100;
+    display: none;
 }
 
 .dropdownItems {

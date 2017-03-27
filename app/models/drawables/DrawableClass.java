@@ -3,12 +3,19 @@ package models.drawables;
 
 import models.JavaClass;
 
+/**
+ * class that wraps a JavaClass to add information like position and color for the visualization
+ */
 public class DrawableClass extends Drawable {
 
+    /**
+     * the center of the position of the drawable in the visualization, and its z "height"
+     */
     private int cx;
     private int cy;
-    private int w;
     private int z;
+
+    private int width;
     private int color;
     private JavaClass cls;
 
@@ -36,12 +43,12 @@ public class DrawableClass extends Drawable {
         this.cy = cy;
     }
 
-    public int getW() {
-        return w;
+    public int getWidth() {
+        return width;
     }
 
-    public void setW(int w) {
-        this.w = w;
+    public void setWidth(int width) {
+        this.width = width;
     }
 
     public int getZ() {

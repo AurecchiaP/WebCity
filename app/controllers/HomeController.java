@@ -1,15 +1,9 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
-import models.JavaClass;
-import models.drawables.DrawableClass;
 import models.drawables.DrawablePackage;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
@@ -17,14 +11,11 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
-import play.api.libs.json.Json;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.routing.JavaScriptReverseRouter;
-import scala.util.parsing.json.JSONObject;
 import utils.BasicParser;
 import models.JavaPackage;
 import utils.RectanglePacking;
@@ -45,9 +36,10 @@ public class HomeController extends Controller {
     private boolean web;
     private double percentage = 0;
     private int taskNumber = 0;
+    private String taskName;
 
     @Inject
-    FormFactory formFactory;
+    private FormFactory formFactory;
 
 
     /**
@@ -93,8 +85,6 @@ public class HomeController extends Controller {
      */
     // FIXME should there be option to authenticate and use private repos? though then they
     // FIXME would be on the server
-
-    // FIXME add a token sent from javascript, which javascript received from the server from `visualization`
     public Result getVisualizationData() {
         JavaPackage pkg;
         List<String> versions = new ArrayList<>();
@@ -126,6 +116,7 @@ public class HomeController extends Controller {
 
                                 // increase task number
                                 ++taskNumber;
+                                taskName = title;
                                 totalData = totalWork;
                             }
 
@@ -234,10 +225,15 @@ public class HomeController extends Controller {
         }
     }
 
+
+    /**
+     * while the data is being sent from server to client, the client will poll the server to know the percentage
+     */
     public Result poll() {
         JsonObject obj = new JsonObject();
         obj.addProperty("percentage", percentage);
         obj.addProperty("task", taskNumber);
+        obj.addProperty("taskName", taskName);
         return ok(obj.toString());
     }
 }

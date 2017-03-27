@@ -7,21 +7,17 @@ var raycaster;
 var intersects = [];
 var hoveredCube;
 
-// the texts that contain statistics on the objects
+// the texts that contain statistics on the objects (lines of code, NOA, NOM...)
 var classesText = document.getElementById("classes");
 var nameText = document.getElementById("name");
 var statistic1 = document.getElementById("statistic1");
 var statistic2 = document.getElementById("statistic2");
 var statistic3 = document.getElementById("statistic3");
 
-// init();
-
 
 /**
- * takes care of initialising the visualisation
+ * takes care of initialising the visualisation (sets up canvas, scene, lights, renderer, controls...)
  */
-
-//TODO parameterize sizes
 function init(json) {
 
     window.requestAnimationFrame(render);
@@ -32,21 +28,19 @@ function init(json) {
 
     scene = new THREE.Scene();
 
-    // TODO try to make it better
-    // TODO try different materials and stuff
     var light = new THREE.DirectionalLight(0xffffff, 0.5);
     // light.position.set(-100,-100,200);
     light.position.set(0, 0, 1);
 
     // shadow settings
     light.castShadow = true;
-
-    // TODO max between width and depth?
+    scale = 1250 / Math.max(json.width, json.depth);
     var pkgWidth = Math.max(json.width * scale, json.depth * scale);
 
+
     // TODO high map size vs shadowMap type; 4096 THREE.PCFSoftShadowMap or 8192 THREE.PCFShadowMap
-    light.shadow.mapSize.width = 4096;
-    light.shadow.mapSize.height = 4096;
+    light.shadow.mapSize.width = 6144;
+    light.shadow.mapSize.height = 6144;
     light.shadow.camera.near = -pkgWidth * 0.05;
 
     // change values depending on angle of light
@@ -82,8 +76,10 @@ function init(json) {
     // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     // renderer.shadowMap.type = THREE.BasicShadowMap;
 
+
     // render shadows only when needed
     renderer.shadowMap.autoUpdate = false;
+
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
     canvas.appendChild(renderer.domElement);
@@ -92,10 +88,10 @@ function init(json) {
     camera.position.z = 2000;
 
     // OrbitControls to move around the visualization
-    controls = new THREE.OrbitControls(camera);
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
 
     // max and min distance on z axis
-    controls.maxDistance = 7000;
+    controls.maxDistance = 6500;
     controls.minDistance = 0;
 
     controls.enableDamping = true;
@@ -109,7 +105,7 @@ function init(json) {
  * updates the texts based on the hovered object, and updates the render
  */
 function render() {
-    // raycasting still slows down a bit, not as much as before
+    // ray-casting still slows down a bit, not as much as before
     raycaster.setFromCamera(mouse, camera);
     intersects = raycaster.intersectObjects(meshes);
     // if we intersected some objects
@@ -121,7 +117,7 @@ function render() {
         if (!isPinned) {
 
             if (hoveredCube.object.type == "package") {
-                nameText.innerText = reverse(hoveredCube.object.name);
+                nameText.innerText = hoveredCube.object.name;
 
                 statistic1.firstElementChild.innerText = "contained classes";
                 statistic1.firstElementChild.nextElementSibling.innerText = hoveredCube.object.classes;
@@ -131,7 +127,7 @@ function render() {
                 statistic3.firstElementChild.nextElementSibling.innerText = "";
             }
             else if (hoveredCube.object.type == "class") {
-                nameText.innerText = reverse(hoveredCube.object.name);
+                nameText.innerText = hoveredCube.object.name;
 
                 statistic1.firstElementChild.innerText = "methods";
                 statistic1.firstElementChild.nextElementSibling.innerText = hoveredCube.object.methods;

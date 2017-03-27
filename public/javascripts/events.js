@@ -18,7 +18,7 @@ function onContextMenu(e) {
         var cls = intersects[0].object;
         console.log(cls);
 
-        // TODO find a way to get the code, then maybe use bootrstrap popovers
+        // TODO find a way to get the code, then maybe use bootstrap popovers
     }
 }
 
@@ -61,7 +61,7 @@ function onKeyPress(e) {
                 pinnedObject.object.material.color.set(0xF1BB4E);
                 isPinned = true;
                 if (hoveredCube.object.type == "package") {
-                    nameText.innerText = reverse(hoveredCube.object.name);
+                    nameText.innerText = hoveredCube.object.name;
                     statistic1.firstElementChild.innerText = "contained classes";
                     statistic1.firstElementChild.nextElementSibling.innerText = hoveredCube.object.classes;
                     statistic2.firstElementChild.innerText = "total classes";
@@ -70,7 +70,7 @@ function onKeyPress(e) {
                     statistic3.firstElementChild.nextElementSibling.innerText = "";
                 }
                 else if (hoveredCube.object.type == "class") {
-                    nameText.innerText = reverse(hoveredCube.object.name);
+                    nameText.innerText = hoveredCube.object.name;
                     statistic1.firstElementChild.innerText = "methods";
                     statistic1.firstElementChild.nextElementSibling.innerText = hoveredCube.object.methods;
                     statistic2.firstElementChild.innerText = "attributes";

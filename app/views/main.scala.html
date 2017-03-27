@@ -20,8 +20,30 @@
     </head>
     <body>
 
-        @* Logo *@
-        <p id="logo">logo</p>
+        <p id="version">@version</p>
+
+        <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand" href="#">WebCity</a>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+
+                </ul>
+                @* Versions dropdown *@
+                <div id="versions" class="btn-group">
+                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Versions
+                    </button>
+
+                    <div id="dropdownList" class="dropdownItems dropdown-menu dropdown-menu-right">
+
+                    </div>
+                </div>
+            </div>
+        </nav>
 
         <div id="main-content">
 
@@ -60,52 +82,40 @@
             @* Canvas *@
             <div id="canvas"></div>
 
-            @* Hovered element name *@
-            <p id="name"></p>
-
             @* Sidebar *@
             <div id="sidebar">
-
-                @* Versions dropdown *@
-                <div id="versions" class="btn-group">
-                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Versions
-                    </button>
-
-                    <div id="dropdownList" class="dropdownItems dropdown-menu dropdown-menu-right">
-
-                    </div>
-                </div>
-
-                <div class="col-md-12">
-                    <ul class="list-unstyled">
-                        <li>
-                            <div id="statistic1" class="statistic">
-                                <p class="statistic-name">methods</p>
-                                <p class="statistic-value">0</p>
-                            </div>
-                        </li>
-                        <li>
-                            <div id="statistic2" class="statistic">
-                                <p class="statistic-name">attributes</p>
-                                <p class="statistic-value">0</p>
-                            </div>
-                        </li>
-                        <li>
-                            <div id="statistic3" class="statistic">
-                                <p class="statistic-name">lines of code</p>
-                                <p class="statistic-value">0</p>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="statistic">
-                                <p class="statistic-name">total classes</p>
-                                <p id="classes" class="statistic-value">0</p>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-                <p id="version">@version</p>
+                <ul class="list-unstyled">
+                    <li>
+                        <div class="statistic">
+                            <p class="statistic-name">name</p>
+                            <p id="name"></p>
+                        </div>
+                    </li>
+                    <li>
+                        <div id="statistic1" class="statistic">
+                            <p class="statistic-name">methods</p>
+                            <p class="statistic-value">0</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div id="statistic2" class="statistic">
+                            <p class="statistic-name">attributes</p>
+                            <p class="statistic-value">0</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div id="statistic3" class="statistic">
+                            <p class="statistic-name">lines of code</p>
+                            <p class="statistic-value">0</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="statistic">
+                            <p class="statistic-name">total classes</p>
+                            <p id="classes" class="statistic-value">0</p>
+                        </div>
+                    </li>
+                </ul>
             </div>
         </div>
 

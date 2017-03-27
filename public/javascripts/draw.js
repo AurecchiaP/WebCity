@@ -1,16 +1,17 @@
 var meshes = [];
-const scale = .2;
-const packageHeight = 75 * scale;
+var scale;
+var packageHeight;
 
 
 /**
  * function that takes care of drawing the packages and classes
- * @param {object} pkg - the root package of the visualization to be drawn
+ * @param {object} drwPkg - the root package of the visualization to be drawn
  */
-function draw(pkg) {
+function draw(drwPkg) {
+    packageHeight = 75 * scale;
 
     // create the meshes for all the packages and classes
-    recDraw(pkg);
+    recDraw(drwPkg);
 
     // merge the meshes into a single new mesh; this makes the visualization faster/less computationally expensive.
     // we still have the array `meshes` with the invisible, single meshes so that we can tell them apart for callbacks and
@@ -30,9 +31,7 @@ function draw(pkg) {
         vertexColors: THREE.VertexColors,
         visible: true
     });
-
     mesh = new THREE.Mesh(geometry, material);
-
 
     // bounding box to know size of total mesh; then move camera to its center, and update OrbitControls accordingly
     var box = new THREE.Box3().setFromObject(mesh);
@@ -45,43 +44,43 @@ function draw(pkg) {
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     scene.add(mesh);
-    loaded(pkg);
+    loaded(drwPkg);
 }
 
 /**
  * recursively call recDraw on child packages and draw the packages and their classes
- * @param {object} pkg - the root package of the visualization to be drawn
+ * @param {object} drwPkg - the root package of the visualization to be drawn
  */
-function recDraw(pkg) {
+function recDraw(drwPkg) {
     // recursion on the child packages, to be drawn first
-    for (var i = 0; i < pkg.drawablePackages.length; ++i) {
-        recDraw(pkg.drawablePackages[i]);
+    for (var i = 0; i < drwPkg.drawablePackages.length; ++i) {
+        recDraw(drwPkg.drawablePackages[i]);
     }
 
     // draw the classes of pkg
-    for (var j = 0; j < pkg.drawableClasses.length; ++j) {
-        drawClass(pkg.drawableClasses[j]);
+    for (var j = 0; j < drwPkg.drawableClasses.length; ++j) {
+        drawClass(drwPkg.drawableClasses[j]);
     }
 
-    drawPackage(pkg);
+    drawPackage(drwPkg);
 }
 
 
 /**
  * creates the mesh representing the given class, with the right position, size and attributes
- * @param {object} cls - the object representing the class to be drawn
+ * @param {object} drwCls - the object representing the class to be drawn
  */
-function drawClass(cls) {
+function drawClass(drwCls) {
 
     // adding 10 to attributes and methods, to have a lower bound (else we won't see the class)
-    var clsHeight = (cls.cls.methods + 5) * scale;
-    var clsWidth = (cls.cls.attributes + 5) * scale;
+    var clsHeight = (drwCls.cls.methods + 5) * scale;
+    var clsWidth = (drwCls.cls.attributes + 5) * scale;
 
-    var posX = cls.cx * scale;
-    var posY = cls.cy * scale;
-    var posZ = (cls.z * scale * packageHeight) + (((clsHeight / 2) + (packageHeight / 2) * scale));
+    var posX = drwCls.cx * scale;
+    var posY = drwCls.cy * scale;
+    var posZ = (drwCls.z * scale * packageHeight) + (((clsHeight / 2) + (packageHeight / 2) * scale));
 
-    var color = cls.color;
+    var color = drwCls.color;
 
     // create geometry and material for this class
     geometry = new THREE.BoxGeometry(clsWidth, clsWidth, clsHeight);
@@ -96,10 +95,10 @@ function drawClass(cls) {
 
     // create the mash with the needed data
     mesh = new THREE.Mesh(geometry, material);
-    mesh.name = cls.cls.name;
-    mesh.methods = cls.cls.methods;
-    mesh.attributes = cls.cls.attributes;
-    mesh.linesOfCode = cls.cls.linesOfCode;
+    mesh.name = drwCls.cls.name;
+    mesh.methods = drwCls.cls.methods;
+    mesh.attributes = drwCls.cls.attributes;
+    mesh.linesOfCode = drwCls.cls.linesOfCode;
     mesh.type = "class";
 
     // position the mesh
@@ -115,23 +114,21 @@ function drawClass(cls) {
 
 /**
  * creates the mesh representing the given package, with the right position, size and attributes
- * @param {object} pkg - the object representing the package to be drawn
+ * @param {object} drwPkg - the object representing the package to be drawn
  */
-function drawPackage(pkg) {
-
-
+function drawPackage(drwPkg) {
     // size of the package
-    var width = pkg.width * scale;
-    var depth = pkg.depth * scale;
+    var width = drwPkg.width * scale;
+    var depth = drwPkg.depth * scale;
     if(width == 0 || depth == 0) return;
     var height = packageHeight * scale;
 
     // position of package
-    var posX = pkg.cx * scale;
-    var posY = pkg.cy * scale;
-    var posZ = pkg.z * packageHeight * scale;
+    var posX = drwPkg.cx * scale;
+    var posY = drwPkg.cy * scale;
+    var posZ = drwPkg.z * packageHeight * scale;
 
-    var color = pkg.color;
+    var color = drwPkg.color;
 
     // create geometry and material for this package
     geometry = new THREE.BoxGeometry(width, depth, height);
@@ -146,9 +143,9 @@ function drawPackage(pkg) {
 
     // create the mash with the needed data
     mesh = new THREE.Mesh(geometry, material);
-    mesh.name = pkg.pkg.name;
-    mesh.classes = pkg.drawableClasses.length;
-    mesh.totalClasses = pkg.pkg.totalClasses;
+    mesh.name = drwPkg.pkg.name;
+    mesh.classes = drwPkg.drawableClasses.length;
+    mesh.totalClasses = drwPkg.pkg.totalClasses;
     mesh.width = width;
     mesh.depth = depth;
     mesh.type = "package";
@@ -169,8 +166,9 @@ function drawPackage(pkg) {
  */
 function loaded(data) {
     // document.getElementById("loader-container").remove();
-    document.getElementById("main-content").remove();
-    document.getElementById("container").style.display = "block";
+    $("#main-content").css('display', 'none');
+    $("#container").css('display', 'block');
+    $("#versions").css('display', 'block');
     classesText.innerText = data.pkg.totalClasses;
 
     // notify the renderer that our html canvas has appeared
@@ -187,7 +185,6 @@ function loaded(data) {
     window.addEventListener("keydown", onKeyPress, false);
     window.addEventListener('mousewheel', onWheel, false);
     window.addEventListener('contextmenu', onContextMenu, false);
-
     render();
 }
 

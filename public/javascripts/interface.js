@@ -60,7 +60,8 @@ function poll() {
 
             //update the progress bar with the data received from server
             var json = JSON.parse(data);
-            $('.progress-bar').css('width', json.percentage+'%').attr('aria-valuenow', json.percentage).html(+ json.task - 2 + '/3');
+            // $('.progress-bar').css('width', json.percentage+'%').attr('aria-valuenow', json.percentage).html(+ json.task - 2 + '/3');
+            $('.progress-bar').css('width', json.percentage+'%');
 
         }, error: function () {
             console.log("poll error");
