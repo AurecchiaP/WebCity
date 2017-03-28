@@ -3,6 +3,8 @@ var geometry, material, mesh;
 var canvas, mouse;
 var pinnedObject, isPinned, pinnedColor;
 var raycaster;
+var light;
+var vector = new THREE.Vector3();
 
 var intersects = [];
 var hoveredCube;
@@ -28,45 +30,44 @@ function init(json) {
 
     scene = new THREE.Scene();
 
-    var light = new THREE.DirectionalLight(0xffffff, 0.5);
+    scale = 1250 / Math.max(json.width, json.depth);
+
+    light = new THREE.DirectionalLight(0xffffff, 0.5);
+
+
     // light.position.set(-100,-100,200);
-    light.position.set(0, 0, 1);
+    light.position.set(0, 0, 0);
 
     // shadow settings
     light.castShadow = true;
-    scale = 1250 / Math.max(json.width, json.depth);
-    var pkgWidth = Math.max(json.width * scale, json.depth * scale);
-
 
     // TODO high map size vs shadowMap type; 4096 THREE.PCFSoftShadowMap or 8192 THREE.PCFShadowMap
-    light.shadow.mapSize.width = 6144;
-    light.shadow.mapSize.height = 6144;
-    light.shadow.camera.near = -pkgWidth * 0.05;
+    light.shadow.mapSize.width = 4096;
+    light.shadow.mapSize.height = 4096;
 
     // change values depending on angle of light
-    light.shadow.camera.far = pkgWidth * 0.82;
+    light.shadow.camera.near = 0;
+    light.shadow.camera.far = 5000;
     light.shadow.camera.fov = 90;
 
     // hardcoded for this light position and light target
-    light.shadow.camera.left = 0;
-    light.shadow.camera.right = pkgWidth * 0.9;
-    light.shadow.camera.top = pkgWidth * 0.95;
-    light.shadow.camera.bottom = -pkgWidth * 0.19;
+    light.shadow.camera.left = -500;
+    light.shadow.camera.right = 500;
+    light.shadow.camera.top = 500;
+    light.shadow.camera.bottom = -500;
 
     light.shadow.bias = 0.00001;
 
-    light.shadow.shadowDarkness = 1;
+    light.target.position.set(1361 / 2, 1081 / 2, 0);
 
-    light.target.position.set(1, 1, -1);
-    scene.add(light.target);
-    scene.add(light);
+    scene.add(light, light.target);
 
-    var ambientLight = new THREE.AmbientLight(0x505050); // soft white light
+
+    var ambientLight = new THREE.AmbientLight(0xffffff, 0.3); // soft white light
     scene.add(ambientLight);
 
-    // helper to see bounding box and direction of shadow box
-    // var helper = new THREE.CameraHelper( light.shadow.camera );
-    // scene.add( helper );
+    // var helper = new THREE.CameraHelper(light.shadow.camera);
+    // scene.add(helper);
 
     renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
     renderer.shadowMap.enabled = true;
@@ -75,10 +76,6 @@ function init(json) {
     renderer.shadowMap.type = THREE.PCFShadowMap; // default
     // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     // renderer.shadowMap.type = THREE.BasicShadowMap;
-
-
-    // render shadows only when needed
-    renderer.shadowMap.autoUpdate = false;
 
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
@@ -105,6 +102,13 @@ function init(json) {
  * updates the texts based on the hovered object, and updates the render
  */
 function render() {
+
+    camera.getWorldDirection(vector);
+
+        light.position.copy(camera.position);
+        light.target.position.set(light.position.x + vector.x, light.position.y + vector.y, light.position.z + vector.z);
+
+
     // ray-casting still slows down a bit, not as much as before
     raycaster.setFromCamera(mouse, camera);
     intersects = raycaster.intersectObjects(meshes);
