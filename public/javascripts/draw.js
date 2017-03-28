@@ -8,7 +8,7 @@ var packageHeight;
  * @param {object} drwPkg - the root package of the visualization to be drawn
  */
 function draw(drwPkg) {
-    packageHeight = 75 * scale;
+    packageHeight = 20;
 
     // create the meshes for all the packages and classes
     recDraw(drwPkg);

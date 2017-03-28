@@ -30,7 +30,7 @@ import java.util.Optional;
 public class BasicParser {
 
     // FIXME change this to thesis/repository (?) when using the download feature
-    private static String repoPath = "/Users/paolo/Documents/6th semester/thesis/";
+    private static String repoPath = "/Users/paolo/Documents/6th semester/thesis/webcity/repository";
 
     /**
      * Starts the recursive parsing of the repository corresponding to the given path.
