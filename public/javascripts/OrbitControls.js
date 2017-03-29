@@ -285,6 +285,7 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 	}
 
 	function onMouseDown( event ) {
+        if (event.target != scope.domElement) { return; }
 
 		if ( scope.enabled === false ) { return; }
 		event.preventDefault();
@@ -309,7 +310,6 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 			state = STATE.PAN;
 
 			panStart.set( event.clientX, event.clientY );
-
 		}
 
 		// Greggman fix: https://github.com/greggman/three.js/commit/fde9f9917d6d8381f06bf22cdff766029d1761be

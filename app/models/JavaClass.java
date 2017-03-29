@@ -10,17 +10,26 @@ import models.metrics.NumberOfMethods;
  */
 public class JavaClass {
 
+    private String filename;
     private String name;
 
     private Metric<Integer> methods;
     private Metric<Integer> attributes;
     private Metric<Integer> linesOfCode;
 
-    public JavaClass(String name, Metric<Integer> methods, Metric<Integer> attributes, Metric<Integer> linesOfCode) {
+    public JavaClass(String filename, String name, Metric<Integer> methods, Metric<Integer> attributes, Metric<Integer> linesOfCode) {
+        this.filename = filename;
         this.name = name;
         this.methods = methods;
         this.attributes = attributes;
         this.linesOfCode = linesOfCode;
+    }
+
+    /**
+     * @return the name of the file that the class is contained in
+     */
+    public String getFilename() {
+        return filename;
     }
 
     /**

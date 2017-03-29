@@ -22,6 +22,7 @@ public abstract class JSON {
         @Override
         public JsonElement serialize(final JavaClass cls, final Type typeOfSrc, final JsonSerializationContext context) {
             final JsonObject jsonObject = new JsonObject();
+            jsonObject.add("filename", context.serialize(cls.getFilename()));
             jsonObject.add("name", context.serialize(cls.getName()));
             jsonObject.add("attributes", context.serialize(cls.getAttributes().getValue()));
             jsonObject.add("methods", context.serialize(cls.getMethods().getValue()));

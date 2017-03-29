@@ -96,6 +96,7 @@ function drawClass(drwCls) {
     // create the mash with the needed data
     mesh = new THREE.Mesh(geometry, material);
     mesh.name = drwCls.cls.name;
+    mesh.filename = drwCls.cls.filename;
     mesh.methods = drwCls.cls.methods;
     mesh.attributes = drwCls.cls.attributes;
     mesh.linesOfCode = drwCls.cls.linesOfCode;
