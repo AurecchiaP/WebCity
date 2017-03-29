@@ -70,7 +70,7 @@ function onKeyPress(e) {
                     statistic3.firstElementChild.nextElementSibling.innerText = "";
                 }
                 else if (hoveredCube.object.type == "class") {
-                    nameText.innerText = hoveredCube.object.name;
+                    nameText.innerText = hoveredCube.object.filename + ":" + hoveredCube.object.name;
                     statistic1.firstElementChild.innerText = "methods";
                     statistic1.firstElementChild.nextElementSibling.innerText = hoveredCube.object.methods;
                     statistic2.firstElementChild.innerText = "attributes";

@@ -22,11 +22,12 @@ submitButton.onclick = function() {
         },
         success: function () {
 
-            // show success message
+            // the linked repo is valid
+
+            // show success message and progress bar
             $("#successMessage").css('opacity', '1');
             setTimeout(function() {$("#successMessage").css('opacity', '0');}, 2000);
 
-            // the linked repo is valid
             document.getElementById("progressBar").style.width = "100%";
 
             // start downloading

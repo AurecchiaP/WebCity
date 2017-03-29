@@ -64,13 +64,13 @@ public class HomeController extends Controller {
             FileRepository localRepo = new FileRepository("/Users/paolo/Documents/6th semester/thesis/webcity/.git");
             Git git = new Git(localRepo);
             String version = "";
-            if(git.tagList().call().iterator().hasNext()) {
-                version = git.tagList().call().get( git.tagList().call().size() - 1 ).getName().replace("refs/tags/","");
+            if (git.tagList().call().iterator().hasNext()) {
+                version = git.tagList().call().get(git.tagList().call().size() - 1).getName().replace("refs/tags/", "");
 
             }
             git.close();
 
-            return ok(views.html.main.render("Web City", version,null));
+            return ok(views.html.main.render("Web City", version, null));
 
         } catch (IOException | GitAPIException e) {
             e.printStackTrace();
@@ -145,7 +145,7 @@ public class HomeController extends Controller {
                         .call();
 
                 // TODO to print tags
-                for(int i = 0; i < git.tagList().call().size(); ++i) {
+                for (int i = 0; i < git.tagList().call().size(); ++i) {
                     System.out.println(git.tagList().call().get(i).getName());
                 }
                 versions = git.tagList().call().stream().map(Ref::getName).collect(Collectors.toList());

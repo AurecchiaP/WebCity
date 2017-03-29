@@ -114,7 +114,7 @@ public class BasicParser {
                         in = new FileInputStream(file);
                         CompilationUnit cu = JavaParser.parse(in);
 
-                        ClassVisitor cv = new ClassVisitor(pkg);
+                        ClassVisitor cv = new ClassVisitor(pkg, file.getPath().replaceFirst(repoPath, ""));
                         cv.visit(cu, null);
 
                     } catch (IOException e) {
@@ -136,12 +136,15 @@ public class BasicParser {
 
         private JavaPackage pkg;
         private JavaClass cls;
+        private String filename;
         private int methods = 0;
         private int attributes = 0;
         private int numberOfLines = 0;
 
-        private ClassVisitor(JavaPackage pkg) {
+        private ClassVisitor(JavaPackage pkg, String filename) {
             this.pkg = pkg;
+            this.filename = filename;
+
         }
 
 
@@ -176,7 +179,7 @@ public class BasicParser {
             }, null);
 
             // create the new JavaClass with the given number of methods and attributes, and add it to the parent package
-            cls = new JavaClass(n.getName().toString(), new NumberOfMethods(methods), new NumberOfAttributes(attributes), new LinesOfCode(numberOfLines));
+            cls = new JavaClass(filename, n.getName().toString(), new NumberOfMethods(methods), new NumberOfAttributes(attributes), new LinesOfCode(numberOfLines));
             pkg.addClass(cls);
             super.visit(n, arg);
         }
