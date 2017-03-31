@@ -5,8 +5,6 @@ import models.JavaPackage;
 import models.drawables.DrawableClass;
 import models.drawables.DrawablePackage;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public abstract class DrawableUtils {
 

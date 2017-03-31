@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import models.drawables.DrawablePackage;
+import models.history.JavaPackageHistory;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -19,6 +20,7 @@ import play.mvc.Result;
 import play.routing.JavaScriptReverseRouter;
 import utils.BasicParser;
 import models.JavaPackage;
+import utils.HistoryUtils;
 import utils.RectanglePacking;
 
 import java.io.File;
@@ -167,6 +169,28 @@ public class HomeController extends Controller {
 
         System.out.println("Done downloading repo");
 
+        JavaPackageHistory jph;
+
+        HistoryUtils historyUtils = new HistoryUtils();
+
+
+        // iterate all the versions of the repo
+        for (String version : versions) {
+
+            // set repository to the next version
+            try {
+                git.checkout().setCreateBranch( true ).setName( "test_" + version ).setStartPoint( version ).call();
+
+                // parse the current version
+                JavaPackage temp = BasicParser.parseRepo(Play.current().path() + "/repository");
+                jph = historyUtils.toHistory(temp);
+
+                System.out.println(jph);
+
+            } catch (GitAPIException e) {
+                e.printStackTrace();
+            }
+        }
 
         DrawablePackage drw = toDrawable(pkg);
 
@@ -190,7 +214,7 @@ public class HomeController extends Controller {
 
 
     /**
-     * route for the visualisation page; not yet used
+     * route for the visualisation page
      */
     public Result visualization() {
         String repo = formFactory.form().bindFromRequest().get("repository");

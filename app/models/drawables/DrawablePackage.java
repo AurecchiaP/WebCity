@@ -1,9 +1,7 @@
 package models.drawables;
 
 
-// TODO make it nice, don't return lists and stuff
 import models.JavaPackage;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
