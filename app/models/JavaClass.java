@@ -42,7 +42,6 @@ public class JavaClass {
     /**
      * @param linesOfCode the new Metric that we will set to the class
      */
-    // TODO check right type of metric?
     public void setLinesOfCode(Metric<Integer> linesOfCode) {
         this.linesOfCode = linesOfCode;
     }
