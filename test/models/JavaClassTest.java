@@ -10,7 +10,7 @@ public class JavaClassTest extends TestCase {
     JavaClass testClass;
 
     public void setUp() throws Exception {
-        testClass = new JavaClass("test class", new NumberOfMethods(10), new NumberOfAttributes(5), new LinesOfCode(7));
+        testClass = new JavaClass("somefile.java", "test class", new NumberOfMethods(10), new NumberOfAttributes(5), new LinesOfCode(7));
         super.setUp();
     }
 

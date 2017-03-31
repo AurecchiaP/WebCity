@@ -16,7 +16,7 @@ public class JavaPackageTest extends TestCase {
 
     public void setUp() throws Exception {
         testPackage = new JavaPackage("test package");
-        JavaClass testClass = new JavaClass("test class", new NumberOfMethods(10), new NumberOfAttributes(5), new LinesOfCode(7));
+        JavaClass testClass = new JavaClass("somefile.java", "test class", new NumberOfMethods(10), new NumberOfAttributes(5), new LinesOfCode(7));
         clss = new ArrayList<>();
         clss.add(testClass);
         testPackage.setClasses(clss);
@@ -29,8 +29,8 @@ public class JavaPackageTest extends TestCase {
     }
 
     public void testSetClasses() throws Exception {
-        JavaClass testClass1 = new JavaClass("test class1", new NumberOfMethods(1), new NumberOfAttributes(2), new LinesOfCode(3));
-        JavaClass testClass2 = new JavaClass("test class2", new NumberOfMethods(4), new NumberOfAttributes(5), new LinesOfCode(6));
+        JavaClass testClass1 = new JavaClass("somefile1.java", "test class1", new NumberOfMethods(1), new NumberOfAttributes(2), new LinesOfCode(3));
+        JavaClass testClass2 = new JavaClass("somefile1.java", "test class2", new NumberOfMethods(4), new NumberOfAttributes(5), new LinesOfCode(6));
         List<JavaClass> clss1 = new ArrayList<>();
         clss.add(testClass1);
         clss.add(testClass2);
@@ -72,7 +72,7 @@ public class JavaPackageTest extends TestCase {
     }
 
     public void testAddClass() throws Exception {
-        JavaClass testClass1 = new JavaClass("test class1", new NumberOfMethods(1), new NumberOfAttributes(2), new LinesOfCode(3));
+        JavaClass testClass1 = new JavaClass("somefile1.java", "test class1", new NumberOfMethods(1), new NumberOfAttributes(2), new LinesOfCode(3));
         testPackage.addClass(testClass1);
     }
 

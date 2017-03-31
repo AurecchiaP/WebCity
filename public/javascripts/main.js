@@ -58,8 +58,6 @@ function init(json) {
 
     light.shadow.bias = 0.00001;
 
-    light.target.position.set(1361 / 2, 1081 / 2, 0);
-
     scene.add(light, light.target);
 
 
@@ -71,6 +69,8 @@ function init(json) {
 
     renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
     renderer.shadowMap.enabled = true;
+
+    // renderer.shadowMap.autoUpdate = false;
 
     // quality vs performance
     renderer.shadowMap.type = THREE.PCFShadowMap; // default
@@ -101,13 +101,14 @@ function init(json) {
 /**
  * updates the texts based on the hovered object, and updates the render
  */
+
+var w;
 function render() {
 
     camera.getWorldDirection(vector);
 
-        light.position.copy(camera.position);
-        light.target.position.set(light.position.x + vector.x, light.position.y + vector.y, light.position.z + vector.z);
-
+    light.position.copy(camera.position);
+    light.target.position.set(light.position.x + vector.x, light.position.y + vector.y, light.position.z + vector.z);
 
     // ray-casting still slows down a bit, not as much as before
     raycaster.setFromCamera(mouse, camera);

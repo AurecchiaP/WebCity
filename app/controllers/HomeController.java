@@ -12,6 +12,7 @@ import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import play.api.Play;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -37,6 +38,7 @@ public class HomeController extends Controller {
     private double percentage = 0;
     private int taskNumber = 0;
     private String taskName;
+    private Git git;
 
     @Inject
     private FormFactory formFactory;
@@ -51,7 +53,8 @@ public class HomeController extends Controller {
                 JavaScriptReverseRouter.create("jsRoutes",
                         routes.javascript.HomeController.getVisualizationData(),
                         routes.javascript.HomeController.visualization(),
-                        routes.javascript.HomeController.poll()
+                        routes.javascript.HomeController.poll(),
+                        routes.javascript.HomeController.getVersion()
                 )
         ).as("text/javascript");
     }
@@ -61,7 +64,8 @@ public class HomeController extends Controller {
      */
     public Result index() {
         try {
-            FileRepository localRepo = new FileRepository("/Users/paolo/Documents/6th semester/thesis/webcity/.git");
+            FileRepository localRepo = new FileRepository(Play.current().path() + "/.git");
+            System.out.println(Play.current().path());
             Git git = new Git(localRepo);
             String version = "";
             if (git.tagList().call().iterator().hasNext()) {
@@ -91,12 +95,12 @@ public class HomeController extends Controller {
 
         if (web) {
             // remove the old downloaded repository
-            deleteDir(new File("/Users/paolo/Documents/6th semester/thesis/webcity/repository"));
+            deleteDir(new File(Play.current().path() + "/repository"));
 
             // try to download the given repository
             try {
-                Git git = Git.cloneRepository()
-                        .setCredentialsProvider(new UsernamePasswordCredentialsProvider("AurecchiaP", "VHv5yeB2IxOu"))
+                git = Git.cloneRepository()
+                        .setCredentialsProvider(new UsernamePasswordCredentialsProvider("AurecchiaP", ""))
                         // for debugging, prints data nicely in System.out
                         // .setProgressMonitor(new TextProgressMonitor(new PrintWriter(System.out)))
 
@@ -141,13 +145,9 @@ public class HomeController extends Controller {
                             }
                         })
                         .setURI(currentRepo)
-                        .setDirectory(new File("/Users/paolo/Documents/6th semester/thesis/webcity/repository"))
+                        .setDirectory(new File(Play.current().path() + "/repository"))
                         .call();
-
-                // TODO to print tags
-                for (int i = 0; i < git.tagList().call().size(); ++i) {
-                    System.out.println(git.tagList().call().get(i).getName());
-                }
+                
                 versions = git.tagList().call().stream().map(Ref::getName).collect(Collectors.toList());
 
                 // TODO use this to set the version to visualise
@@ -160,7 +160,7 @@ public class HomeController extends Controller {
             }
 
             // parse the .java files of the repository
-            pkg = BasicParser.parseRepo("/Users/paolo/Documents/6th semester/thesis/webcity/repository");
+            pkg = BasicParser.parseRepo(Play.current().path() + "/repository");
         } else {
             pkg = BasicParser.parseRepo("/Users/paolo/Documents/6th semester/thesis/commons-math");
         }
@@ -207,7 +207,7 @@ public class HomeController extends Controller {
             final LsRemoteCommand lsCmd = new LsRemoteCommand(null)
 
                     // FIXME to download private repo
-//                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider( "AurecchiaP", "" ))
+                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider( "AurecchiaP", "" ))
                     .setRemote(repo);
             try {
                 // print for debugging
@@ -235,5 +235,20 @@ public class HomeController extends Controller {
         obj.addProperty("task", taskNumber);
         obj.addProperty("taskName", taskName);
         return ok(obj.toString());
+    }
+
+    public Result getVersion() {
+        String version = formFactory.form().bindFromRequest().get("version");
+        System.out.println("version required: " + version);
+
+
+        try {
+            git.checkout().setCreateBranch( true ).setName( "test" ).setStartPoint( version ).call();
+
+        } catch (GitAPIException e) {
+            e.printStackTrace();
+            return badRequest();
+        }
+        return ok();
     }
 }
