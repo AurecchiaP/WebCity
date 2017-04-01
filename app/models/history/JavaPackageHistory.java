@@ -4,6 +4,7 @@ import models.JavaPackage;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * a JavaPackageHistory represents a container for the different versions of the system we are analysing.
@@ -15,9 +16,9 @@ public class JavaPackageHistory {
 
     private List<JavaPackageHistory> jpChildren;
     private List<JavaClassHistory> jcChildren;
-    private List<JavaPackage> packageHistories;
+    private Map<String, JavaPackage> packageHistories;
 
-    public JavaPackageHistory(String name, List<JavaPackageHistory> jpChildren, List<JavaClassHistory> jcChildren, List<JavaPackage> packageHistories) {
+    public JavaPackageHistory(String name, List<JavaPackageHistory> jpChildren, List<JavaClassHistory> jcChildren, Map<String, JavaPackage> packageHistories) {
         this.name = name;
         this.jpChildren = jpChildren;
         this.jcChildren = jcChildren;
@@ -42,8 +43,25 @@ public class JavaPackageHistory {
         this.jpChildren.addAll(jpChildren);
     }
 
-    public void addJpChildren(List<JavaPackageHistory> jpChildren) {
-        this.jpChildren.addAll(jpChildren);
+    /**
+     * if the element of jpChildren is already in this.jpChildren, then update it; else add it
+     *
+     * @param jpChildren elements to be added to this.jpChildren
+     */
+    public void addOrUpdateJpChildren(List<JavaPackageHistory> jpChildren) {
+        for (JavaPackageHistory aJpChildren : jpChildren) {
+            boolean found = false;
+            for (int j = 0; j < this.jpChildren.size(); ++j) {
+                if (aJpChildren.getName().equals(this.jpChildren.get(j).getName())) {
+                    this.jpChildren.set(j, aJpChildren);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                this.jpChildren.add(aJpChildren);
+            }
+        }
     }
 
     public List<JavaClassHistory> getJcChildren() {
@@ -59,16 +77,11 @@ public class JavaPackageHistory {
         this.jcChildren.addAll(jcChildren);
     }
 
-    public List<JavaPackage> getPackageHistories() {
-        return Collections.unmodifiableList(packageHistories);
+    public boolean PackageHistoriesContains(String version) {
+        return packageHistories.containsKey(version);
     }
 
-    public void setPackageHistories(List<JavaPackage> packageHistories) {
-        this.packageHistories.clear();
-        this.packageHistories.addAll(packageHistories);
-    }
-
-    public void addPackageHistory(JavaPackage packageHistory) {
-        this.packageHistories.add(packageHistory);
+    public void addPackageHistory(String version, JavaPackage packageHistory) {
+        this.packageHistories.put(version, packageHistory);
     }
 }

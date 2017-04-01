@@ -152,8 +152,6 @@ public class HomeController extends Controller {
                 
                 versions = git.tagList().call().stream().map(Ref::getName).collect(Collectors.toList());
 
-                // TODO use this to set the version to visualise
-//                git.checkout().setCreateBranch( true ).setName( "test" ).setStartPoint( git.tagList().call().get( git.tagList().call().size() -1 ).getName() ).call();
                 git.close();
             } catch (GitAPIException e) {
                 System.out.println("failed to download repo");
@@ -169,7 +167,7 @@ public class HomeController extends Controller {
 
         System.out.println("Done downloading repo");
 
-        JavaPackageHistory jph;
+        JavaPackageHistory jph = null;
 
         HistoryUtils historyUtils = new HistoryUtils();
 
@@ -183,16 +181,16 @@ public class HomeController extends Controller {
 
                 // parse the current version
                 JavaPackage temp = BasicParser.parseRepo(Play.current().path() + "/repository");
-                jph = historyUtils.toHistory(temp);
-
-                System.out.println(jph);
+                jph = historyUtils.toHistory(version, temp);
 
             } catch (GitAPIException e) {
                 e.printStackTrace();
             }
+            System.out.println("done version " + version);
         }
 
         DrawablePackage drw = toDrawable(pkg);
+//        jph = historyUtils.toHistory(pkg);
 
         // do the rectangle packing
         new RectanglePacking(drw);
@@ -207,6 +205,7 @@ public class HomeController extends Controller {
         jsonObject.add("visualization", gson.fromJson(toJSON(drw), JsonElement.class));
         // add list of versions
         jsonObject.add("versions", gson.fromJson(new Gson().toJson(versions), JsonElement.class));
+        jsonObject.add("test", gson.fromJson(new Gson().toJson(jph), JsonElement.class));
 
         // send data to client
         return ok(gson.toJson(jsonObject));
