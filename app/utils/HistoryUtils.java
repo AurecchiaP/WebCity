@@ -30,7 +30,6 @@ public class HistoryUtils {
      * @return the JavaPackageHistory
      */
     public JavaPackageHistory toHistory(String version, JavaPackage pkg) {
-        System.out.println(pkg.getName());
         // empty lists that will be filled with the JPH and JCH children of the current package
         List<JavaPackageHistory> jpChildren = new ArrayList<>();
         List<JavaClassHistory> jcChildren = new ArrayList<>();

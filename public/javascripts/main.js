@@ -70,7 +70,7 @@ function init(json) {
     renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
     renderer.shadowMap.enabled = true;
 
-    // renderer.shadowMap.autoUpdate = false;
+    renderer.shadowMap.autoUpdate = false;
 
     // quality vs performance
     renderer.shadowMap.type = THREE.PCFShadowMap; // default
@@ -102,9 +102,9 @@ function init(json) {
  * updates the texts based on the hovered object, and updates the render
  */
 
-var w;
+// var w;
+var c = 0;
 function render() {
-
     camera.getWorldDirection(vector);
 
     light.position.copy(camera.position);
@@ -152,5 +152,9 @@ function render() {
         }
     }
 
+    c++;
+    if (c % 5 === 0) {
+        renderer.shadowMap.needsUpdate = true;
+    }
     renderer.render(scene, camera);
 }

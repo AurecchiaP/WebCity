@@ -29,7 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static utils.DrawableUtils.toDrawable;
+import static utils.DrawableUtils.historyToDrawable;
+import static utils.DrawableUtils.packageToDrawable;
 import static utils.FileUtils.deleteDir;
 import static utils.JSON.toJSON;
 
@@ -189,11 +190,22 @@ public class HomeController extends Controller {
             System.out.println("done version " + version);
         }
 
-        DrawablePackage drw = toDrawable(pkg);
-//        jph = historyUtils.toHistory(pkg);
+        List<DrawablePackage> drws = new ArrayList<>();
 
-        // do the rectangle packing
-        new RectanglePacking(drw);
+        // TODO when building these, also keep track of sizes or something like that
+        for (String version : versions) {
+            // make the packages into drawables to be used for rectangle packing
+//            DrawablePackage drw = packageToDrawable(pkg);
+
+            DrawablePackage drw = historyToDrawable(version, jph);
+
+            // do the rectangle packing
+            new RectanglePacking(drw);
+            drws.add(drw);
+        }
+
+
+
         System.out.println("Done packing");
 
         taskNumber = 0;
@@ -202,10 +214,10 @@ public class HomeController extends Controller {
         Gson gson = new Gson();
         final JsonObject jsonObject = new JsonObject();
         // add visualization data
-        jsonObject.add("visualization", gson.fromJson(toJSON(drw), JsonElement.class));
+        jsonObject.add("visualization", gson.fromJson(toJSON(drws.get(10)), JsonElement.class));
         // add list of versions
         jsonObject.add("versions", gson.fromJson(new Gson().toJson(versions), JsonElement.class));
-        jsonObject.add("test", gson.fromJson(new Gson().toJson(jph), JsonElement.class));
+        jsonObject.add("test", gson.fromJson(new Gson().toJson(drws), JsonElement.class));
 
         // send data to client
         return ok(gson.toJson(jsonObject));

@@ -84,4 +84,8 @@ public class JavaPackageHistory {
     public void addPackageHistory(String version, JavaPackage packageHistory) {
         this.packageHistories.put(version, packageHistory);
     }
+
+    public JavaPackage getPackageHistory(String version) {
+        return this.packageHistories.get(version);
+    }
 }
