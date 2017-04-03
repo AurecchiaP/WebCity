@@ -4,9 +4,7 @@ package utils;
 import models.drawables.DrawableClass;
 import models.drawables.DrawablePackage;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 import static utils.RGB.RGBtoInt;
 
@@ -17,6 +15,7 @@ public class RectanglePacking {
     private int maxDepth = 0;
     private int maxLines = 0;
     private final int padding = 25;
+    private Map<String, DrawablePackage> drwPackages;
 
 
     /**
@@ -26,12 +25,15 @@ public class RectanglePacking {
      */
     public RectanglePacking(DrawablePackage drwPkg) {
 
-        // traverse recursively the packages to find out the maximum size needed for the visualization and the maximum
+        // will contain a reference to all the drwPackages contained
+        drwPackages = new HashMap<>();
+
+        // traverse recursively the drwPackages to find out the maximum size needed for the visualization and the maximum
         // depth of recursion
         int recDepth = 0;
         getPackageMaxWidth(drwPkg, recDepth);
 
-        // traverse again, this time to find the positions for packages and classes, using recDepth to set the color
+        // traverse again, this time to find the positions for drwPackages and classes, using recDepth to set the color
         recDepth = 0;
 
         pack(drwPkg, new Bin(0, 0, 0, 0, 0), new ArrayList<>(), new ArrayList<>(), recDepth);
@@ -39,7 +41,7 @@ public class RectanglePacking {
 
 
     /**
-     * recursively iterate from pkg, to find out the sizes of its children packages to find out the space needed to draw
+     * recursively iterate from pkg, to find out the sizes of its children drwPackages to find out the space needed to draw
      * the package pkg (it's a heuristic, we stack them in a line, which gives a value that is bigger than the ideal size;
      * we don't know the size of a package before we do the rectangle packing)
      *
@@ -49,10 +51,10 @@ public class RectanglePacking {
      */
     private int getPackageMaxWidth(DrawablePackage drwPkg, int depth) {
 
-        // store maximum depth of packages reached
+        // store maximum depth of drwPackages reached
         if (depth > maxDepth) maxDepth = depth;
 
-        // recursively iterate on child packages
+        // recursively iterate on child drwPackages
         for (DrawablePackage child : drwPkg.getDrawablePackages()) {
             drwPkg.setWidth(drwPkg.getWidth() + getPackageMaxWidth(child, depth + 1));
         }
@@ -66,7 +68,7 @@ public class RectanglePacking {
                 maxLines = cls.getCls().getLinesOfCode().getValue();
         }
 
-        // sort the children packages by their size, in descending order
+        // sort the children drwPackages by their size, in descending order
         drwPkg.sortChildren();
         return drwPkg.getWidth();
     }
@@ -82,8 +84,10 @@ public class RectanglePacking {
      * @return the bin/size occupied by pkg
      */
     private Bin pack(DrawablePackage drwPkg, Bin parentBin, List<Bin> siblingBins, List<Bin> parentOpenBins, int recDepth) {
+        drwPackages.put(drwPkg.getPkg().getName(), drwPkg);
 
-        // the Bins available to pkg's children packages
+
+        // the Bins available to pkg's children drwPackages
         List<Bin> openBins = new ArrayList<>();
         List<Bin> childrenBins = new ArrayList<>();
 
@@ -255,7 +259,7 @@ public class RectanglePacking {
 
     /**
      * adds bottom-left padding to the bin before we find the position for the pkg/classes.
-     * first we shift to clear space for the padding, then we fit in the bin, then we shift back so that the other packages
+     * first we shift to clear space for the padding, then we fit in the bin, then we shift back so that the other drwPackages
      * don't get put on top of the padding of this package.
      * then we add padding to the top right of the bin.
      *
@@ -266,7 +270,7 @@ public class RectanglePacking {
      * @param drawPackage true if we want to draw the package, false for its classes
      */
     private void addPaddingAndFit(Bin bin, DrawablePackage drwPkg, int padding, int recDepth, boolean drawPackage) {
-        // add padding on bottom left of package; times depth of recursion to account space for the surrounding packages
+        // add padding on bottom left of package; times depth of recursion to account space for the surrounding drwPackages
         int pad = padding * recDepth;
 
         bin.setX1(bin.getX1() + pad);
@@ -286,7 +290,7 @@ public class RectanglePacking {
         bin.setX2(bin.getX2() - pad);
         bin.setY2(bin.getY2() - pad);
 
-        // add padding to right/top of packages
+        // add padding to right/top of drwPackages
         bin.setX2(bin.getX2() + 2 * padding);
         bin.setY2(bin.getY2() + 2 * padding);
     }
@@ -358,5 +362,17 @@ public class RectanglePacking {
             cls.setZ(drwPkg.getZ());
             cls.setColor(RGBtoInt(55 + (200 * cls.getCls().getLinesOfCode().getValue() / maxLines), 55 + (200 * cls.getCls().getLinesOfCode().getValue() / maxLines), 255));
         }
+    }
+
+    public Map<String, DrawablePackage> getDrwPackages() {
+        return Collections.unmodifiableMap(drwPackages);
+    }
+
+    public boolean containsDrwPackage(DrawablePackage drw) {
+        return drwPackages.containsKey(drw.getPkg().getName());
+    }
+
+    public DrawablePackage getDrwPackage(String name) {
+        return drwPackages.get(name);
     }
 }

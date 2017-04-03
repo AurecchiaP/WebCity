@@ -26,7 +26,9 @@ import utils.RectanglePacking;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static utils.DrawableUtils.historyToDrawable;
@@ -96,6 +98,8 @@ public class HomeController extends Controller {
         JavaPackage pkg;
         List<String> versions = new ArrayList<>();
 
+        System.out.println("Downloading depo...");
+
         if (web) {
             // remove the old downloaded repository
             deleteDir(new File(Play.current().path() + "/repository"));
@@ -150,12 +154,12 @@ public class HomeController extends Controller {
                         .setURI(currentRepo)
                         .setDirectory(new File(Play.current().path() + "/repository"))
                         .call();
-                
+
                 versions = git.tagList().call().stream().map(Ref::getName).collect(Collectors.toList());
 
                 git.close();
             } catch (GitAPIException e) {
-                System.out.println("failed to download repo");
+                System.out.println("Failed to download repository.");
                 e.printStackTrace();
                 return badRequest();
             }
@@ -166,19 +170,20 @@ public class HomeController extends Controller {
             pkg = BasicParser.parseRepo("/Users/paolo/Documents/6th semester/thesis/commons-math");
         }
 
-        System.out.println("Done downloading repo");
+        System.out.println("Done downloading repository.");
 
         JavaPackageHistory jph = null;
 
         HistoryUtils historyUtils = new HistoryUtils();
 
 
+        System.out.println("Start parsing...");
         // iterate all the versions of the repo
         for (String version : versions) {
 
             // set repository to the next version
             try {
-                git.checkout().setCreateBranch( true ).setName( "test_" + version ).setStartPoint( version ).call();
+                git.checkout().setCreateBranch(true).setName("test_" + version).setStartPoint(version).call();
 
                 // parse the current version
                 JavaPackage temp = BasicParser.parseRepo(Play.current().path() + "/repository");
@@ -187,12 +192,14 @@ public class HomeController extends Controller {
             } catch (GitAPIException e) {
                 e.printStackTrace();
             }
-            System.out.println("done version " + version);
         }
 
+        System.out.println("Done parsing.");
         List<DrawablePackage> drws = new ArrayList<>();
+        List<RectanglePacking> packings = new ArrayList<>();
 
-        // TODO when building these, also keep track of sizes or something like that
+        System.out.println("Start packing...");
+
         for (String version : versions) {
             // make the packages into drawables to be used for rectangle packing
 //            DrawablePackage drw = packageToDrawable(pkg);
@@ -200,13 +207,17 @@ public class HomeController extends Controller {
             DrawablePackage drw = historyToDrawable(version, jph);
 
             // do the rectangle packing
-            new RectanglePacking(drw);
+            packings.add(new RectanglePacking(drw));
             drws.add(drw);
         }
 
+        System.out.println("Done packing.");
 
+        Map<String, DrawablePackage> totalPackages = new HashMap<>();
+        for (RectanglePacking packing : packings) {
+            packing.getDrwPackages().forEach((k, v) -> totalPackages.merge(k, v, (v1, v2) -> v1.getWidth() * v1.getDepth() > v2.getWidth() * v2.getDepth() ? v1 : v2));
+        }
 
-        System.out.println("Done packing");
 
         taskNumber = 0;
 
@@ -242,18 +253,18 @@ public class HomeController extends Controller {
             final LsRemoteCommand lsCmd = new LsRemoteCommand(null)
 
                     // FIXME to download private repo
-                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider( "AurecchiaP", "" ))
+                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider("AurecchiaP", ""))
                     .setRemote(repo);
             try {
                 // print for debugging
 //                System.out.println(lsCmd.call().toString());
                 lsCmd.call();
-                System.out.println("valid repo");
+                System.out.println("Valid repository.");
                 currentRepo = repo;
                 return ok();
 
             } catch (GitAPIException e) {
-                System.out.println("invalid repo");
+                System.out.println("Invalid repository.");
                 e.printStackTrace();
                 return badRequest();
             }
@@ -278,7 +289,7 @@ public class HomeController extends Controller {
 
 
         try {
-            git.checkout().setCreateBranch( true ).setName( "test" ).setStartPoint( version ).call();
+            git.checkout().setCreateBranch(true).setName("test").setStartPoint(version).call();
 
         } catch (GitAPIException e) {
             e.printStackTrace();
