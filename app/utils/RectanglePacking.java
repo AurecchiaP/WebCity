@@ -367,12 +367,4 @@ public class RectanglePacking {
     public Map<String, DrawablePackage> getDrwPackages() {
         return Collections.unmodifiableMap(drwPackages);
     }
-
-    public boolean containsDrwPackage(DrawablePackage drw) {
-        return drwPackages.containsKey(drw.getPkg().getName());
-    }
-
-    public DrawablePackage getDrwPackage(String name) {
-        return drwPackages.get(name);
-    }
 }

@@ -25,14 +25,11 @@ import utils.RectanglePacking;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static utils.DrawableUtils.getMaxDrawable;
 import static utils.DrawableUtils.historyToDrawable;
-import static utils.DrawableUtils.packageToDrawable;
 import static utils.FileUtils.deleteDir;
 import static utils.JSON.toJSON;
 
@@ -195,15 +192,17 @@ public class HomeController extends Controller {
         }
 
         System.out.println("Done parsing.");
+
+        // a list of drawables and rectangle packings for all the versions
         List<DrawablePackage> drws = new ArrayList<>();
         List<RectanglePacking> packings = new ArrayList<>();
 
         System.out.println("Start packing...");
 
-        for (String version : versions) {
-            // make the packages into drawables to be used for rectangle packing
-//            DrawablePackage drw = packageToDrawable(pkg);
 
+        for (String version : versions) {
+
+            // make the packages into drawables to be used for rectangle packing
             DrawablePackage drw = historyToDrawable(version, jph);
 
             // do the rectangle packing
@@ -213,11 +212,8 @@ public class HomeController extends Controller {
 
         System.out.println("Done packing.");
 
-        Map<String, DrawablePackage> totalPackages = new HashMap<>();
-        for (RectanglePacking packing : packings) {
-            packing.getDrwPackages().forEach((k, v) -> totalPackages.merge(k, v, (v1, v2) -> v1.getWidth() * v1.getDepth() > v2.getWidth() * v2.getDepth() ? v1 : v2));
-        }
-
+        // find the biggest drawable, considering all versions
+        DrawablePackage maxDrw = getMaxDrawable(packings);
 
         taskNumber = 0;
 
@@ -228,7 +224,7 @@ public class HomeController extends Controller {
         jsonObject.add("visualization", gson.fromJson(toJSON(drws.get(10)), JsonElement.class));
         // add list of versions
         jsonObject.add("versions", gson.fromJson(new Gson().toJson(versions), JsonElement.class));
-        jsonObject.add("test", gson.fromJson(new Gson().toJson(drws), JsonElement.class));
+        jsonObject.add("maxDrw", gson.fromJson(new Gson().toJson(maxDrw), JsonElement.class));
 
         // send data to client
         return ok(gson.toJson(jsonObject));

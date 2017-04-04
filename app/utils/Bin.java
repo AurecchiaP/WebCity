@@ -121,13 +121,13 @@ class Bin {
      * @param other the Bin to be compared to
      */
     boolean overlap(final Bin other) {
-                // overlap X
+        // overlap X
         return (this.getX2() > other.getX1() && this.getX1() < other.getX2()
-                        ||
-                        other.getX2() > this.getX1() && other.getX1() < this.getX2())
-                        &&
+                ||
+                other.getX2() > this.getX1() && other.getX1() < this.getX2())
+                &&
                 // overlap Y
-                        (this.getY2() > other.getY1() && this.getY1() < other.getY2()
+                (this.getY2() > other.getY1() && this.getY1() < other.getY2()
                         ||
                         other.getY2() > this.getY1() && other.getY1() < this.getY2());
     }
