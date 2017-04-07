@@ -126,12 +126,13 @@ public abstract class DrawableUtils {
 
     public static void compareWithMax(DrawablePackage drw, RectanglePacking packing) {
         // if in packing there is drw package
-        // FIXME account for relative paths, eg main/src vs /src
         if(packing.getDrwPackages().containsKey(drw.getPkg().getName())) {
-            drw.setHeight(1);
+            drw.setVisible(true);
+            // FIXME can't just overwrite, have to keep position
+            // FIXME when making max package, have a set of classes contained?
         }
         else {
-            drw.setHeight(0);
+            drw.setVisible(false);
         }
 
         for (DrawablePackage childDrw : drw.getDrawablePackages()) {

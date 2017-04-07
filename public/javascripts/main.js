@@ -17,6 +17,7 @@ var statistic2 = document.getElementById("statistic2");
 var statistic3 = document.getElementById("statistic3");
 
 
+
 /**
  * takes care of initialising the visualisation (sets up canvas, scene, lights, renderer, controls...)
  */
@@ -121,7 +122,7 @@ function render() {
 
         if (!isPinned) {
 
-            if (hoveredCube.object.type == "package") {
+            if (hoveredCube.object.type === "package") {
                 nameText.innerText = hoveredCube.object.name;
 
                 statistic1.firstElementChild.innerText = "contained classes";
@@ -131,7 +132,7 @@ function render() {
                 statistic3.firstElementChild.innerText = "";
                 statistic3.firstElementChild.nextElementSibling.innerText = "";
             }
-            else if (hoveredCube.object.type == "class") {
+            else if (hoveredCube.object.type === "class") {
                 nameText.innerText = hoveredCube.object.filename + ":" + hoveredCube.object.name;
 
                 statistic1.firstElementChild.innerText = "methods";

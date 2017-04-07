@@ -36,11 +36,13 @@ import static utils.JSON.toJSON;
 public class HomeController extends Controller {
 
     private String currentRepo;
-    private boolean web;
     private double percentage = 0;
     private int taskNumber = 0;
     private String taskName;
     private Git git;
+    private DrawablePackage maxDrw;
+    private List<RectanglePacking> packings;
+    private List<String> versions;
 
     @Inject
     private FormFactory formFactory;
@@ -93,78 +95,74 @@ public class HomeController extends Controller {
     // FIXME would be on the server
     public Result getVisualizationData() {
         JavaPackage pkg;
-        List<String> versions = new ArrayList<>();
+        versions = new ArrayList<>();
 
         System.out.println("Downloading depo...");
 
-        if (web) {
-            // remove the old downloaded repository
-            deleteDir(new File(Play.current().path() + "/repository"));
+        // remove the old downloaded repository
+        deleteDir(new File(Play.current().path() + "/repository"));
 
-            // try to download the given repository
-            try {
-                git = Git.cloneRepository()
-                        // for debugging, prints data nicely in System.out
-                        // .setProgressMonitor(new TextProgressMonitor(new PrintWriter(System.out)))
+        // try to download the given repository
+        try {
+            git = Git.cloneRepository()
+                    // for debugging, prints data nicely in System.out
+                    // .setProgressMonitor(new TextProgressMonitor(new PrintWriter(System.out)))
 
-                        // saves download progress information to send to client
-                        .setProgressMonitor(new ProgressMonitor() {
-                            int downloadedData = 1;
-                            int totalData = 1;
+                    // saves download progress information to send to client
+                    .setProgressMonitor(new ProgressMonitor() {
+                        int downloadedData = 1;
+                        int totalData = 1;
 
-                            @Override
-                            public void start(int totalTasks) {
+                        @Override
+                        public void start(int totalTasks) {
+                        }
+
+                        @Override
+                        public void beginTask(String title, int totalWork) {
+                            // new task has started; reset downloaded data for this task to 0
+                            downloadedData = 0;
+
+                            // increase task number
+                            ++taskNumber;
+                            taskName = title;
+                            totalData = totalWork;
+                        }
+
+                        @Override
+                        public void update(int completed) {
+                            // update the number of total downloaded data
+                            downloadedData += completed;
+
+                            //update downloaded percentage
+                            if (totalData != 0) {
+                                percentage = ((double) downloadedData / (double) totalData) * 100;
                             }
+                        }
 
-                            @Override
-                            public void beginTask(String title, int totalWork) {
-                                // new task has started; reset downloaded data for this task to 0
-                                downloadedData = 0;
+                        @Override
+                        public void endTask() {
+                        }
 
-                                // increase task number
-                                ++taskNumber;
-                                taskName = title;
-                                totalData = totalWork;
-                            }
+                        @Override
+                        public boolean isCancelled() {
+                            return false;
+                        }
+                    })
+                    .setURI(currentRepo)
+                    .setDirectory(new File(Play.current().path() + "/repository"))
+                    .call();
 
-                            @Override
-                            public void update(int completed) {
-                                // update the number of total downloaded data
-                                downloadedData += completed;
+            versions = git.tagList().call().stream().map(Ref::getName).collect(Collectors.toList());
 
-                                //update downloaded percentage
-                                if (totalData != 0) {
-                                    percentage = ((double) downloadedData / (double) totalData) * 100;
-                                }
-                            }
-
-                            @Override
-                            public void endTask() {
-                            }
-
-                            @Override
-                            public boolean isCancelled() {
-                                return false;
-                            }
-                        })
-                        .setURI(currentRepo)
-                        .setDirectory(new File(Play.current().path() + "/repository"))
-                        .call();
-
-                versions = git.tagList().call().stream().map(Ref::getName).collect(Collectors.toList());
-
-                git.close();
-            } catch (GitAPIException e) {
-                System.out.println("Failed to download repository.");
-                e.printStackTrace();
-                return badRequest();
-            }
-
-            // parse the .java files of the repository
-            pkg = BasicParser.parseRepo(Play.current().path() + "/repository");
-        } else {
-            pkg = BasicParser.parseRepo("/Users/paolo/Documents/6th semester/thesis/commons-math");
+            git.close();
+        } catch (GitAPIException e) {
+            System.out.println("Failed to download repository.");
+            e.printStackTrace();
+            return badRequest();
         }
+
+        // parse the .java files of the repository
+        pkg = BasicParser.parseRepo(Play.current().path() + "/repository");
 
         System.out.println("Done downloading repository.");
 
@@ -194,7 +192,7 @@ public class HomeController extends Controller {
 
         // a list of drawables and rectangle packings for all the versions
         List<DrawablePackage> drws = new ArrayList<>();
-        List<RectanglePacking> packings = new ArrayList<>();
+        packings = new ArrayList<>();
 
         System.out.println("Start packing...");
 
@@ -212,11 +210,11 @@ public class HomeController extends Controller {
         System.out.println("Done packing.");
 
         // find the biggest drawable, considering all versions
-        DrawablePackage maxDrw = getMaxDrawable(packings);
+        maxDrw = getMaxDrawable(packings);
 
         new RectanglePacking(maxDrw, maxDrw);
 
-        compareWithMax(maxDrw, packings.get(packings.size() - 1));
+        compareWithMax(maxDrw, packings.get(10));
 
         taskNumber = 0;
 
@@ -243,29 +241,24 @@ public class HomeController extends Controller {
         System.out.println("input repository: " + repo);
 
         // empty input uses local repo, for debugging
-        if (repo.equals("")) {
-            web = false;
-            return getVisualizationData();
-        } else {
-            web = true;
-            currentRepo = repo;
+        currentRepo = repo;
 
-            final LsRemoteCommand lsCmd = new LsRemoteCommand(null)
-                    .setRemote(repo);
-            try {
-                // print for debugging
+        final LsRemoteCommand lsCmd = new LsRemoteCommand(null)
+                .setRemote(repo);
+        try {
+            // print for debugging
 //                System.out.println(lsCmd.call().toString());
-                lsCmd.call();
-                System.out.println("Valid repository.");
-                currentRepo = repo;
-                return ok();
+            lsCmd.call();
+            System.out.println("Valid repository.");
+            currentRepo = repo;
+            return ok();
 
-            } catch (GitAPIException e) {
-                System.out.println("Invalid repository.");
-                e.printStackTrace();
-                return badRequest();
-            }
+        } catch (GitAPIException e) {
+            System.out.println("Invalid repository.");
+            e.printStackTrace();
+            return badRequest();
         }
+
     }
 
 
@@ -280,18 +273,26 @@ public class HomeController extends Controller {
         return ok(obj.toString());
     }
 
+    /**
+     * not used yet
+     */
     public Result getVersion() {
         String version = formFactory.form().bindFromRequest().get("version");
         System.out.println("version required: " + version);
 
+        compareWithMax(maxDrw, packings.get(versions.indexOf(version)));
 
-        try {
-            git.checkout().setCreateBranch(true).setName("test").setStartPoint(version).call();
 
-        } catch (GitAPIException e) {
-            e.printStackTrace();
-            return badRequest();
-        }
-        return ok();
+        // create json object
+        Gson gson = new Gson();
+        final JsonObject jsonObject = new JsonObject();
+        // add visualization data
+        // jsonObject.add("visualization", gson.fromJson(toJSON(drws.get(3)), JsonElement.class));
+        jsonObject.add("visualization", gson.fromJson(toJSON(maxDrw), JsonElement.class));
+        // add list of versions
+        jsonObject.add("maxDrw", gson.fromJson(new Gson().toJson(maxDrw), JsonElement.class));
+
+        // send data to client
+        return ok(gson.toJson(jsonObject));
     }
 }

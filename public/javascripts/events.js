@@ -14,7 +14,7 @@ function onWheel(e) {
 function onContextMenu(e) {
 
     intersects = raycaster.intersectObjects(meshes);
-    if (intersects.length > 0 && intersects[0].object.type == "class") {
+    if (intersects.length > 0 && intersects[0].object.type === "class") {
         var cls = intersects[0].object;
         console.log(cls);
 
@@ -60,7 +60,7 @@ function onKeyPress(e) {
                 pinnedObject.object.material.visible = true;
                 pinnedObject.object.material.color.set(0xF1BB4E);
                 isPinned = true;
-                if (hoveredCube.object.type == "package") {
+                if (hoveredCube.object.type === "package") {
                     nameText.innerText = hoveredCube.object.name;
                     statistic1.firstElementChild.innerText = "contained classes";
                     statistic1.firstElementChild.nextElementSibling.innerText = hoveredCube.object.classes;
@@ -69,7 +69,7 @@ function onKeyPress(e) {
                     statistic3.firstElementChild.innerText = "";
                     statistic3.firstElementChild.nextElementSibling.innerText = "";
                 }
-                else if (hoveredCube.object.type == "class") {
+                else if (hoveredCube.object.type === "class") {
                     nameText.innerText = hoveredCube.object.filename + ":" + hoveredCube.object.name;
                     statistic1.firstElementChild.innerText = "methods";
                     statistic1.firstElementChild.nextElementSibling.innerText = hoveredCube.object.methods;
