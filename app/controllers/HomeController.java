@@ -205,7 +205,7 @@ public class HomeController extends Controller {
             DrawablePackage drw = historyToDrawable(version, jph);
 
             // do the rectangle packing
-            packings.add(new RectanglePacking(drw));
+            packings.add(new RectanglePacking(drw, null));
             drws.add(drw);
         }
 
@@ -214,7 +214,7 @@ public class HomeController extends Controller {
         // find the biggest drawable, considering all versions
         DrawablePackage maxDrw = getMaxDrawable(packings);
 
-        new RectanglePacking(maxDrw);
+        new RectanglePacking(maxDrw, maxDrw);
 
         compareWithMax(maxDrw, packings.get(packings.size() - 1));
 

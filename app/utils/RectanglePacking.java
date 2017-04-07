@@ -23,7 +23,7 @@ public class RectanglePacking {
      *
      * @param drwPkg the root JavaPackage of the repository we want to visualize
      */
-    public RectanglePacking(DrawablePackage drwPkg) {
+    public RectanglePacking(DrawablePackage drwPkg, DrawablePackage maxDrw) {
 
         // will contain a reference to all the drwPackages contained
         drwPackages = new HashMap<>();
@@ -32,12 +32,12 @@ public class RectanglePacking {
         // depth of recursion
         int recDepth = 0;
 
-        getPackageHeuristicMaxWidth(drwPkg, recDepth);
+        getPackageHeuristicMaxWidth(drwPkg, maxDrw, recDepth);
 
         // traverse again, this time to find the positions for drwPackages and classes, using recDepth to set the color
         recDepth = 0;
 
-        pack(drwPkg, new Bin(0, 0, 0, 0, 0), new ArrayList<>(), new ArrayList<>(), recDepth);
+        pack(drwPkg, maxDrw, new Bin(0, 0, 0, 0, 0), new ArrayList<>(), new ArrayList<>(), recDepth);
     }
 
     /**
@@ -49,14 +49,14 @@ public class RectanglePacking {
      * @param depth  the current depth of recursion
      * @return the maximum edge size that pkg will occupy
      */
-    private int getPackageHeuristicMaxWidth(DrawablePackage drwPkg, int depth) {
+    private int getPackageHeuristicMaxWidth(DrawablePackage drwPkg, DrawablePackage maxDrw, int depth) {
 
         // store maximum depth of drwPackages reached
         if (depth > maxDepth) maxDepth = depth;
 
         // recursively iterate on child drwPackages
         for (DrawablePackage child : drwPkg.getDrawablePackages()) {
-            drwPkg.setWidth(drwPkg.getWidth() + getPackageHeuristicMaxWidth(child, depth + 1));
+            drwPkg.setWidth(drwPkg.getWidth() + getPackageHeuristicMaxWidth(child, maxDrw, depth + 1));
         }
 
         // store the width
@@ -77,12 +77,13 @@ public class RectanglePacking {
      * takes care of positioning the JavaPackage pkg and its children and classes
      *
      * @param drwPkg         the current package we're trying to position/fit
+     * @param maxDrw         the package containing the maximum sizes of all versions of the packages
      * @param parentBin      the bin/space occupied by the parent package of pkg
      * @param parentOpenBins the available bins/free spaces where we could try to fit pkg
      * @param recDepth       the current depth of recursion
      * @return the bin/size occupied by pkg
      */
-    private Bin pack(DrawablePackage drwPkg, Bin parentBin, List<Bin> siblingBins, List<Bin> parentOpenBins, int recDepth) {
+    private Bin pack(DrawablePackage drwPkg, DrawablePackage maxDrw, Bin parentBin, List<Bin> siblingBins, List<Bin> parentOpenBins, int recDepth) {
         drwPackages.put(drwPkg.getPkg().getName(), drwPkg);
 
 
@@ -129,15 +130,15 @@ public class RectanglePacking {
 
 
         // add pkg's classes to the total of all classes contained in pkg (recursive as well)
-        drwPkg.getPkg().addClassTotal(drwPkg.getDrawableClasses().size());
+        if (maxDrw == null) drwPkg.getPkg().addClassTotal(drwPkg.getDrawableClasses().size());
 
         // pack the children of pkg before fitting pkg itself
         for (DrawablePackage child : drwPkg.getDrawablePackages()) {
-            Bin childBin = pack(child, localBin, childrenBins, openBins, recDepth + 1);
+            Bin childBin = pack(child, maxDrw, localBin, childrenBins, openBins, recDepth + 1);
             siblingBins.add(childBin);
 
             // add the classes of the children to the total number of classes of pkg
-            drwPkg.getPkg().addClassTotal(child.getPkg().getClassTotal());
+            if (maxDrw == null) drwPkg.getPkg().addClassTotal(child.getPkg().getClassTotal());
 
             // add the size of the child package to the size of pkg
             localBin.mergeBin(childBin);
