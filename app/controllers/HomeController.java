@@ -12,7 +12,6 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import play.api.Play;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -28,6 +27,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static utils.DrawableUtils.compareWithMax;
 import static utils.DrawableUtils.getMaxDrawable;
 import static utils.DrawableUtils.historyToDrawable;
 import static utils.FileUtils.deleteDir;
@@ -104,7 +104,6 @@ public class HomeController extends Controller {
             // try to download the given repository
             try {
                 git = Git.cloneRepository()
-                        .setCredentialsProvider(new UsernamePasswordCredentialsProvider("AurecchiaP", ""))
                         // for debugging, prints data nicely in System.out
                         // .setProgressMonitor(new TextProgressMonitor(new PrintWriter(System.out)))
 
@@ -215,13 +214,18 @@ public class HomeController extends Controller {
         // find the biggest drawable, considering all versions
         DrawablePackage maxDrw = getMaxDrawable(packings);
 
+        new RectanglePacking(maxDrw);
+
+        compareWithMax(maxDrw, packings.get(packings.size() - 1));
+
         taskNumber = 0;
 
         // create json object
         Gson gson = new Gson();
         final JsonObject jsonObject = new JsonObject();
         // add visualization data
-        jsonObject.add("visualization", gson.fromJson(toJSON(drws.get(10)), JsonElement.class));
+        // jsonObject.add("visualization", gson.fromJson(toJSON(drws.get(3)), JsonElement.class));
+        jsonObject.add("visualization", gson.fromJson(toJSON(maxDrw), JsonElement.class));
         // add list of versions
         jsonObject.add("versions", gson.fromJson(new Gson().toJson(versions), JsonElement.class));
         jsonObject.add("maxDrw", gson.fromJson(new Gson().toJson(maxDrw), JsonElement.class));
@@ -247,9 +251,6 @@ public class HomeController extends Controller {
             currentRepo = repo;
 
             final LsRemoteCommand lsCmd = new LsRemoteCommand(null)
-
-                    // FIXME to download private repo
-                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider("AurecchiaP", ""))
                     .setRemote(repo);
             try {
                 // print for debugging

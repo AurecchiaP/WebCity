@@ -21,6 +21,7 @@ public class DrawablePackage extends Drawable {
 
     private int width;
     private int depth;
+    private int height;
     private int color;
     /**
      * the JavaPackage that this drawable refers to
@@ -69,6 +70,14 @@ public class DrawablePackage extends Drawable {
 
     public void setDepth(int depth) {
         this.depth = depth;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
     }
 
     public int getZ() {

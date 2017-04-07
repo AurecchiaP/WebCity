@@ -2,6 +2,7 @@ package utils;
 
 import models.JavaClass;
 import models.JavaPackage;
+import models.drawables.Drawable;
 import models.drawables.DrawableClass;
 import models.drawables.DrawablePackage;
 import models.history.JavaPackageHistory;
@@ -121,5 +122,20 @@ public abstract class DrawableUtils {
             }
         }
         return maxDrw;
+    }
+
+    public static void compareWithMax(DrawablePackage drw, RectanglePacking packing) {
+        // if in packing there is drw package
+        // FIXME account for relative paths, eg main/src vs /src
+        if(packing.getDrwPackages().containsKey(drw.getPkg().getName())) {
+            drw.setHeight(1);
+        }
+        else {
+            drw.setHeight(0);
+        }
+
+        for (DrawablePackage childDrw : drw.getDrawablePackages()) {
+            compareWithMax(childDrw, packing);
+        }
     }
 }

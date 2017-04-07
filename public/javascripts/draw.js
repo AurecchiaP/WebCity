@@ -52,6 +52,7 @@ function draw(drwPkg) {
  * @param {object} drwPkg - the root package of the visualization to be drawn
  */
 function recDraw(drwPkg) {
+    if (drwPkg.height === 0) return;
     // recursion on the child packages, to be drawn first
     for (var i = 0; i < drwPkg.drawablePackages.length; ++i) {
         recDraw(drwPkg.drawablePackages[i]);
@@ -121,7 +122,7 @@ function drawPackage(drwPkg) {
     // size of the package
     var width = drwPkg.width * scale;
     var depth = drwPkg.depth * scale;
-    if(width == 0 || depth == 0) return;
+    if(width === 0 || depth === 0) return;
     var height = packageHeight * scale;
 
     // position of package

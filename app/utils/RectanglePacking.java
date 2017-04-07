@@ -31,14 +31,14 @@ public class RectanglePacking {
         // traverse recursively the drwPackages to find out the maximum size needed for the visualization and the maximum
         // depth of recursion
         int recDepth = 0;
-        getPackageMaxWidth(drwPkg, recDepth);
+
+        getPackageHeuristicMaxWidth(drwPkg, recDepth);
 
         // traverse again, this time to find the positions for drwPackages and classes, using recDepth to set the color
         recDepth = 0;
 
         pack(drwPkg, new Bin(0, 0, 0, 0, 0), new ArrayList<>(), new ArrayList<>(), recDepth);
     }
-
 
     /**
      * recursively iterate from pkg, to find out the sizes of its children drwPackages to find out the space needed to draw
@@ -49,14 +49,14 @@ public class RectanglePacking {
      * @param depth  the current depth of recursion
      * @return the maximum edge size that pkg will occupy
      */
-    private int getPackageMaxWidth(DrawablePackage drwPkg, int depth) {
+    private int getPackageHeuristicMaxWidth(DrawablePackage drwPkg, int depth) {
 
         // store maximum depth of drwPackages reached
         if (depth > maxDepth) maxDepth = depth;
 
         // recursively iterate on child drwPackages
         for (DrawablePackage child : drwPkg.getDrawablePackages()) {
-            drwPkg.setWidth(drwPkg.getWidth() + getPackageMaxWidth(child, depth + 1));
+            drwPkg.setWidth(drwPkg.getWidth() + getPackageHeuristicMaxWidth(child, depth + 1));
         }
 
         // store the width
@@ -72,7 +72,6 @@ public class RectanglePacking {
         drwPkg.sortChildren();
         return drwPkg.getWidth();
     }
-
 
     /**
      * takes care of positioning the JavaPackage pkg and its children and classes
