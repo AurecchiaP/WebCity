@@ -214,7 +214,7 @@ public class HomeController extends Controller {
 
         new RectanglePacking(maxDrw, maxDrw);
 
-        compareWithMax(maxDrw, packings.get(10));
+        compareWithMax(maxDrw, packings.get(0));
 
         taskNumber = 0;
 

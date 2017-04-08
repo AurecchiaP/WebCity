@@ -1,6 +1,7 @@
 var meshes = [];
 var scale;
 var packageHeight;
+var box;
 
 
 /**
@@ -34,11 +35,13 @@ function draw(drwPkg) {
     mesh = new THREE.Mesh(geometry, material);
 
     // bounding box to know size of total mesh; then move camera to its center, and update OrbitControls accordingly
-    var box = new THREE.Box3().setFromObject(mesh);
-    camera.position.x -= -box.getSize().x / 2;
-    camera.position.y -= -box.getSize().y / 2;
-    controls.target.set(box.getSize().x / 2, box.getSize().y / 2, 0);
-    controls.update();
+    if (!box) {
+        box = new THREE.Box3().setFromObject(mesh);
+        camera.position.x -= -box.getSize().x / 2;
+        camera.position.y -= -box.getSize().y / 2;
+        controls.target.set(box.getSize().x / 2, box.getSize().y / 2, 0);
+        controls.update();
+    }
 
     // add the mesh to the scene and notify that the visualization is ready
     mesh.castShadow = true;
@@ -60,10 +63,10 @@ function clearVisualization() {
         }
     });
     meshes.forEach(function (object) {
-            scene.remove(object);
-            object.material.dispose();
-            object.geometry.dispose();
-            object = undefined;
+        scene.remove(object);
+        object.material.dispose();
+        object.geometry.dispose();
+        object = undefined;
     });
     meshes = [];
 }

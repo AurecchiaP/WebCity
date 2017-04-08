@@ -89,6 +89,7 @@ function getData(id) {
             var json = JSON.parse(data);
             console.log(json);
             addVersions(json.versions);
+            $('#current-version').text(json.versions[0]);
             init(json.visualization);
         }, error: function () {
 

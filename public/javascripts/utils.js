@@ -24,6 +24,7 @@ function getVersion(e) {
             console.log("valid version");
             var json = JSON.parse(data);
             console.log(json);
+            $('#current-version').text(e.target.innerText);
             clearVisualization();
             draw(json.visualization);
 
