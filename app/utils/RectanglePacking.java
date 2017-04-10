@@ -283,6 +283,7 @@ public class RectanglePacking {
             fitPackage(bin, drwPkg);
         } else {
             fitClasses(bin, drwPkg);
+            drwPkg.setClassesBin(bin.copy());
         }
 
         bin.setX1(bin.getX1() - pad);
@@ -342,7 +343,7 @@ public class RectanglePacking {
      * @param bin    the Bin in which the classes will be put
      * @param drwPkg the JavaPackage that contains the classes that will be put in bin
      */
-    private void fitClasses(Bin bin, DrawablePackage drwPkg) {
+    public void fitClasses(Bin bin, DrawablePackage drwPkg) {
 
         List<DrawableClass> classes = drwPkg.getDrawableClasses();
         int totalClasses = classes.size();
@@ -364,6 +365,9 @@ public class RectanglePacking {
         }
     }
 
+    /**
+     * @return the map of packages contained in this rectangle packing
+     */
     public Map<String, DrawablePackage> getDrwPackages() {
         return Collections.unmodifiableMap(drwPackages);
     }

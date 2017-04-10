@@ -4,7 +4,7 @@ package utils;
  * Class that represents a rectangle, defined by the 5 points x1, x2, y1, y2 and z.
  * z needs no upper bound since we are not stacking objects of varying size on the z axis.
  */
-class Bin {
+public class Bin {
     private int x1;
     private int x2;
     private int y1;
@@ -133,7 +133,7 @@ class Bin {
     }
 
     /**
-     * @return returns a new Bin of the same size of other
+     * @return returns a new Bin of the same size of this
      */
     Bin copy() {
         return new Bin(this.getX1(), this.getX2(), this.getY1(), this.getY2(), this.getZ());

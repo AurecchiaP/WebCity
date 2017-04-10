@@ -2,6 +2,8 @@ package models.drawables;
 
 
 import models.JavaPackage;
+import utils.Bin;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +31,7 @@ public class DrawablePackage extends Drawable {
     private JavaPackage pkg;
     private List<DrawablePackage> drawablePackages;
     private List<DrawableClass> drawableClasses;
+    private Bin classesBin;
 
     public DrawablePackage(int cx, int cy, int z, int color, JavaPackage pkg) {
         this.cx = cx;
@@ -131,6 +134,13 @@ public class DrawablePackage extends Drawable {
         this.drawableClasses.add(cls);
     }
 
+    public Bin getClassesBin() {
+        return classesBin;
+    }
+
+    public void setClassesBin(Bin classesBin) {
+        this.classesBin = classesBin;
+    }
 
     /**
      * sorts the child packages by their size, in descending order

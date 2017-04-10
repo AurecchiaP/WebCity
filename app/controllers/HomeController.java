@@ -258,7 +258,6 @@ public class HomeController extends Controller {
             e.printStackTrace();
             return badRequest();
         }
-
     }
 
 
@@ -274,7 +273,7 @@ public class HomeController extends Controller {
     }
 
     /**
-     * not used yet
+     * returns the visualisation data for a given version of the repository
      */
     public Result getVersion() {
         String version = formFactory.form().bindFromRequest().get("version");
@@ -287,7 +286,6 @@ public class HomeController extends Controller {
         Gson gson = new Gson();
         final JsonObject jsonObject = new JsonObject();
         // add visualization data
-        // jsonObject.add("visualization", gson.fromJson(toJSON(drws.get(3)), JsonElement.class));
         jsonObject.add("visualization", gson.fromJson(toJSON(maxDrw), JsonElement.class));
         // add list of versions
         jsonObject.add("maxDrw", gson.fromJson(new Gson().toJson(maxDrw), JsonElement.class));

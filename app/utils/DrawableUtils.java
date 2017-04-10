@@ -126,12 +126,19 @@ public abstract class DrawableUtils {
 
     public static void compareWithMax(DrawablePackage drw, RectanglePacking packing) {
         // if in packing there is drw package
-        if(packing.getDrwPackages().containsKey(drw.getPkg().getName())) {
+        if (packing.getDrwPackages().containsKey(drw.getPkg().getName())) {
             drw.setVisible(true);
+            // if the package has some classes, place them
+            if(drw.getClassesBin() != null) {
+                ArrayList<DrawableClass> temp = new ArrayList<>();
+                temp.addAll(packing.getDrwPackages().get(drw.getPkg().getName()).getDrawableClasses());
+                drw.setDrawableClasses(temp);
+                packing.fitClasses(drw.getClassesBin(), drw);
+            }
+
             // FIXME can't just overwrite, have to keep position
             // FIXME when making max package, have a set of classes contained?
-        }
-        else {
+        } else {
             drw.setVisible(false);
         }
 
