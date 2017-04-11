@@ -10,3 +10,7 @@ jdk:
 
 scala:
  - 2.11.8
+
+after_success:
+ - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+ - sbt docker:publish
