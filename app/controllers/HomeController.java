@@ -71,11 +71,7 @@ public class HomeController extends Controller {
             FileRepository localRepo = new FileRepository(Play.current().path() + "/.git");
             System.out.println(Play.current().path());
             Git git = new Git(localRepo);
-            String version = "";
-            if (git.tagList().call().iterator().hasNext()) {
-                version = git.tagList().call().get(git.tagList().call().size() - 1).getName().replace("refs/tags/", "");
-
-            }
+            String version = git.tagList().call().get(git.tagList().call().size() - 1).getName().replace("refs/tags/", "");
             git.close();
 
             return ok(views.html.main.render("Web City", version, null));
