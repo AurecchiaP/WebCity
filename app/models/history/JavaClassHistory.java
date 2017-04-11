@@ -12,11 +12,21 @@ import java.util.List;
  */
 public class JavaClassHistory {
 
+    private String name;
     private List<JavaClass> classHistories;
 
-    public JavaClassHistory(List<JavaClass> classHistories) {
+    public JavaClassHistory(String name, List<JavaClass> classHistories) {
+        this.name = name;
         this.classHistories = classHistories;
 
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public List<JavaClass> getClassHistories() {
@@ -26,6 +36,10 @@ public class JavaClassHistory {
     public void setClassHistories(List<JavaClass> classHistories) {
         this.classHistories.clear();
         this.classHistories.addAll(classHistories);
+    }
+
+    public void addClassHistory(JavaClass jc) {
+        this.classHistories.add(jc);
     }
 
 }

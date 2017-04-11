@@ -1,8 +1,8 @@
 package models.drawables;
 
 
-// TODO make it nice, don't return lists and stuff
 import models.JavaPackage;
+import utils.Bin;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,6 +23,7 @@ public class DrawablePackage extends Drawable {
 
     private int width;
     private int depth;
+    private boolean visible;
     private int color;
     /**
      * the JavaPackage that this drawable refers to
@@ -30,6 +31,7 @@ public class DrawablePackage extends Drawable {
     private JavaPackage pkg;
     private List<DrawablePackage> drawablePackages;
     private List<DrawableClass> drawableClasses;
+    private Bin classesBin;
 
     public DrawablePackage(int cx, int cy, int z, int color, JavaPackage pkg) {
         this.cx = cx;
@@ -71,6 +73,14 @@ public class DrawablePackage extends Drawable {
 
     public void setDepth(int depth) {
         this.depth = depth;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 
     public int getZ() {
@@ -124,6 +134,13 @@ public class DrawablePackage extends Drawable {
         this.drawableClasses.add(cls);
     }
 
+    public Bin getClassesBin() {
+        return classesBin;
+    }
+
+    public void setClassesBin(Bin classesBin) {
+        this.classesBin = classesBin;
+    }
 
     /**
      * sorts the child packages by their size, in descending order

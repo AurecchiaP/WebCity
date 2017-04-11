@@ -17,6 +17,7 @@ var statistic2 = document.getElementById("statistic2");
 var statistic3 = document.getElementById("statistic3");
 
 
+
 /**
  * takes care of initialising the visualisation (sets up canvas, scene, lights, renderer, controls...)
  */
@@ -70,7 +71,7 @@ function init(json) {
     renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
     renderer.shadowMap.enabled = true;
 
-    // renderer.shadowMap.autoUpdate = false;
+    renderer.shadowMap.autoUpdate = false;
 
     // quality vs performance
     renderer.shadowMap.type = THREE.PCFShadowMap; // default
@@ -102,9 +103,9 @@ function init(json) {
  * updates the texts based on the hovered object, and updates the render
  */
 
-var w;
+// var w;
+var c = 0;
 function render() {
-
     camera.getWorldDirection(vector);
 
     light.position.copy(camera.position);
@@ -121,7 +122,7 @@ function render() {
 
         if (!isPinned) {
 
-            if (hoveredCube.object.type == "package") {
+            if (hoveredCube.object.type === "package") {
                 nameText.innerText = hoveredCube.object.name;
 
                 statistic1.firstElementChild.innerText = "contained classes";
@@ -131,7 +132,7 @@ function render() {
                 statistic3.firstElementChild.innerText = "";
                 statistic3.firstElementChild.nextElementSibling.innerText = "";
             }
-            else if (hoveredCube.object.type == "class") {
+            else if (hoveredCube.object.type === "class") {
                 nameText.innerText = hoveredCube.object.filename + ":" + hoveredCube.object.name;
 
                 statistic1.firstElementChild.innerText = "methods";
@@ -152,5 +153,9 @@ function render() {
         }
     }
 
+    c++;
+    if (c % 5 === 0) {
+        renderer.shadowMap.needsUpdate = true;
+    }
     renderer.render(scene, camera);
 }

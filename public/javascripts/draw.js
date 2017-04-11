@@ -1,6 +1,7 @@
 var meshes = [];
 var scale;
 var packageHeight;
+var box;
 
 
 /**
@@ -16,7 +17,7 @@ function draw(drwPkg) {
     // merge the meshes into a single new mesh; this makes the visualization faster/less computationally expensive.
     // we still have the array `meshes` with the invisible, single meshes so that we can tell them apart for callbacks and
     // other similar things
-    var geometry = mergeMeshes(meshes);
+    geometry = mergeMeshes(meshes);
 
     // TODO best looking, but computationally expensive
     // var material = new THREE.MeshStandardMaterial({
@@ -26,7 +27,7 @@ function draw(drwPkg) {
     //     visible: true
     // });
 
-    var material = new THREE.MeshPhongMaterial({
+    material = new THREE.MeshPhongMaterial({
         shading: THREE.SmoothShading,
         vertexColors: THREE.VertexColors,
         visible: true
@@ -34,11 +35,13 @@ function draw(drwPkg) {
     mesh = new THREE.Mesh(geometry, material);
 
     // bounding box to know size of total mesh; then move camera to its center, and update OrbitControls accordingly
-    var box = new THREE.Box3().setFromObject(mesh);
-    camera.position.x -= -box.getSize().x / 2;
-    camera.position.y -= -box.getSize().y / 2;
-    controls.target.set(box.getSize().x / 2, box.getSize().y / 2, 0);
-    controls.update();
+    if (!box) {
+        box = new THREE.Box3().setFromObject(mesh);
+        camera.position.x -= -box.getSize().x / 2;
+        camera.position.y -= -box.getSize().y / 2;
+        controls.target.set(box.getSize().x / 2, box.getSize().y / 2, 0);
+        controls.update();
+    }
 
     // add the mesh to the scene and notify that the visualization is ready
     mesh.castShadow = true;
@@ -48,10 +51,33 @@ function draw(drwPkg) {
 }
 
 /**
+ * cleans the scene of the current objects, to prepare for a new visualisation
+ */
+function clearVisualization() {
+    scene.children.forEach(function (object) {
+        if (object.type === "Mesh") {
+            scene.remove(object);
+            object.material.dispose();
+            object.geometry.dispose();
+            object = undefined;
+        }
+    });
+    meshes.forEach(function (object) {
+        scene.remove(object);
+        object.material.dispose();
+        object.geometry.dispose();
+        object = undefined;
+    });
+    meshes = [];
+}
+
+/**
  * recursively call recDraw on child packages and draw the packages and their classes
  * @param {object} drwPkg - the root package of the visualization to be drawn
  */
 function recDraw(drwPkg) {
+    if (!drwPkg.visible || (drwPkg.width === 0 && drwPkg.depth === 0)) return;
+    console.log(drwPkg);
     // recursion on the child packages, to be drawn first
     for (var i = 0; i < drwPkg.drawablePackages.length; ++i) {
         recDraw(drwPkg.drawablePackages[i]);
@@ -72,6 +98,8 @@ function recDraw(drwPkg) {
  */
 function drawClass(drwCls) {
 
+    if (!drwCls.visible) return;
+    // if (!drwCls.visible) return;
     // adding 10 to attributes and methods, to have a lower bound (else we won't see the class)
     var clsHeight = (drwCls.cls.methods + 5) * scale;
     var clsWidth = (drwCls.cls.attributes + 5) * scale;
@@ -121,7 +149,7 @@ function drawPackage(drwPkg) {
     // size of the package
     var width = drwPkg.width * scale;
     var depth = drwPkg.depth * scale;
-    if(width == 0 || depth == 0) return;
+    if (width === 0 || depth === 0) return;
     var height = packageHeight * scale;
 
     // position of package

@@ -1,5 +1,3 @@
-
-
 var submitButton = document.getElementById("submitButton");
 var btn = document.getElementById("testBtn");
 var inputField = document.getElementById("inputField");
@@ -9,7 +7,7 @@ var inputField = document.getElementById("inputField");
  * sends a request to the server with the repository linked in the input field; if valid, visualizes it
  */
 
-submitButton.onclick = function() {
+submitButton.onclick = function () {
 
     // send repo link to server
     var r = jsRoutes.controllers.HomeController.visualization();
@@ -26,7 +24,9 @@ submitButton.onclick = function() {
 
             // show success message and progress bar
             $("#successMessage").css('opacity', '1');
-            setTimeout(function() {$("#successMessage").css('opacity', '0');}, 2000);
+            setTimeout(function () {
+                $("#successMessage").css('opacity', '0');
+            }, 2000);
 
             document.getElementById("progressBar").style.width = "100%";
 
@@ -35,14 +35,15 @@ submitButton.onclick = function() {
             getData(id);
 
 
-
             console.log("valid repository");
 
         }, error: function () {
 
             // show error message
             $("#errorMessage").css('opacity', '1');
-            setTimeout(function() {$("#errorMessage").css('opacity', '0');}, 2000);
+            setTimeout(function () {
+                $("#errorMessage").css('opacity', '0');
+            }, 2000);
             console.log("invalid repository");
         }
     });
@@ -62,7 +63,7 @@ function poll() {
             //update the progress bar with the data received from server
             var json = JSON.parse(data);
             // $('.progress-bar').css('width', json.percentage+'%').attr('aria-valuenow', json.percentage).html(+ json.task - 2 + '/3');
-            $('.progress-bar').css('width', json.percentage+'%');
+            $('.progress-bar').css('width', json.percentage + '%');
 
         }, error: function () {
             console.log("poll error");
@@ -89,6 +90,7 @@ function getData(id) {
             var json = JSON.parse(data);
             console.log(json);
             addVersions(json.versions);
+            $('#current-version').text(json.versions[0]);
             init(json.visualization);
         }, error: function () {
 

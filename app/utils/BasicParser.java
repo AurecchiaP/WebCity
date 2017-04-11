@@ -1,12 +1,12 @@
 package utils;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import com.google.gson.Gson;
 import models.*;
 import models.metrics.LinesOfCode;
 import models.metrics.NumberOfAttributes;
@@ -14,13 +14,8 @@ import models.metrics.NumberOfMethods;
 import play.api.Play;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
 
 /**
  * Utility class that takes the path of the root of a local repository and parses its contents, starting if possible
@@ -91,14 +86,17 @@ public class BasicParser {
                     FileInputStream in;
                     try {
                         in = new FileInputStream(file);
+//                        System.out.println(file.getName());
                         CompilationUnit cu = JavaParser.parse(in);
 
                         ClassVisitor cv = new ClassVisitor(pkg, file.getPath().replaceFirst(repoPath, ""));
                         cv.visit(cu, null);
 
                     } catch (IOException e) {
-//                        System.out.println(file.getName());
-                        e.printStackTrace();
+                        System.out.println("IO reading exception in file " + file.getName() + ", file will be ignored");
+                    }
+                    catch (ParseProblemException e) {
+                        System.out.println("Parse exception in file " + file.getName() + ", file will be ignored");
                     }
                 }
             }

@@ -4,7 +4,7 @@ package utils;
  * Class that represents a rectangle, defined by the 5 points x1, x2, y1, y2 and z.
  * z needs no upper bound since we are not stacking objects of varying size on the z axis.
  */
-class Bin {
+public class Bin {
     private int x1;
     private int x2;
     private int y1;
@@ -121,19 +121,19 @@ class Bin {
      * @param other the Bin to be compared to
      */
     boolean overlap(final Bin other) {
-                // overlap X
+        // overlap X
         return (this.getX2() > other.getX1() && this.getX1() < other.getX2()
-                        ||
-                        other.getX2() > this.getX1() && other.getX1() < this.getX2())
-                        &&
+                ||
+                other.getX2() > this.getX1() && other.getX1() < this.getX2())
+                &&
                 // overlap Y
-                        (this.getY2() > other.getY1() && this.getY1() < other.getY2()
+                (this.getY2() > other.getY1() && this.getY1() < other.getY2()
                         ||
                         other.getY2() > this.getY1() && other.getY1() < this.getY2());
     }
 
     /**
-     * @return returns a new Bin of the same size of other
+     * @return returns a new Bin of the same size of this
      */
     Bin copy() {
         return new Bin(this.getX1(), this.getX2(), this.getY1(), this.getY2(), this.getZ());

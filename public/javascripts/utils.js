@@ -20,8 +20,13 @@ function getVersion(e) {
         data: {
             version: e.target.innerText
         },
-        success: function () {
+        success: function (data) {
             console.log("valid version");
+            var json = JSON.parse(data);
+            console.log(json);
+            $('#current-version').text(e.target.innerText);
+            clearVisualization();
+            draw(json.visualization);
 
         }, error: function () {
             console.log("invalid version");
