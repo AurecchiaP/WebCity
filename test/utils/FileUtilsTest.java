@@ -1,13 +1,10 @@
 package utils;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class FileUtilsTest extends TestCase {
-    public void setUp() throws Exception {
-        super.setUp();
+public class FileUtilsTest {
 
-    }
-
+    @Test
     public void testDeleteDir() throws Exception {
 
     }

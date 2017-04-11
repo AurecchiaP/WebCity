@@ -1,13 +1,10 @@
 package utils;
 
-import junit.framework.TestCase;
+import org.junit.*;
 
-public class RectanglePackingTest extends TestCase {
-    public void setUp() throws Exception {
-        super.setUp();
+public class RectanglePackingTest {
 
-    }
-
+    @Test
     public void newRectanglePackingTest() throws Exception {
 
     }
