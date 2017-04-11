@@ -69,14 +69,14 @@ public class HomeController extends Controller {
     public Result index() {
         try {
             FileRepository localRepo = new FileRepository(Play.current().path() + "/.git");
-            System.out.println(Play.current().path());
-            Git git = new Git(localRepo);
-            String version = git.tagList().call().get(git.tagList().call().size() - 1).getName().replace("refs/tags/", "");
-            git.close();
+//            System.out.println(Play.current().path());
+//            Git git = new Git(localRepo);
+//            String version = git.tagList().call().get(git.tagList().call().size() - 1).getName().replace("refs/tags/", "");
+//            git.close();
 
-            return ok(views.html.main.render("Web City", version, null));
+            return ok(views.html.main.render("Web City", "version", null));
 
-        } catch (IOException | GitAPIException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
