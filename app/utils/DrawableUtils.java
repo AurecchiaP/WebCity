@@ -155,6 +155,11 @@ public abstract class DrawableUtils {
     public static void compareWithMax(DrawablePackage maxDrw, RectanglePacking packing) {
         // if in packing there is drw package
         if (packing.getDrwPackages().containsKey(maxDrw.getPkg().getName())) {
+            if(maxDrw.getPkg().getName().equals("/src/test/java/org/junit/tests/experimental/rules")) {
+//                System.out.println(packing.getDrwPackages().get(maxDrw.getPkg().getName()).getPkg().getClassTotal());
+                System.out.println(packing.getDrwPackages().get(maxDrw.getPkg().getName()).getPkg().getClassTotal());
+            }
+            maxDrw.getPkg().setClassTotal(packing.getDrwPackages().get(maxDrw.getPkg().getName()).getPkg().getClassTotal());
             maxDrw.setVisible(true);
             // if the package has some classes, place them
             if (maxDrw.getClassesBin() != null) {

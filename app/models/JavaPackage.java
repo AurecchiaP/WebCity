@@ -85,4 +85,8 @@ public class JavaPackage {
     public int getClassTotal() {
         return totalClasses;
     }
+
+    public void setClassTotal(int totalClasses) {
+        this.totalClasses = totalClasses;
+    }
 }
