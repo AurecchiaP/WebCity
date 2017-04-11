@@ -76,7 +76,8 @@ function clearVisualization() {
  * @param {object} drwPkg - the root package of the visualization to be drawn
  */
 function recDraw(drwPkg) {
-    if (!drwPkg.visible) return;
+    if (!drwPkg.visible || (drwPkg.width === 0 && drwPkg.depth === 0)) return;
+    console.log(drwPkg);
     // recursion on the child packages, to be drawn first
     for (var i = 0; i < drwPkg.drawablePackages.length; ++i) {
         recDraw(drwPkg.drawablePackages[i]);

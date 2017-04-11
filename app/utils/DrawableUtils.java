@@ -5,12 +5,13 @@ import models.JavaPackage;
 import models.drawables.Drawable;
 import models.drawables.DrawableClass;
 import models.drawables.DrawablePackage;
+import models.drawables.MaxDrawable;
 import models.history.JavaPackageHistory;
+import org.eclipse.jgit.internal.storage.pack.PackWriter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static utils.RectanglePacking.getMinClassesSize;
 
 
 public abstract class DrawableUtils {
@@ -76,12 +77,43 @@ public abstract class DrawableUtils {
      */
     public static DrawablePackage getMaxDrawable(List<RectanglePacking> packings) {
 
-        // make a map nameOfPackage -> DrawablePackage that contains all the possible packages; if there's more than one
-        // version, we take the biggest one
+        //FIXME refactor into a class
+        // map of all the packages present between all the versions
         Map<String, DrawablePackage> totalPackages = new HashMap<>();
+        // Map(packageName, Map(className, DrawableClass))
+        Map<String, Map<String, DrawableClass>> totalClasses = new HashMap<>();
         for (RectanglePacking packing : packings) {
-            packing.getDrwPackages().forEach((k, v) -> totalPackages.merge(k, v, (v1, v2) -> v1.getWidth() * v1.getDepth() > v2.getWidth() * v2.getDepth() ? v1 : v2));
+
+//            System.out.println(packing.getVersion());
+
+            packing.getDrwPackages().forEach((k, v) -> {
+                if (!totalPackages.containsKey(k)) {
+                    totalPackages.put(k, v);
+                    totalClasses.put(k, new HashMap<>());
+                }
+//                    System.out.println("b " + totalClasses.get(k).size());
+                    Map<String, DrawableClass> map = totalClasses.get(k);
+                    v.getDrawableClasses().forEach(cls -> {
+                        if(!map.containsKey(cls.getCls().getName()) || map.get(cls.getCls().getName()).getCls().getAttributes().getValue() < cls.getCls().getAttributes().getValue()) {
+                            map.put(cls.getCls().getName(), cls);
+                        }
+                    });
+//                    System.out.println("af " + totalClasses.get(k).size());
+//                }
+//                else {
+//                    totalPackages.put(k, v);
+//                    totalClasses.put(k, new HashMap<>());
+//
+//                }
+            });
         }
+
+        totalPackages.forEach(((k, drw) -> {
+//            System.out.println(drw.getPkg().getName() + " " + totalClasses.get(k).values().size());
+            drw.setDrawableClasses(new ArrayList<>(totalClasses.get(k).values()));
+//            drw.setWidth(getMinClassesSize(drw));
+        }));
+
 
         // remove the list of childPackages, since these are specific to the versions they came from
         for (DrawablePackage drw : totalPackages.values()) {
@@ -135,9 +167,6 @@ public abstract class DrawableUtils {
                 drw.setDrawableClasses(temp);
                 packing.fitClasses(drw.getClassesBin(), drw);
             }
-
-            // FIXME can't just overwrite, have to keep position
-            // FIXME when making max package, have a set of classes contained?
         } else {
             drw.setVisible(false);
         }

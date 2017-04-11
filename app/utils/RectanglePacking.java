@@ -14,7 +14,8 @@ public class RectanglePacking {
 
     private int maxDepth = 0;
     private int maxLines = 0;
-    private final int padding = 25;
+    private String version;
+    private static final int padding = 25;
     private Map<String, DrawablePackage> drwPackages;
 
 
@@ -23,7 +24,8 @@ public class RectanglePacking {
      *
      * @param drwPkg the root JavaPackage of the repository we want to visualize
      */
-    public RectanglePacking(DrawablePackage drwPkg, DrawablePackage maxDrw) {
+    public RectanglePacking(DrawablePackage drwPkg, DrawablePackage maxDrw, String version) {
+        this.version = version;
 
         // will contain a reference to all the drwPackages contained
         drwPackages = new HashMap<>();
@@ -305,7 +307,7 @@ public class RectanglePacking {
      * @param drwPkg the package we want to know the minimum size of
      * @return the minimum edge size for this package
      */
-    private int getMinClassesSize(DrawablePackage drwPkg) {
+    public static int getMinClassesSize(DrawablePackage drwPkg) {
         List<DrawableClass> classes = drwPkg.getDrawableClasses();
 
         // if there are no classes, return 0
@@ -327,7 +329,7 @@ public class RectanglePacking {
      * @param bin    the Bin in which the JavaPackage pkg will be put
      * @param drwPkg the JavaPackage that will be put in bin
      */
-    private void fitPackage(Bin bin, DrawablePackage drwPkg) {
+    public void fitPackage(Bin bin, DrawablePackage drwPkg) {
         // set position of package to center of bin
         drwPkg.setCx(bin.getX1() + bin.width() / 2);
         drwPkg.setCy(bin.getY1() + bin.depth() / 2);
@@ -363,6 +365,14 @@ public class RectanglePacking {
             cls.setZ(drwPkg.getZ());
             cls.setColor(RGBtoInt(55 + (200 * cls.getCls().getLinesOfCode().getValue() / maxLines), 55 + (200 * cls.getCls().getLinesOfCode().getValue() / maxLines), 255));
         }
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     /**
