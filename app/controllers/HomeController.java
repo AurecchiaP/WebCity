@@ -281,7 +281,6 @@ public class HomeController extends Controller {
 
         compareWithMax(maxDrw, packings.get(versions.indexOf(version)));
 
-
         // create json object
         Gson gson = new Gson();
         final JsonObject jsonObject = new JsonObject();

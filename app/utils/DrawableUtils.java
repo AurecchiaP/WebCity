@@ -2,16 +2,11 @@ package utils;
 
 import models.JavaClass;
 import models.JavaPackage;
-import models.drawables.Drawable;
 import models.drawables.DrawableClass;
 import models.drawables.DrawablePackage;
-import models.drawables.MaxDrawable;
 import models.history.JavaPackageHistory;
-import org.eclipse.jgit.internal.storage.pack.PackWriter;
 
 import java.util.*;
-
-import static utils.RectanglePacking.getMinClassesSize;
 
 
 public abstract class DrawableUtils {
@@ -82,36 +77,30 @@ public abstract class DrawableUtils {
         Map<String, DrawablePackage> totalPackages = new HashMap<>();
         // Map(packageName, Map(className, DrawableClass))
         Map<String, Map<String, DrawableClass>> totalClasses = new HashMap<>();
+
+        // for every packing(which means every version)
         for (RectanglePacking packing : packings) {
 
-//            System.out.println(packing.getVersion());
-
+            // for every package in a version, update the list of total classes adding (if necessary) the classes
+            // of this specific version
             packing.getDrwPackages().forEach((k, v) -> {
+
                 if (!totalPackages.containsKey(k)) {
                     totalPackages.put(k, v);
                     totalClasses.put(k, new HashMap<>());
                 }
-//                    System.out.println("b " + totalClasses.get(k).size());
-                    Map<String, DrawableClass> map = totalClasses.get(k);
-                    v.getDrawableClasses().forEach(cls -> {
-                        if(!map.containsKey(cls.getCls().getName()) || map.get(cls.getCls().getName()).getCls().getAttributes().getValue() < cls.getCls().getAttributes().getValue()) {
-                            map.put(cls.getCls().getName(), cls);
-                        }
-                    });
-//                    System.out.println("af " + totalClasses.get(k).size());
-//                }
-//                else {
-//                    totalPackages.put(k, v);
-//                    totalClasses.put(k, new HashMap<>());
-//
-//                }
+                Map<String, DrawableClass> map = totalClasses.get(k);
+                v.getDrawableClasses().forEach(cls -> {
+                    if (!map.containsKey(cls.getCls().getName()) || map.get(cls.getCls().getName()).getCls().getAttributes().getValue() < cls.getCls().getAttributes().getValue()) {
+                        map.put(cls.getCls().getName(), cls);
+                    }
+                });
             });
         }
 
+        // add the total list of classes to the corresponding package drawable
         totalPackages.forEach(((k, drw) -> {
-//            System.out.println(drw.getPkg().getName() + " " + totalClasses.get(k).values().size());
             drw.setDrawableClasses(new ArrayList<>(totalClasses.get(k).values()));
-//            drw.setWidth(getMinClassesSize(drw));
         }));
 
 
@@ -156,22 +145,37 @@ public abstract class DrawableUtils {
         return maxDrw;
     }
 
-    public static void compareWithMax(DrawablePackage drw, RectanglePacking packing) {
+    /**
+     * this method sets to visible the packages and classes of the maximum drawable only if they are present in the
+     * specific version represented by packing
+     *
+     * @param maxDrw  the drawable that contains all packages and classes considering all versions
+     * @param packing the rectangle packing of a specific version we want to visualise
+     */
+    public static void compareWithMax(DrawablePackage maxDrw, RectanglePacking packing) {
         // if in packing there is drw package
-        if (packing.getDrwPackages().containsKey(drw.getPkg().getName())) {
-            drw.setVisible(true);
+        if (packing.getDrwPackages().containsKey(maxDrw.getPkg().getName())) {
+            maxDrw.setVisible(true);
             // if the package has some classes, place them
-            if(drw.getClassesBin() != null) {
-                ArrayList<DrawableClass> temp = new ArrayList<>();
-                temp.addAll(packing.getDrwPackages().get(drw.getPkg().getName()).getDrawableClasses());
-                drw.setDrawableClasses(temp);
-                packing.fitClasses(drw.getClassesBin(), drw);
+            if (maxDrw.getClassesBin() != null) {
+                // set the correct classes to visible
+                maxDrw.getDrawableClasses().forEach(maxDrwCls -> {
+                    //fixme don't use arraylists
+                    boolean found = false;
+                    for (DrawableClass packingDrwCls : packing.getDrwPackages().get(maxDrw.getPkg().getName()).getDrawableClasses()) {
+                        if (packingDrwCls.getCls().getName().equals(maxDrwCls.getCls().getName())) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    maxDrwCls.setVisible(found);
+                });
             }
         } else {
-            drw.setVisible(false);
+            maxDrw.setVisible(false);
         }
 
-        for (DrawablePackage childDrw : drw.getDrawablePackages()) {
+        for (DrawablePackage childDrw : maxDrw.getDrawablePackages()) {
             compareWithMax(childDrw, packing);
         }
     }
