@@ -67,8 +67,8 @@ public class HomeController extends Controller {
      * default route for index page
      */
     public Result index() {
-        try {
-            FileRepository localRepo = new FileRepository(Play.current().path() + "/.git");
+//        try {
+//            FileRepository localRepo = new FileRepository(Play.current().path() + "/.git");
 //            System.out.println(Play.current().path());
 //            Git git = new Git(localRepo);
 //            String version = git.tagList().call().get(git.tagList().call().size() - 1).getName().replace("refs/tags/", "");
@@ -76,11 +76,11 @@ public class HomeController extends Controller {
 
             return ok(views.html.main.render("Web City", "version", null));
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return badRequest();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return badRequest();
     }
 
 
