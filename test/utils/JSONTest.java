@@ -1,15 +1,11 @@
 package utils;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class JSONTest extends TestCase {
-    public void setUp() throws Exception {
-        super.setUp();
+public class JSONTest {
 
-    }
-
+    @Test
     public void testToJSON() throws Exception {
 
     }
-
 }

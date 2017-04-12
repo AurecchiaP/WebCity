@@ -1,8 +1,12 @@
 package utils;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class RGBTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+
+public class RGBTest  {
+
+    @Test
     public void testRGBtoInt() throws Exception {
         int r = 255;
         int g = 120;

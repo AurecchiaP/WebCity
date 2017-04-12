@@ -1,62 +1,78 @@
 package utils;
 
 import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
-public class BinTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+
+public class BinTest {
     Bin bin;
 
+    @Before
     public void setUp() throws Exception {
         bin = new Bin(0, 10, 0, 15, 5);
-        super.setUp();
     }
 
+
+    @Test
     public void testGetX1() throws Exception {
         assertEquals(0, bin.getX1());
 
     }
 
+    @Test
     public void testSetX1() throws Exception {
         bin.setX1(100);
         assertEquals(100, bin.getX1());
     }
 
+    @Test
     public void testGetX2() throws Exception {
         assertEquals(10, bin.getX2());
     }
 
+    @Test
     public void testSetX2() throws Exception {
         bin.setX2(100);
         assertEquals(100, bin.getX2());
     }
 
+    @Test
     public void testGetY1() throws Exception {
         assertEquals(0, bin.getY1());
 
     }
 
+    @Test
     public void testSetY1() throws Exception {
         bin.setY1(100);
         assertEquals(100, bin.getY1());
     }
 
+    @Test
     public void testGetY2() throws Exception {
         assertEquals(15, bin.getY2());
     }
 
+    @Test
     public void testSetY2() throws Exception {
         bin.setY2(100);
         assertEquals(100, bin.getY2());
     }
 
+    @Test
     public void testGetZ() throws Exception {
         assertEquals(5, bin.getZ());
     }
 
+    @Test
     public void testSetZ() throws Exception {
         bin.setZ(100);
         assertEquals(100, bin.getZ());
     }
 
+    @Test
     public void testWidth() throws Exception {
         assertEquals(10, bin.width());
         bin.setX1(20);
@@ -64,6 +80,7 @@ public class BinTest extends TestCase {
         assertEquals(30, bin.width());
     }
 
+    @Test
     public void testDepth() throws Exception {
         assertEquals(15, bin.depth());
         bin.setY1(20);
@@ -71,6 +88,7 @@ public class BinTest extends TestCase {
         assertEquals(30, bin.depth());
     }
 
+    @Test
     public void testMergeBin() throws Exception {
 
         // simple merge 1
