@@ -28,6 +28,17 @@ public class DrawableClass extends Drawable {
         this.cls = cls;
     }
 
+    /**
+     * copy constructor
+     */
+    public DrawableClass(DrawableClass drwCls) {
+        this.cx = drwCls.getCx();
+        this.cy = drwCls.getCy();
+        this.z = drwCls.getZ();
+        this.color = drwCls.getColor();
+        this.cls = new JavaClass(drwCls.getCls());
+    }
+
     public int getCx() {
         return cx;
     }

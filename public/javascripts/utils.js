@@ -10,7 +10,6 @@ function addVersions(json) {
 }
 
 function getVersion(e) {
-    console.log(e.target.innerText);
 
     var r = jsRoutes.controllers.HomeController.getVersion();
     $.ajax({
@@ -23,7 +22,6 @@ function getVersion(e) {
         success: function (data) {
             console.log("valid version");
             var json = JSON.parse(data);
-            console.log(json);
             $('#current-version').text(e.target.innerText);
             clearVisualization();
             draw(json.visualization);

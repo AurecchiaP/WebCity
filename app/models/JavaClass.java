@@ -26,6 +26,17 @@ public class JavaClass {
     }
 
     /**
+     * copy constructor
+     */
+    public JavaClass(JavaClass cls) {
+        this.filename = cls.getFilename();
+        this.name = cls.getName();
+        this.methods = new NumberOfMethods(cls.getMethods().getValue());
+        this.attributes = new NumberOfAttributes(cls.getAttributes().getValue());
+        this.linesOfCode = new LinesOfCode(cls.getLinesOfCode().getValue());
+    }
+
+    /**
      * @return the name of the file that the class is contained in
      */
     public String getFilename() {
@@ -60,6 +71,22 @@ public class JavaClass {
     public Metric<Integer> getMethods() {
         return new NumberOfMethods(methods.getValue());
     }
+
+    /**
+     * @param methods the new Metric that we will set to the class
+     */
+    public void setMethods(Metric<Integer> methods) {
+        this.methods = methods;
+    }
+
+    /**
+     * @param attributes the new Metric that we will set to the class
+     */
+    public void setAttributes(Metric<Integer> attributes) {
+        this.attributes = attributes;
+    }
+
+
 
     /**
      * @return a Metric object representing the number of attributes

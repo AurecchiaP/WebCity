@@ -86,13 +86,14 @@ public abstract class DrawableUtils {
             packing.getDrwPackages().forEach((k, v) -> {
 
                 if (!totalPackages.containsKey(k)) {
-                    totalPackages.put(k, v);
+                    DrawablePackage newDrwPkg = new DrawablePackage(v);
+                    totalPackages.put(k, newDrwPkg);
                     totalClasses.put(k, new HashMap<>());
                 }
                 Map<String, DrawableClass> map = totalClasses.get(k);
                 v.getDrawableClasses().forEach(cls -> {
                     if (!map.containsKey(cls.getCls().getName()) || map.get(cls.getCls().getName()).getCls().getAttributes().getValue() < cls.getCls().getAttributes().getValue()) {
-                        map.put(cls.getCls().getName(), cls);
+                        map.put(cls.getCls().getName(), new DrawableClass(cls));
                     }
                 });
             });
@@ -102,7 +103,6 @@ public abstract class DrawableUtils {
         totalPackages.forEach(((k, drw) -> {
             drw.setDrawableClasses(new ArrayList<>(totalClasses.get(k).values()));
         }));
-
 
         // remove the list of childPackages, since these are specific to the versions they came from
         for (DrawablePackage drw : totalPackages.values()) {
@@ -153,12 +153,9 @@ public abstract class DrawableUtils {
      * @param packing the rectangle packing of a specific version we want to visualise
      */
     public static void compareWithMax(DrawablePackage maxDrw, RectanglePacking packing) {
+
         // if in packing there is drw package
         if (packing.getDrwPackages().containsKey(maxDrw.getPkg().getName())) {
-            if(maxDrw.getPkg().getName().equals("/src/test/java/org/junit/tests/experimental/rules")) {
-//                System.out.println(packing.getDrwPackages().get(maxDrw.getPkg().getName()).getPkg().getClassTotal());
-                System.out.println(packing.getDrwPackages().get(maxDrw.getPkg().getName()).getPkg().getClassTotal());
-            }
             maxDrw.getPkg().setClassTotal(packing.getDrwPackages().get(maxDrw.getPkg().getName()).getPkg().getClassTotal());
             maxDrw.setVisible(true);
             // if the package has some classes, place them
@@ -168,8 +165,12 @@ public abstract class DrawableUtils {
                     //fixme don't use arraylists
                     boolean found = false;
                     for (DrawableClass packingDrwCls : packing.getDrwPackages().get(maxDrw.getPkg().getName()).getDrawableClasses()) {
+                        found = false;
                         if (packingDrwCls.getCls().getName().equals(maxDrwCls.getCls().getName())) {
                             found = true;
+                            maxDrwCls.getCls().setLinesOfCode(packingDrwCls.getCls().getLinesOfCode());
+                            maxDrwCls.getCls().setMethods(packingDrwCls.getCls().getMethods());
+                            maxDrwCls.getCls().setAttributes(packingDrwCls.getCls().getAttributes());
                             break;
                         }
                     }

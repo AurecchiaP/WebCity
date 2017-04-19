@@ -100,7 +100,7 @@ function recDraw(drwPkg) {
 function drawClass(drwCls) {
 
     if (!drwCls.visible) return;
-    // if (!drwCls.visible) return;
+
     // adding 10 to attributes and methods, to have a lower bound (else we won't see the class)
     var clsHeight = (drwCls.cls.methods + 5) * scale;
     var clsWidth = (drwCls.cls.attributes + 5) * scale;
@@ -178,7 +178,7 @@ function drawPackage(drwPkg, totalClasses) {
     var classes = 0;
     for (var j = 0; j < drwPkg.drawableClasses.length; ++j) {
         var cls = drwPkg.drawableClasses[j];
-        if (cls.visible) classes += 1
+        if (cls.visible) classes += 1;
     }
     mesh.classes = classes;
 
