@@ -34,7 +34,7 @@ public class RectanglePacking {
         // depth of recursion
         int recDepth = 0;
 
-        getPackageHeuristicMaxWidth(drwPkg, maxDrw, recDepth);
+        getPackageHeuristicMaxWidth(drwPkg, recDepth);
 
         // traverse again, this time to find the positions for drwPackages and classes, using recDepth to set the color
         recDepth = 0;
@@ -51,14 +51,14 @@ public class RectanglePacking {
      * @param depth  the current depth of recursion
      * @return the maximum edge size that pkg will occupy
      */
-    private int getPackageHeuristicMaxWidth(DrawablePackage drwPkg, DrawablePackage maxDrw, int depth) {
+    private int getPackageHeuristicMaxWidth(DrawablePackage drwPkg, int depth) {
 
         // store maximum depth of drwPackages reached
         if (depth > maxDepth) maxDepth = depth;
 
         // recursively iterate on child drwPackages
         for (DrawablePackage child : drwPkg.getDrawablePackages()) {
-            drwPkg.setWidth(drwPkg.getWidth() + getPackageHeuristicMaxWidth(child, maxDrw, depth + 1));
+            drwPkg.setWidth(drwPkg.getWidth() + getPackageHeuristicMaxWidth(child, depth + 1));
         }
 
         // store the width
@@ -87,7 +87,6 @@ public class RectanglePacking {
      */
     private Bin pack(DrawablePackage drwPkg, DrawablePackage maxDrw, Bin parentBin, List<Bin> siblingBins, List<Bin> parentOpenBins, int recDepth) {
         drwPackages.put(drwPkg.getPkg().getName(), drwPkg);
-
 
         // the Bins available to pkg's children drwPackages
         List<Bin> openBins = new ArrayList<>();
@@ -130,13 +129,14 @@ public class RectanglePacking {
             }
         }
 
-
         // add pkg's classes to the total of all classes contained in pkg (recursive as well)
         if (maxDrw == null) drwPkg.getPkg().addClassTotal(drwPkg.getDrawableClasses().size());
 
-        // pack the children of pkg before fitting pkg itself
+        // recursively pack the children of pkg before fitting pkg itself
         for (DrawablePackage child : drwPkg.getDrawablePackages()) {
+
             Bin childBin = pack(child, maxDrw, localBin, childrenBins, openBins, recDepth + 1);
+
             siblingBins.add(childBin);
 
             // add the classes of the children to the total number of classes of pkg
@@ -148,11 +148,8 @@ public class RectanglePacking {
 
         if (drwPkg.getPkg().getClassTotal() == 0) {
             drwPkg.setWidth(0);
-            return new Bin(0, 0, 0, 0, 0);
+            return new Bin(parentBin.getX1(), parentBin.getX1(), parentBin.getY1(), parentBin.getY1(), parentBin.getZ());
         }
-
-        // FIXME make classes into rectangles and/or put them in bins
-        // TODO to put them in bins: try to put them in a bin, and check for overlaps with all the other children
 
         // bin that will contain the classes of the current package
         Bin classesBin = new Bin(0, 0, 0, 0, 0);
@@ -183,6 +180,7 @@ public class RectanglePacking {
 
         // if no valid open Bin (e.g. first child of package), put local Bin either to the right or above of parentBin
         else {
+
             if (localBin.depth() > localBin.width()) {
                 classesBin.setX1(localBin.getX2());
                 classesBin.setX2(localBin.getX2() + minClassesSize);

@@ -138,4 +138,8 @@ public class Bin {
     Bin copy() {
         return new Bin(this.getX1(), this.getX2(), this.getY1(), this.getY2(), this.getZ());
     }
+
+    String print() {
+        return String.format("%d %d %d %d %d", this.getX1(), this.getX2(), this.getY1(), this.getY2(), this.getZ());
+    }
 }
