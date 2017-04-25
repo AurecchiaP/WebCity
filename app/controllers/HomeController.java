@@ -9,7 +9,6 @@ import models.history.JavaPackageHistory;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.lib.Ref;
 import play.api.Play;
@@ -23,7 +22,6 @@ import utils.HistoryUtils;
 import utils.RectanglePacking;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,7 +37,6 @@ public class HomeController extends Controller {
     private double percentage = 0;
     private int taskNumber = 0;
     private String taskName;
-    private Git git;
     private DrawablePackage maxDrw;
     private List<RectanglePacking> packings;
     private List<String> versions;
@@ -67,30 +64,13 @@ public class HomeController extends Controller {
      * default route for index page
      */
     public Result index() {
-//        try {
-//            FileRepository localRepo = new FileRepository(Play.current().path() + "/.git");
-//            System.out.println(Play.current().path());
-//            Git git = new Git(localRepo);
-//            String version = git.tagList().call().get(git.tagList().call().size() - 1).getName().replace("refs/tags/", "");
-//            git.close();
-
-            return ok(views.html.main.render("Web City", "version", null));
-
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return badRequest();
+        return ok(views.html.main.render("Web City", "version", null));
     }
-
 
     /**
      * downloads the linked repository, parses it, does the rectangle packing, and returns the data to be visualized
      */
-    // FIXME should there be option to authenticate and use private repos? though then they
-    // FIXME would be on the server
     public Result getVisualizationData() {
-        JavaPackage pkg;
         versions = new ArrayList<>();
 
         System.out.println("Downloading depo...");
@@ -99,6 +79,7 @@ public class HomeController extends Controller {
         deleteDir(new File(Play.current().path() + "/repository"));
 
         // try to download the given repository
+        Git git;
         try {
             git = Git.cloneRepository()
                     // for debugging, prints data nicely in System.out
@@ -158,7 +139,7 @@ public class HomeController extends Controller {
         }
 
         // parse the .java files of the repository
-        pkg = BasicParser.parseRepo(Play.current().path() + "/repository");
+        BasicParser.parseRepo(Play.current().path() + "/repository");
 
         System.out.println("Done downloading repository.");
 
@@ -186,8 +167,7 @@ public class HomeController extends Controller {
 
         System.out.println("Done parsing.");
 
-        // a list of drawables and rectangle packings for all the versions
-        List<DrawablePackage> drws = new ArrayList<>();
+        // a list of rectangle packings for all the versions
         packings = new ArrayList<>();
 
         System.out.println("Start packing...");
@@ -200,7 +180,6 @@ public class HomeController extends Controller {
 
             // do the rectangle packing
             packings.add(new RectanglePacking(drw, null, version));
-            drws.add(drw);
         }
 
         System.out.println("Done packing.");
@@ -218,7 +197,6 @@ public class HomeController extends Controller {
         Gson gson = new Gson();
         final JsonObject jsonObject = new JsonObject();
         // add visualization data
-        // jsonObject.add("visualization", gson.fromJson(toJSON(drws.get(3)), JsonElement.class));
         jsonObject.add("visualization", gson.fromJson(toJSON(maxDrw), JsonElement.class));
         // add list of versions
         jsonObject.add("versions", gson.fromJson(new Gson().toJson(versions), JsonElement.class));

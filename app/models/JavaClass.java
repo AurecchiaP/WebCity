@@ -17,7 +17,11 @@ public class JavaClass {
     private Metric<Integer> attributes;
     private Metric<Integer> linesOfCode;
 
-    public JavaClass(String filename, String name, Metric<Integer> methods, Metric<Integer> attributes, Metric<Integer> linesOfCode) {
+    public JavaClass(String filename,
+                     String name,
+                     Metric<Integer> methods,
+                     Metric<Integer> attributes,
+                     Metric<Integer> linesOfCode) {
         this.filename = filename;
         this.name = name;
         this.methods = methods;

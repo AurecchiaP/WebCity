@@ -92,7 +92,10 @@ public abstract class DrawableUtils {
                 }
                 Map<String, DrawableClass> map = totalClasses.get(k);
                 v.getDrawableClasses().forEach(cls -> {
-                    if (!map.containsKey(cls.getCls().getName()) || map.get(cls.getCls().getName()).getCls().getAttributes().getValue() < cls.getCls().getAttributes().getValue()) {
+                    String name = cls.getCls().getName();
+                    if (!map.containsKey(name)
+                            ||
+                            map.get(name).getCls().getAttributes().getValue() < cls.getCls().getAttributes().getValue()) {
                         map.put(cls.getCls().getName(), new DrawableClass(cls));
                     }
                 });
@@ -156,7 +159,9 @@ public abstract class DrawableUtils {
 
         // if in packing there is drw package
         if (packing.getDrwPackages().containsKey(maxDrw.getPkg().getName())) {
-            maxDrw.getPkg().setClassTotal(packing.getDrwPackages().get(maxDrw.getPkg().getName()).getPkg().getClassTotal());
+            maxDrw.getPkg().setClassTotal(
+                    packing.getDrwPackages().get(maxDrw.getPkg().getName()).getPkg().getClassTotal());
+
             maxDrw.setVisible(true);
             // if the package has some classes, place them
             if (maxDrw.getClassesBin() != null) {
