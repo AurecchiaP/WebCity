@@ -12,7 +12,7 @@ function draw(drwPkg) {
     packageHeight = 20;
 
     // create the meshes for all the packages and classes
-    recDraw(drwPkg);
+    var totalClasses = recDraw(drwPkg);
 
     // merge the meshes into a single new mesh; this makes the visualization faster/less computationally expensive.
     // we still have the array `meshes` with the invisible, single meshes so that we can tell them apart for callbacks and
@@ -47,7 +47,7 @@ function draw(drwPkg) {
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     scene.add(mesh);
-    loaded(drwPkg);
+    loaded(totalClasses);
 }
 
 /**
@@ -76,11 +76,11 @@ function clearVisualization() {
  * @param {object} drwPkg - the root package of the visualization to be drawn
  */
 function recDraw(drwPkg) {
-    if (!drwPkg.visible || (drwPkg.width === 0 && drwPkg.depth === 0)) return;
-    console.log(drwPkg);
+    var totalClasses = 0;
+    if (!drwPkg.visible || (drwPkg.width === 0 && drwPkg.depth === 0)) return 0;
     // recursion on the child packages, to be drawn first
     for (var i = 0; i < drwPkg.drawablePackages.length; ++i) {
-        recDraw(drwPkg.drawablePackages[i]);
+        totalClasses += recDraw(drwPkg.drawablePackages[i]);
     }
 
     // draw the classes of pkg
@@ -88,7 +88,8 @@ function recDraw(drwPkg) {
         drawClass(drwPkg.drawableClasses[j]);
     }
 
-    drawPackage(drwPkg);
+    totalClasses += drawPackage(drwPkg, totalClasses);
+    return totalClasses;
 }
 
 
@@ -99,7 +100,7 @@ function recDraw(drwPkg) {
 function drawClass(drwCls) {
 
     if (!drwCls.visible) return;
-    // if (!drwCls.visible) return;
+
     // adding 10 to attributes and methods, to have a lower bound (else we won't see the class)
     var clsHeight = (drwCls.cls.methods + 5) * scale;
     var clsWidth = (drwCls.cls.attributes + 5) * scale;
@@ -144,12 +145,13 @@ function drawClass(drwCls) {
 /**
  * creates the mesh representing the given package, with the right position, size and attributes
  * @param {object} drwPkg - the object representing the package to be drawn
+ * @param totalClasses - the number of classes contained in children packages
  */
-function drawPackage(drwPkg) {
+function drawPackage(drwPkg, totalClasses) {
     // size of the package
     var width = drwPkg.width * scale;
     var depth = drwPkg.depth * scale;
-    if (width === 0 || depth === 0) return;
+    if (width === 0 || depth === 0) return 0;
     var height = packageHeight * scale;
 
     // position of package
@@ -173,8 +175,14 @@ function drawPackage(drwPkg) {
     // create the mash with the needed data
     mesh = new THREE.Mesh(geometry, material);
     mesh.name = drwPkg.pkg.name;
-    mesh.classes = drwPkg.drawableClasses.length;
-    mesh.totalClasses = drwPkg.pkg.totalClasses;
+    var classes = 0;
+    for (var j = 0; j < drwPkg.drawableClasses.length; ++j) {
+        var cls = drwPkg.drawableClasses[j];
+        if (cls.visible) classes += 1;
+    }
+    mesh.classes = classes;
+
+    mesh.totalClasses = totalClasses + classes;
     mesh.width = width;
     mesh.depth = depth;
     mesh.type = "package";
@@ -187,18 +195,19 @@ function drawPackage(drwPkg) {
     // add mesh to the array of meshes and the scene
     meshes.push(mesh);
     scene.add(mesh);
+    return classes;
 }
 
 
 /**
  * readies the page when the visualization is loaded
  */
-function loaded(data) {
+function loaded(totalClasses) {
     // document.getElementById("loader-container").remove();
     $("#main-content").css('display', 'none');
     $("#container").css('display', 'block');
     $("#versions").css('display', 'block');
-    classesText.innerText = data.pkg.totalClasses;
+    classesText.innerText = totalClasses;
 
     // notify the renderer that our html canvas has appeared
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);

@@ -43,6 +43,26 @@ public class DrawablePackage extends Drawable {
         this.drawableClasses = new ArrayList<>();
     }
 
+
+    /**
+     * copy constructor
+     */
+    public DrawablePackage(DrawablePackage drwPkg) {
+        this.cx = drwPkg.getCx();
+        this.cy = drwPkg.getCy();
+        this.z = drwPkg.getZ();
+        this.color = drwPkg.getColor();
+        this.pkg = drwPkg.getPkg();
+        this.drawablePackages = new ArrayList<>();
+        drwPkg.getDrawablePackages().forEach(childDrwPkg -> {
+            this.drawablePackages.add(new DrawablePackage(childDrwPkg));
+        });
+        this.drawableClasses = new ArrayList<>();
+        drwPkg.getDrawableClasses().forEach(childDrwCls -> {
+            this.drawableClasses.add(new DrawableClass(childDrwCls));
+        });
+    }
+
     public int getCx() {
         return cx;
     }

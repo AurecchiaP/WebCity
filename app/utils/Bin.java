@@ -19,42 +19,73 @@ public class Bin {
         this.z = z;
     }
 
+    /**
+     * @return the left side of the bin
+     */
     public int getX1() {
         return x1;
     }
 
+
+    /**
+     * @param x1 the new position of the left side to be set to this Bin
+     */
     public void setX1(int x1) {
         this.x1 = x1;
     }
 
+    /**
+     * @return the right side of the bin
+     */
     public int getX2() {
         return x2;
     }
 
+    /**
+     * @param x2 the new position of the right side to be set to this Bin
+     */
     public void setX2(int x2) {
         this.x2 = x2;
     }
 
+    /**
+     * @return the bottom side of the bin
+     */
     public int getY1() {
         return y1;
     }
 
+    /**
+     * @param y1 the new position of the bottom side to be set to this Bin
+     */
     public void setY1(int y1) {
         this.y1 = y1;
     }
 
+    /**
+     * @return the top side of the bin
+     */
     public int getY2() {
         return y2;
     }
 
+    /**
+     * @param y2 the new position of the top side to be set to this Bin
+     */
     public void setY2(int y2) {
         this.y2 = y2;
     }
 
+    /**
+     * @return the height of the bin
+     */
     public int getZ() {
         return z;
     }
 
+    /**
+     * @param z the new height to be set to this Bin
+     */
     public void setZ(int z) {
         this.z = z;
     }
@@ -137,5 +168,12 @@ public class Bin {
      */
     Bin copy() {
         return new Bin(this.getX1(), this.getX2(), this.getY1(), this.getY2(), this.getZ());
+    }
+
+    /**
+     * @return returns a String containing the x1, x2, y1, y2, z of the bin
+     */
+    String print() {
+        return String.format("%d %d %d %d %d", this.getX1(), this.getX2(), this.getY1(), this.getY2(), this.getZ());
     }
 }

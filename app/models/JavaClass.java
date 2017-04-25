@@ -17,12 +17,27 @@ public class JavaClass {
     private Metric<Integer> attributes;
     private Metric<Integer> linesOfCode;
 
-    public JavaClass(String filename, String name, Metric<Integer> methods, Metric<Integer> attributes, Metric<Integer> linesOfCode) {
+    public JavaClass(String filename,
+                     String name,
+                     Metric<Integer> methods,
+                     Metric<Integer> attributes,
+                     Metric<Integer> linesOfCode) {
         this.filename = filename;
         this.name = name;
         this.methods = methods;
         this.attributes = attributes;
         this.linesOfCode = linesOfCode;
+    }
+
+    /**
+     * copy constructor
+     */
+    public JavaClass(JavaClass cls) {
+        this.filename = cls.getFilename();
+        this.name = cls.getName();
+        this.methods = new NumberOfMethods(cls.getMethods().getValue());
+        this.attributes = new NumberOfAttributes(cls.getAttributes().getValue());
+        this.linesOfCode = new LinesOfCode(cls.getLinesOfCode().getValue());
     }
 
     /**
@@ -60,6 +75,22 @@ public class JavaClass {
     public Metric<Integer> getMethods() {
         return new NumberOfMethods(methods.getValue());
     }
+
+    /**
+     * @param methods the new Metric that we will set to the class
+     */
+    public void setMethods(Metric<Integer> methods) {
+        this.methods = methods;
+    }
+
+    /**
+     * @param attributes the new Metric that we will set to the class
+     */
+    public void setAttributes(Metric<Integer> attributes) {
+        this.attributes = attributes;
+    }
+
+
 
     /**
      * @return a Metric object representing the number of attributes
