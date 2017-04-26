@@ -114,8 +114,6 @@ public class BasicParser {
         private JavaPackage pkg;
         private JavaClass cls;
         private String filename;
-        private int methods = 0;
-        private int attributes = 0;
         private int numberOfLines = 0;
 
         private ClassVisitor(JavaPackage pkg, String filename) {
@@ -124,38 +122,25 @@ public class BasicParser {
 
         }
 
-
         // for each class found
         @Override
         public void visit(ClassOrInterfaceDeclaration n, Void arg) {
 
 
+            // if the node class n has some content, set it's number of lines
             if (n.getBegin().isPresent() && n.getEnd().isPresent()) {
                 numberOfLines = n.getEnd().get().line - n.getBegin().get().line + 1;
             } else {
                 numberOfLines = 0;
             }
 
-            n.accept(new VoidVisitorAdapter<Void>() {
-
-                // for each method found
-                @Override
-                public void visit(MethodDeclaration n, Void arg) {
-                    methods += 1;
-                }
-            }, null);
-
-            n.accept(new VoidVisitorAdapter<Void>() {
-
-                // for each attribute found
-                @Override
-                public void visit(FieldDeclaration n, Void arg) {
-                    attributes += 1;
-                }
-            }, null);
-
             // create the new JavaClass with the given number of methods and attributes, and add it to the parent package
-            cls = new JavaClass(filename, n.getName().toString(), new NumberOfMethods(methods), new NumberOfAttributes(attributes), new LinesOfCode(numberOfLines));
+            cls = new JavaClass(filename,
+                    n.getName().toString(),
+                    new NumberOfMethods(n.getMethods().size()),
+                    new NumberOfAttributes(n.getFields().size()),
+                    new LinesOfCode(numberOfLines));
+
             pkg.addClass(cls);
             super.visit(n, arg);
         }
