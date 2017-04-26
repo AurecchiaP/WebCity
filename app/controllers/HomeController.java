@@ -9,8 +9,10 @@ import models.history.JavaPackageHistory;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.revwalk.RevCommit;
 import play.api.Play;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -20,6 +22,10 @@ import utils.BasicParser;
 import models.JavaPackage;
 import utils.HistoryUtils;
 import utils.RectanglePacking;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 
 import java.io.File;
 import java.util.*;
@@ -40,6 +46,8 @@ public class HomeController extends Controller {
     private DrawablePackage maxDrw;
     private List<RectanglePacking> packings;
     private List<String> versions;
+    private List<String> commits;
+    private List<String> dates;
 
     @Inject
     private FormFactory formFactory;
@@ -72,6 +80,8 @@ public class HomeController extends Controller {
      */
     public Result getVisualizationData() {
         versions = new ArrayList<>();
+        commits = new ArrayList<>();
+        dates = new ArrayList<>();
 
         System.out.println("Downloading depo...");
 
@@ -129,7 +139,24 @@ public class HomeController extends Controller {
                     .setDirectory(new File(Play.current().path() + "/repository"))
                     .call();
 
+            Iterable<RevCommit> revCommits = git.log()
+                    .call();
+            for(RevCommit revCommit : revCommits){
+                PersonIdent authorIdent = revCommit.getAuthorIdent();
+                Date authorDate = authorIdent.getWhen();
+                System.out.println(revCommit.getName());
+                System.out.println(revCommit.getShortMessage());
+                System.out.println(authorIdent.getName());
+//                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                System.out.println(dateFormat.format(authorDate));
+                System.out.println();
+                commits.add(revCommit.getName());
+                dates.add(dateFormat.format(authorDate));
+
+            }
             versions = git.tagList().call().stream().map(Ref::getName).collect(Collectors.toList());
+
 
             git.close();
         } catch (GitAPIException e) {
@@ -150,15 +177,16 @@ public class HomeController extends Controller {
 
         System.out.println("Start parsing...");
         // iterate all the versions of the repo
-        for (String version : versions) {
+        for (String commit : commits) {
 
             // set repository to the next version
             try {
-                git.checkout().setCreateBranch(true).setName("test_" + version).setStartPoint(version).call();
+//                git.checkout().setCreateBranch(true).setName("test_" + version).setStartPoint(version).call();
+                git.checkout().setName(commit).call();
 
                 // parse the current version
                 JavaPackage temp = BasicParser.parseRepo(Play.current().path() + "/repository");
-                jph = historyUtils.toHistory(version, temp);
+                jph = historyUtils.toHistory(commit, temp);
 
             } catch (GitAPIException e) {
                 e.printStackTrace();
@@ -173,13 +201,13 @@ public class HomeController extends Controller {
         System.out.println("Start packing...");
 
 
-        for (String version : versions) {
+        for (String commit : commits) {
 
             // make the packages into drawables to be used for rectangle packing
-            DrawablePackage drw = historyToDrawable(version, jph);
+            DrawablePackage drw = historyToDrawable(commit, jph);
 
             // do the rectangle packing
-            packings.add(new RectanglePacking(drw, null, version));
+            packings.add(new RectanglePacking(drw, null, commit));
         }
 
         System.out.println("Done packing.");
@@ -200,6 +228,8 @@ public class HomeController extends Controller {
         jsonObject.add("visualization", gson.fromJson(toJSON(maxDrw), JsonElement.class));
         // add list of versions
         jsonObject.add("versions", gson.fromJson(new Gson().toJson(versions), JsonElement.class));
+        jsonObject.add("commits", gson.fromJson(new Gson().toJson(commits), JsonElement.class));
+        jsonObject.add("dates", gson.fromJson(new Gson().toJson(dates), JsonElement.class));
         jsonObject.add("maxDrw", gson.fromJson(new Gson().toJson(maxDrw), JsonElement.class));
 
         // send data to client
@@ -250,10 +280,10 @@ public class HomeController extends Controller {
      * returns the visualisation data for a given version of the repository
      */
     public Result getVersion() {
-        String version = formFactory.form().bindFromRequest().get("version");
+        String version = formFactory.form().bindFromRequest().get("version").split("\n")[0];
         System.out.println("version required: " + version);
 
-        compareWithMax(maxDrw, packings.get(versions.indexOf(version)));
+        compareWithMax(maxDrw, packings.get(commits.indexOf(version)));
 
         // create json object
         Gson gson = new Gson();

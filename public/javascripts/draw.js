@@ -206,7 +206,7 @@ function loaded(totalClasses) {
     // document.getElementById("loader-container").remove();
     $("#main-content").css('display', 'none');
     $("#container").css('display', 'block');
-    $("#versions").css('display', 'block');
+    $("#navbar-visualization-items").css('display', 'contents');
     classesText.innerText = totalClasses;
 
     // notify the renderer that our html canvas has appeared

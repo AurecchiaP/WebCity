@@ -40,7 +40,7 @@
     padding: 5vh 1vh 1vh 1vh;
 }
 
-#versions {
+#navbar-visualization-items {
     display: none;
 }
 
@@ -50,7 +50,6 @@
     scrollbar-arrow-color: grey;
     max-height: 25vh;
 }
-
 
 .statistic {
     padding-bottom: 4vh;

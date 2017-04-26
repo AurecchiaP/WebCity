@@ -89,7 +89,7 @@ function getData(id) {
             // initialize th visualization
             var json = JSON.parse(data);
             console.log(json);
-            addVersions(json.versions);
+            addVersions(json.commits, json.dates);
             $('#current-version').text(json.versions[0]);
             init(json.visualization);
         }, error: function () {

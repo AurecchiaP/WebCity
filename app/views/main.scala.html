@@ -20,7 +20,7 @@
     </head>
     <body>
 
-        <p id="version">@version</p>
+        @*<p id="version">@version</p>*@
 
         <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
             <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,16 +30,22 @@
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
-
                 </ul>
-                @* Versions dropdown *@
-                <div id="versions" class="btn-group">
-                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span id="current-version">Version</span>
-                    </button>
 
-                    <div id="dropdownList" class="dropdownItems dropdown-menu dropdown-menu-right">
+                <div id="navbar-visualization-items">
+                    <div class="col-2">
+                        <input class="form-control" type="search" placeholder="Search..." id="example-search-input">
+                    </div>
 
+                    @* Versions dropdown *@
+                    <div class="btn-group">
+                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span id="current-version">Version</span>
+                        </button>
+
+                        <div id="dropdownList" class="dropdownItems dropdown-menu dropdown-menu-right">
+
+                        </div>
                     </div>
                 </div>
             </div>
