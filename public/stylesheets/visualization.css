@@ -44,6 +44,21 @@
     display: none;
 }
 
+#search-list {
+    position: absolute;
+    z-index: 100;
+    display: none;
+    overflow-y: scroll;
+    scrollbar-base-color: black;
+    scrollbar-arrow-color: grey;
+    max-height: 25vh;
+}
+
+#search-list:hover {
+    display: block;
+}
+
+
 .dropdownItems {
     overflow-y: scroll;
     scrollbar-base-color: black;

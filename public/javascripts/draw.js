@@ -2,6 +2,7 @@ var meshes = [];
 var scale;
 var packageHeight;
 var box;
+var classes = [];
 
 
 /**
@@ -100,6 +101,7 @@ function recDraw(drwPkg) {
 function drawClass(drwCls) {
 
     if (!drwCls.visible) return;
+    classes.push(drwCls);
 
     // adding 10 to attributes and methods, to have a lower bound (else we won't see the class)
     var clsHeight = (drwCls.cls.methods + 5) * scale;
@@ -125,6 +127,7 @@ function drawClass(drwCls) {
     // create the mash with the needed data
     mesh = new THREE.Mesh(geometry, material);
     mesh.name = drwCls.cls.name;
+    mesh.realColor = color;
     mesh.filename = drwCls.cls.filename;
     mesh.methods = drwCls.cls.methods;
     mesh.attributes = drwCls.cls.attributes;
@@ -186,6 +189,7 @@ function drawPackage(drwPkg, totalClasses) {
     mesh.width = width;
     mesh.depth = depth;
     mesh.type = "package";
+    mesh.realColor = color;
 
     // position the mesh
     mesh.translateX(posX);
@@ -203,7 +207,6 @@ function drawPackage(drwPkg, totalClasses) {
  * readies the page when the visualization is loaded
  */
 function loaded(totalClasses) {
-    // document.getElementById("loader-container").remove();
     $("#main-content").css('display', 'none');
     $("#container").css('display', 'block');
     $("#navbar-visualization-items").css('display', 'contents');
@@ -216,6 +219,8 @@ function loaded(totalClasses) {
 
     // update shadows only once
     renderer.shadowMap.needsUpdate = true;
+
+    setSearchResults();
 
     // add events for visualization callbacks
     window.addEventListener('resize', onWindowResize, false);
@@ -236,7 +241,7 @@ function loaded(totalClasses) {
 function mergeMeshes(meshes) {
     var combined = new THREE.Geometry();
 
-    for (var i = 0; i < meshes.length; i++) {
+    for (var i = 0; i < meshes.length; ++i) {
         meshes[i].updateMatrix();
         combined.merge(meshes[i].geometry, meshes[i].matrix);
     }

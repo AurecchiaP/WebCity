@@ -90,7 +90,7 @@ function getData(id) {
             var json = JSON.parse(data);
             console.log(json);
             addVersions(json.commits, json.dates);
-            $('#current-version').text(json.versions[0]);
+            $('#current-version').text(json.commits[0]);
             init(json.visualization);
         }, error: function () {
 
@@ -98,5 +98,86 @@ function getData(id) {
             clearInterval(id);
             console.log("data fetch error");
         }
+    });
+}
+
+
+var searchObject;
+var searchSelectedItem;
+var searchInput = $('#search-input');
+var searchList = $('#search-list');
+var searchListItems;
+
+searchInput.on('keyup', function (e) {
+    var input = searchInput.val();
+    if (input !== "") {
+        for (var i = 0; i < searchListItems.length; ++i) {
+            if (searchListItems[i].innerText.includes(input)) {
+                searchListItems[i].style.display = "block";
+            } else {
+                searchListItems[i].style.display = "none";
+            }
+        }
+    }
+
+});
+
+searchInput.on('focus', function (e) {
+    searchList.css('display', 'block');
+});
+
+
+searchInput.on('blur', function (e) {
+    searchList.css('display', 'none');
+});
+
+// prevent searchList from disappearing
+searchList.on('mousedown', function (e) {
+    event.preventDefault();
+});
+
+function setSearchResults() {
+    searchList.empty();
+
+    // populate the searchList
+    for (var i = 0; i < meshes.length; ++i) {
+        if (meshes[i].type === "class") {
+            searchList.append(" <a href='#' class='search-list-item list-group-item list-group-item-action'>"
+                + meshes[i].filename + "</a>");
+
+        } else {
+            searchList.append(" <a href='#' class='search-list-item list-group-item list-group-item-action'>"
+                + meshes[i].name + "</a>");
+        }
+
+    }
+    searchListItems = $('.search-list-item');
+    // initially set all search results as invisible
+    for (var j = 0; j < searchListItems.length; ++j) {
+        searchListItems[j].style.display = "none";
+    }
+
+    searchListItems.on('click', function (e) {
+        var newSearchObject = meshes[searchListItems.index(e.target)];
+        // if an object is already selected
+        if (searchObject) {
+            searchSelectedItem.classList.remove("active");
+            searchObject.material.visible = false;
+            // we clicked twice on the same object, so it's not invisible; nothing else to do, return
+            if (searchObject === newSearchObject) {
+                searchObject = null;
+                searchSelectedItem = null;
+                renderer.render(scene, camera);
+                renderer.render(scene, camera);
+                return;
+            }
+        }
+        searchSelectedItem = e.target;
+        searchSelectedItem.classList.add("active");
+        searchObject = newSearchObject;
+        searchObject.material.visible = true;
+        searchObject.material.color.set(0xFF0000);
+        renderer.render(scene, camera);
+        renderer.render(scene, camera);
     });
 }
