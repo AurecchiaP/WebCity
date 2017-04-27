@@ -143,11 +143,11 @@ function setSearchResults() {
     for (var i = 0; i < meshes.length; ++i) {
         if (meshes[i].type === "class") {
             searchList.append(" <a href='#' class='search-list-item list-group-item list-group-item-action'>"
-                + meshes[i].filename + "</a>");
+                + meshes[i].filename + ":" + meshes[i].name + "<br><small>" + meshes[i].type + "</small></a>");
 
         } else {
             searchList.append(" <a href='#' class='search-list-item list-group-item list-group-item-action'>"
-                + meshes[i].name + "</a>");
+                + meshes[i].name + "<br><small>" + meshes[i].type + "</small></a>");
         }
 
     }

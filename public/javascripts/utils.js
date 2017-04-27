@@ -2,21 +2,14 @@
  * adds the list of versions to the dropdown menu
  */
 function addVersions(commits, dates) {
-
+    var items = $('.dropdown-items');
     for(var i = 0; i < commits.length; ++i) {
         // FIXME on click would also return the date!
-        $('.dropdownItems').append("<a href='#' class='list-group-item list-group-item-action'>" + commits[i] + "<small>" + dates[i] + "</small></a>");
-        // $('.dropdownItems').append("<a href='#' class='list-group-item list-group-item-action'>" + json[i] + "</a>");
-    //
-    //
-    //         "<a href='#' class='list-group-item list-group-item-action'>" + json[i] + "</a>"
-    //     </div>"
-    //
-    //
-    //     "<li class='list-group-item justify-content-between'>"  + json[i] +
-    //     " <span class='badge badge-default badge-pill'>1</span> </li>");
+        // searchList.append(" <a href='#' class='search-list-item list-group-item list-group-item-action'>"
+        //     + meshes[i].filename + "</a>");
+        items.append("<a href='#' class='list-group-item list-group-item-action'>" + commits[i] + "<small>" + dates[i] + "</small></a>");
     }
-    $('.dropdownItems').on('click', $('.dropdown-item'), getVersion);
+    items.on('click', $('.dropdown-item'), getVersion);
 }
 
 function getVersion(e) {

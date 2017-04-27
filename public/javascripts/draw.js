@@ -220,6 +220,22 @@ function loaded(totalClasses) {
     // update shadows only once
     renderer.shadowMap.needsUpdate = true;
 
+    var commitsDropdown = $("#commits-dropdown");
+    var commitsList = $("#commits-list");
+
+    commitsDropdown.on('focus', function () {
+        commitsList.css('display', 'block');
+    });
+
+    commitsDropdown.on('blur', function () {
+        commitsList.css('display', 'none');
+    });
+
+    commitsList.on('mousedown', function (e) {
+        commitsDropdown.text(e.target.innerText.split(/\r?\n/)[0]);
+        event.preventDefault();
+    });
+
     setSearchResults();
 
     // add events for visualization callbacks

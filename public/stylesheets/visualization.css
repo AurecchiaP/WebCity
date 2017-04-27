@@ -58,6 +58,18 @@
     display: block;
 }
 
+#commits-list {
+    position: absolute;
+    z-index: 100;
+    display: none;
+    overflow-y: scroll;
+    scrollbar-base-color: black;
+    scrollbar-arrow-color: grey;
+    max-height: 25vh;
+    right: 0;
+    top: 2.5em;
+}
+
 
 .dropdownItems {
     overflow-y: scroll;

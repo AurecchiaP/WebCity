@@ -144,13 +144,13 @@ public class HomeController extends Controller {
             for(RevCommit revCommit : revCommits){
                 PersonIdent authorIdent = revCommit.getAuthorIdent();
                 Date authorDate = authorIdent.getWhen();
-                System.out.println(revCommit.getName());
-                System.out.println(revCommit.getShortMessage());
-                System.out.println(authorIdent.getName());
+//                System.out.println(revCommit.getName());
+//                System.out.println(revCommit.getShortMessage());
+//                System.out.println(authorIdent.getName());
 //                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                System.out.println(dateFormat.format(authorDate));
-                System.out.println();
+//                System.out.println(dateFormat.format(authorDate));
+//                System.out.println();
                 commits.add(revCommit.getName());
                 dates.add(dateFormat.format(authorDate));
 
