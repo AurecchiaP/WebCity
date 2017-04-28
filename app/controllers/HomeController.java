@@ -9,7 +9,8 @@ import models.history.JavaPackageHistory;
 import models.Commit;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
-import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.*;
+import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -23,6 +24,7 @@ import models.JavaPackage;
 import utils.HistoryUtils;
 import utils.RectanglePacking;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
@@ -33,7 +35,6 @@ import java.util.*;
 import static utils.DrawableUtils.compareWithMax;
 import static utils.DrawableUtils.getMaxDrawable;
 import static utils.DrawableUtils.historyToDrawable;
-import static utils.FileUtils.deleteDir;
 import static utils.JSON.toJSON;
 
 public class HomeController extends Controller {
@@ -78,82 +79,98 @@ public class HomeController extends Controller {
     public Result getVisualizationData() {
         commits = new ArrayList<>();
 
-        System.out.println("Downloading depo...");
-
         // remove the old downloaded repository
-        deleteDir(new File(Play.current().path() + "/repository"));
+//        deleteDir(new File(Play.current().path() + "/repository"));
 
         // try to download the given repository
-        Git git;
+        Git git = null;
+
+        // repoName is author/repository
+        String repoName = currentRepo.replace("https://github.com/", "");
+
+        File directory = new File(Play.current().path() + "/repository/" + repoName + "/.git/");
+
+        // if we have cached this repository before
         try {
-            git = Git.cloneRepository()
-                    // for debugging, prints data nicely in System.out
-                    // .setProgressMonitor(new TextProgressMonitor(new PrintWriter(System.out)))
+            if (directory.exists()) {
 
-                    // saves download progress information to send to client
-                    .setProgressMonitor(new ProgressMonitor() {
-                        int downloadedData = 1;
-                        int totalData = 1;
+                git = Git.open(directory);
+                git.checkout().setName("master").call();
+            } else {
+                System.out.println("Downloading depo...");
+                git = Git.cloneRepository()
+                        // for debugging, prints data nicely in System.out
+                        // .setProgressMonitor(new TextProgressMonitor(new PrintWriter(System.out)))
 
-                        @Override
-                        public void start(int totalTasks) {
-                        }
+                        // saves download progress information to send to client
+                        .setProgressMonitor(new ProgressMonitor() {
+                            int downloadedData = 1;
+                            int totalData = 1;
 
-                        @Override
-                        public void beginTask(String title, int totalWork) {
-                            // new task has started; reset downloaded data for this task to 0
-                            downloadedData = 0;
-
-                            // increase task number
-                            ++taskNumber;
-                            taskName = title;
-                            totalData = totalWork;
-                        }
-
-                        @Override
-                        public void update(int completed) {
-                            // update the number of total downloaded data
-                            downloadedData += completed;
-
-                            //update downloaded percentage
-                            if (totalData != 0) {
-                                percentage = ((double) downloadedData / (double) totalData) * 100;
+                            @Override
+                            public void start(int totalTasks) {
                             }
-                        }
 
-                        @Override
-                        public void endTask() {
-                        }
+                            @Override
+                            public void beginTask(String title, int totalWork) {
+                                // new task has started; reset downloaded data for this task to 0
+                                downloadedData = 0;
 
-                        @Override
-                        public boolean isCancelled() {
-                            return false;
-                        }
-                    })
-                    .setURI(currentRepo)
-                    .setDirectory(new File(Play.current().path() + "/repository"))
-                    .call();
+                                // increase task number
+                                ++taskNumber;
+                                taskName = title;
+                                totalData = totalWork;
+                            }
 
-            Iterable<RevCommit> revCommits = git.log()
-                    .call();
+                            @Override
+                            public void update(int completed) {
+                                // update the number of total downloaded data
+                                downloadedData += completed;
+
+                                //update downloaded percentage
+                                if (totalData != 0) {
+                                    percentage = ((double) downloadedData / (double) totalData) * 100;
+                                }
+                            }
+
+                            @Override
+                            public void endTask() {
+                            }
+
+                            @Override
+                            public boolean isCancelled() {
+                                return false;
+                            }
+                        })
+                        .setURI(currentRepo)
+                        //                        .
+                        .setDirectory(new File(Play.current().path() + "/repository/" + repoName))
+                        .setGitDir(new File(Play.current().path() + "/repository/" + repoName + "/.git/"))
+                        .call();
+                System.out.println("Done downloading repository.");
+            }
+
+            Iterable<RevCommit> revCommits = null;
+            revCommits = git.log().call();
+
             for (RevCommit revCommit : revCommits) {
                 PersonIdent authorIdent = revCommit.getAuthorIdent();
                 Date authorDate = authorIdent.getWhen();
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 commits.add(new Commit(revCommit.getName(), authorIdent.getName(), dateFormat.format(authorDate)));
             }
-
-            git.close();
+        } catch (IOException e) {
+            System.out.println("IO error");
+            e.printStackTrace();
+            return badRequest();
         } catch (GitAPIException e) {
-            System.out.println("Failed to download repository.");
+            System.out.println("GitAPI error");
             e.printStackTrace();
             return badRequest();
         }
 
         // parse the .java files of the repository
         BasicParser.parseRepo(Play.current().path() + "/repository");
-
-        System.out.println("Done downloading repository.");
 
         JavaPackageHistory jph = null;
 
@@ -205,6 +222,8 @@ public class HomeController extends Controller {
         compareWithMax(maxDrw, packings.get(0));
 
         taskNumber = 0;
+
+        git.close();
 
         // create json object
         Gson gson = new Gson();
