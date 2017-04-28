@@ -6,7 +6,7 @@ GET     /                           controllers.HomeController.index
 GET     /visualization              controllers.HomeController.visualization
 GET     /poll                       controllers.HomeController.poll
 GET     /getVisualizationData       controllers.HomeController.getVisualizationData
-GET     /getVersion                 controllers.HomeController.getVersion
+GET     /getVersion                 controllers.HomeController.getCommit
 
 
 GET     /javascriptRoutes           controllers.HomeController.javascriptRoutes

@@ -6,139 +6,141 @@
 <html lang="en">
     <head>
         @* Here's where we render the page title `String`. *@
-        <title>@title</title>
+    <title>@title</title>
 
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
-        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/visualization.css")">
-        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("bootstrap-4.0.0-alpha.6-dist/css/bootstrap.min.css")">
-        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("font-awesome-4.7.0/css/font-awesome.min.css")">
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/visualization.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("bootstrap-4.0.0-alpha.6-dist/css/bootstrap.min.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("font-awesome-4.7.0/css/font-awesome.min.css")">
+    <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
 
     </head>
     <body>
 
         @*<p id="version">@version</p>*@
 
-        <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
-            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <a class="navbar-brand" href="#">WebCity</a>
+    <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+        data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+        aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand" href="#">WebCity</a>
 
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-                <div id="navbar-visualization-items">
-                    @* Search input *@
-                    <div id="search-container" class="col-2">
-                        <input class="form-control" type="search" placeholder="Search..." id="search-input">
-                        <div id="search-list">
+            <div id="navbar-visualization-items">
+                @* Search input *@
+            <div id="search-container" class="col-2">
+                <input class="form-control" type="search" placeholder="Search..." id="search-input">
+                <div id="search-list">
                         </div>
-                    </div>
+            </div>
 
-                    <ul class="navbar-nav mr-auto">
+            <ul class="navbar-nav mr-auto">
                     </ul>
 
-                    @* Versions dropdown *@
-                    <div class="btn-group">
-                        <button id="commits-dropdown" class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span id="current-version">Version</span>
-                        </button>
+                @* Versions dropdown *@
+            <div class="btn-group">
+                <button id="commits-dropdown" class="btn btn-secondary btn-sm dropdown-toggle" type="button"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span id="current-version">Version</span>
+                </button>
 
-                        <div id="commits-list" class="dropdown-items">
+                <div id="commits-list" class="dropdown-items">
 
                         </div>
-                    </div>
-                </div>
             </div>
-        </nav>
-
-        <div id="main-content">
-
-            @* Input and submit button *@
-            <div class="col-lg-6">
-                <div class="input-group">
-                    <input type="text" id="inputField" class="form-control" size="35" name="repo" placeholder="Paste repository">
-                    <span class="input-group-btn">
-                        <button id="submitButton" class="btn btn-secondary" type="button">Submit</button>
-                    </span>
-                </div>
-
-                @* Progress bar *@
-                <div id="progressBar" class="progress">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="10" aria-valuemin="10" aria-valuemax="100" style="width: 0%">
-                    </div>
-                </div>
-
-                @* Alert messages *@
-                <div class="alertMessages">
-                    <div id="successMessage" class="alert alert-info fade show" role="alert">
-                        <strong>Success!</strong> Download starting
-                    </div>
-                    <div id="errorMessage" class="alert alert-danger fade show" role="alert">
-                        <strong>Error!</strong> Unable to download
-                    </div>
-                </div>
             </div>
-            @* Content *@
-            @content
         </div>
+    </nav>
+
+    <div id="main-content">
+
+        @* Input and submit button *@
+    <div class="col-lg-6">
+        <div class="input-group">
+            <input type="text" id="inputField" class="form-control" size="35" name="repo" placeholder="Paste repository">
+            <span class="input-group-btn">
+                <button id="submitButton" class="btn btn-secondary" type="button">Submit</button>
+            </span>
+        </div>
+        @* Progress bar *@
+        <div id="progressBar" class="progress">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+            aria-valuenow="10" aria-valuemin="10" aria-valuemax="100" style="width: 0%">
+            </div>
+        </div>
+        @* Alert messages *@
+        <div class="alertMessages">
+            <div id="successMessage" class="alert alert-info fade show" role="alert">
+                <strong>Success!</strong> Download starting
+            </div>
+            <div id="errorMessage" class="alert alert-danger fade show" role="alert">
+                <strong>Error!</strong> Unable to download
+            </div>
+        </div>
+    </div>
+        @* Content *@
+        @content
+    </div>
 
         @* Visualization *@
-        <div id="container">
+    <div id="container">
 
-            @* Canvas *@
-            <div id="canvas"></div>
+        @* Canvas *@
+    <div id="canvas"></div>
 
-            @* Sidebar *@
-            <div id="sidebar">
-                <ul class="list-unstyled">
-                    <li>
-                        <div class="statistic">
-                            <p class="statistic-name">name</p>
-                            <p id="name"></p>
-                        </div>
-                    </li>
-                    <li>
-                        <div id="statistic1" class="statistic">
-                            <p class="statistic-name">methods</p>
-                            <p class="statistic-value">0</p>
-                        </div>
-                    </li>
-                    <li>
-                        <div id="statistic2" class="statistic">
-                            <p class="statistic-name">attributes</p>
-                            <p class="statistic-value">0</p>
-                        </div>
-                    </li>
-                    <li>
-                        <div id="statistic3" class="statistic">
-                            <p class="statistic-name">lines of code</p>
-                            <p class="statistic-value">0</p>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="statistic">
-                            <p class="statistic-name">total classes</p>
-                            <p id="classes" class="statistic-value">0</p>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
+        @* Sidebar *@
+    <div id="sidebar">
+        <ul class="list-unstyled">
+            <li>
+                <div class="statistic">
+                    <p class="statistic-name">name</p>
+                    <p id="name"></p>
+                </div>
+            </li>
+            <li>
+                <div id="statistic1" class="statistic">
+                    <p class="statistic-name">methods</p>
+                    <p class="statistic-value">0</p>
+                </div>
+            </li>
+            <li>
+                <div id="statistic2" class="statistic">
+                    <p class="statistic-name">attributes</p>
+                    <p class="statistic-value">0</p>
+                </div>
+            </li>
+            <li>
+                <div id="statistic3" class="statistic">
+                    <p class="statistic-name">lines of code</p>
+                    <p class="statistic-value">0</p>
+                </div>
+            </li>
+            <li>
+                <div class="statistic">
+                    <p class="statistic-name">total classes</p>
+                    <p id="classes" class="statistic-value">0</p>
+                </div>
+            </li>
+        </ul>
+    </div>
+    </div>
 
-        <script type="text/javascript" src="@routes.HomeController.javascriptRoutes"></script>
-        <script src="@routes.Assets.versioned("javascripts/jquery-3.1.1.min.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.versioned("javascripts/tether.min.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.versioned("bootstrap-4.0.0-alpha.6-dist/js/bootstrap.min.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.versioned("javascripts/three.min.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.versioned("javascripts/OrbitControls.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.versioned("javascripts/utils.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.versioned("javascripts/interface.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.versioned("javascripts/draw.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.versioned("javascripts/events.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.versioned("javascripts/main.js")" type="text/javascript"></script>
+    <script type="text/javascript" src="@routes.HomeController.javascriptRoutes"></script>
+    <script src="@routes.Assets.versioned("javascripts/jquery-3.1.1.min.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.versioned("javascripts/tether.min.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.versioned("bootstrap-4.0.0-alpha.6-dist/js/bootstrap.min.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.versioned("javascripts/three.min.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.versioned("javascripts/OrbitControls.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.versioned("javascripts/utils.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.versioned("javascripts/interface.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.versioned("javascripts/draw.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.versioned("javascripts/events.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.versioned("javascripts/main.js")" type="text/javascript"></script>
     </body>
 </html>

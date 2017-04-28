@@ -62,8 +62,9 @@ function poll() {
 
             //update the progress bar with the data received from server
             var json = JSON.parse(data);
+            $('.progress-bar').css('width', json.percentage+'%').attr('aria-valuenow', json.percentage).html(json.taskName);
             // $('.progress-bar').css('width', json.percentage+'%').attr('aria-valuenow', json.percentage).html(+ json.task - 2 + '/3');
-            $('.progress-bar').css('width', json.percentage + '%');
+            // $('.progress-bar').css('width', json.percentage + '%');
 
         }, error: function () {
             console.log("poll error");
@@ -88,9 +89,8 @@ function getData(id) {
 
             // initialize th visualization
             var json = JSON.parse(data);
-            console.log(json);
-            addVersions(json.commits, json.dates);
-            $('#current-version').text(json.commits[0]);
+            addCommits(json.commits);
+            $('#current-commit').text(json.commits[0]);
             init(json.visualization);
         }, error: function () {
 
@@ -108,7 +108,7 @@ var searchInput = $('#search-input');
 var searchList = $('#search-list');
 var searchListItems;
 
-searchInput.on('keyup', function (e) {
+searchInput.on('keyup', function () {
     var input = searchInput.val();
     if (input !== "") {
         for (var i = 0; i < searchListItems.length; ++i) {
@@ -122,17 +122,17 @@ searchInput.on('keyup', function (e) {
 
 });
 
-searchInput.on('focus', function (e) {
+searchInput.on('focus', function () {
     searchList.css('display', 'block');
 });
 
 
-searchInput.on('blur', function (e) {
+searchInput.on('blur', function () {
     searchList.css('display', 'none');
 });
 
 // prevent searchList from disappearing
-searchList.on('mousedown', function (e) {
+searchList.on('mousedown', function () {
     event.preventDefault();
 });
 

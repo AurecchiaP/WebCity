@@ -1,36 +1,34 @@
 /**
- * adds the list of versions to the dropdown menu
+ * adds the list of commits to the dropdown menu
  */
-function addVersions(commits, dates) {
+function addCommits(commits) {
     var items = $('.dropdown-items');
     for(var i = 0; i < commits.length; ++i) {
-        // FIXME on click would also return the date!
-        // searchList.append(" <a href='#' class='search-list-item list-group-item list-group-item-action'>"
-        //     + meshes[i].filename + "</a>");
-        items.append("<a href='#' class='list-group-item list-group-item-action'>" + commits[i] + "<small>" + dates[i] + "</small></a>");
+        items.append("<a href='#' class='list-group-item list-group-item-action'>" +
+            commits[i].name + "<small>" + commits[i].date + "</small></a>");
     }
-    items.on('click', $('.dropdown-item'), getVersion);
+    items.on('click', $('.dropdown-item'), getCommit);
 }
 
-function getVersion(e) {
+function getCommit(e) {
 
-    var r = jsRoutes.controllers.HomeController.getVersion();
+    var r = jsRoutes.controllers.HomeController.getCommit();
     $.ajax({
         url: r.url,
         type: r.type,
         contentType: "application/json; charset=utf-8",
         data: {
-            version: e.target.innerText
+            commit: e.target.innerText
         },
         success: function (data) {
-            console.log("valid version");
+            console.log("valid commit");
             var json = JSON.parse(data);
-            $('#current-version').text(e.target.innerText);
+            $('#current-commit').text(e.target.innerText);
             clearVisualization();
             draw(json.visualization);
 
         }, error: function () {
-            console.log("invalid version");
+            console.log("invalid commit");
         }
     });
 }
