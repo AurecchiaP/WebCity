@@ -176,7 +176,7 @@ public class HomeController extends Controller {
 
         HistoryUtils historyUtils = new HistoryUtils();
 
-
+        System.out.println("reponame " + repoName);
         System.out.println("Start parsing...");
         // iterate all the commits of the repo
         for (Commit commit : commits) {
@@ -187,7 +187,7 @@ public class HomeController extends Controller {
                 git.checkout().setName(commit.getName()).call();
 
                 // parse the current version
-                JavaPackage temp = BasicParser.parseRepo(Play.current().path() + "/repository");
+                JavaPackage temp = BasicParser.parseRepo(Play.current().path() + "/repository/" + repoName);
                 jph = historyUtils.toHistory(commit.getName(), temp);
 
             } catch (GitAPIException e) {
@@ -225,6 +225,13 @@ public class HomeController extends Controller {
 
         git.close();
 
+        Map <String, String> details = new HashMap<>();
+
+        // fixme reponame != repo url
+        details.put("repositoryOwner", repoName);
+        details.put("repositoryName", repoName);
+        details.put("repositoryUrl", currentRepo);
+
         // create json object
         Gson gson = new Gson();
         final JsonObject jsonObject = new JsonObject();
@@ -232,6 +239,7 @@ public class HomeController extends Controller {
         jsonObject.add("visualization", gson.fromJson(toJSON(maxDrw), JsonElement.class));
         jsonObject.add("commits", gson.fromJson(new Gson().toJson(commits), JsonElement.class));
         jsonObject.add("maxDrw", gson.fromJson(new Gson().toJson(maxDrw), JsonElement.class));
+        jsonObject.add("details", gson.fromJson(new Gson().toJson(details), JsonElement.class));
 
         // send data to client
         return ok(gson.toJson(jsonObject));

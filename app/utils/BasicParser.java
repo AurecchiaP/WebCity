@@ -26,7 +26,7 @@ import java.util.List;
 public class BasicParser {
 
     // FIXME change this to thesis/repository (?) when using the download feature
-    private static String repoPath = Play.current().path() + "/repository";
+    private static String repoPath;
 
     /**
      * Starts the recursive parsing of the repository corresponding to the given path.
@@ -36,6 +36,7 @@ public class BasicParser {
      * classes recursively
      */
     public static JavaPackage parseRepo(String path) {
+        repoPath = path;
         // look for the main folder
         return makePackage(path);
     }

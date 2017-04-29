@@ -1,6 +1,7 @@
 var submitButton = document.getElementById("submitButton");
 var btn = document.getElementById("testBtn");
 var inputField = document.getElementById("inputField");
+var currentCommit, repositoryOwner, repositoryName, repositoryUrl;
 
 
 /**
@@ -89,8 +90,11 @@ function getData(id) {
 
             // initialize th visualization
             var json = JSON.parse(data);
+            console.log(json);
+            repositoryUrl = json.details.repositoryUrl;
             addCommits(json.commits);
-            $('#current-commit').text(json.commits[0]);
+            currentCommit = json.commits[0].name;
+            $('#current-commit').text(currentCommit);
             init(json.visualization);
         }, error: function () {
 

@@ -2,7 +2,6 @@
  * handles wheel scrolls/zoom
  */
 function onWheel(e) {
-    // console.log(e.target.id);
     controls.update();
     render();
 }
@@ -16,8 +15,9 @@ function onContextMenu(e) {
     intersects = raycaster.intersectObjects(meshes);
     if (intersects.length > 0 && intersects[0].object.type === "class") {
         var cls = intersects[0].object;
-        console.log(cls);
-
+        var url = repositoryUrl + "/tree/" + currentCommit + cls.filename;
+        var win = window.open(url, '_blank');
+        win.focus();
         // TODO find a way to get the code, then maybe use bootstrap popovers
     }
 }

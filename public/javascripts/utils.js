@@ -23,7 +23,8 @@ function getCommit(e) {
         success: function (data) {
             console.log("valid commit");
             var json = JSON.parse(data);
-            $('#current-commit').text(e.target.innerText);
+            currentCommit = e.target.innerText;
+            $('#current-commit').text(currentCommit);
             clearVisualization();
             draw(json.visualization);
 
