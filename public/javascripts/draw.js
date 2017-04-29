@@ -236,6 +236,14 @@ function loaded(totalClasses) {
         event.preventDefault();
     });
 
+    $("#info-button").on("click", function () {
+        $("#info-content").css("display", "block");
+    });
+
+    $("#info-content-dismiss").on("click", function () {
+        $("#info-content").css("display", "none");
+    });
+
     setSearchResults();
 
     // add events for visualization callbacks
