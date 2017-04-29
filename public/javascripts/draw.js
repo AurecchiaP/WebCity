@@ -2,6 +2,7 @@ var meshes = [];
 var scale;
 var packageHeight;
 var box;
+var classes = [];
 
 
 /**
@@ -100,6 +101,7 @@ function recDraw(drwPkg) {
 function drawClass(drwCls) {
 
     if (!drwCls.visible) return;
+    classes.push(drwCls);
 
     // adding 10 to attributes and methods, to have a lower bound (else we won't see the class)
     var clsHeight = (drwCls.cls.methods + 5) * scale;
@@ -125,6 +127,7 @@ function drawClass(drwCls) {
     // create the mash with the needed data
     mesh = new THREE.Mesh(geometry, material);
     mesh.name = drwCls.cls.name;
+    mesh.realColor = color;
     mesh.filename = drwCls.cls.filename;
     mesh.methods = drwCls.cls.methods;
     mesh.attributes = drwCls.cls.attributes;
@@ -186,6 +189,7 @@ function drawPackage(drwPkg, totalClasses) {
     mesh.width = width;
     mesh.depth = depth;
     mesh.type = "package";
+    mesh.realColor = color;
 
     // position the mesh
     mesh.translateX(posX);
@@ -203,10 +207,9 @@ function drawPackage(drwPkg, totalClasses) {
  * readies the page when the visualization is loaded
  */
 function loaded(totalClasses) {
-    // document.getElementById("loader-container").remove();
     $("#main-content").css('display', 'none');
     $("#container").css('display', 'block');
-    $("#versions").css('display', 'block');
+    $("#navbar-visualization-items").css('display', 'contents');
     classesText.innerText = totalClasses;
 
     // notify the renderer that our html canvas has appeared
@@ -216,6 +219,32 @@ function loaded(totalClasses) {
 
     // update shadows only once
     renderer.shadowMap.needsUpdate = true;
+
+    var commitsDropdown = $("#commits-dropdown");
+    var commitsList = $("#commits-list");
+
+    commitsDropdown.on('focus', function () {
+        commitsList.css('display', 'block');
+    });
+
+    commitsDropdown.on('blur', function () {
+        commitsList.css('display', 'none');
+    });
+
+    commitsList.on('mousedown', function (e) {
+        commitsDropdown.text(e.target.innerText.split(/\r?\n/)[0]);
+        event.preventDefault();
+    });
+
+    $("#info-button").on("click", function () {
+        $("#info-content").css("display", "block");
+    });
+
+    $("#info-content-dismiss").on("click", function () {
+        $("#info-content").css("display", "none");
+    });
+
+    setSearchResults();
 
     // add events for visualization callbacks
     window.addEventListener('resize', onWindowResize, false);
@@ -236,7 +265,7 @@ function loaded(totalClasses) {
 function mergeMeshes(meshes) {
     var combined = new THREE.Geometry();
 
-    for (var i = 0; i < meshes.length; i++) {
+    for (var i = 0; i < meshes.length; ++i) {
         meshes[i].updateMatrix();
         combined.merge(meshes[i].geometry, meshes[i].matrix);
     }

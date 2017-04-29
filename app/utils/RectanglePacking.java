@@ -427,8 +427,8 @@ public class RectanglePacking {
             cls.setCy(bin.getY1() + gridSpacing * y);
             cls.setZ(drwPkg.getZ());
             cls.setColor(RGBtoInt(
-                    55 + (200 * cls.getCls().getLinesOfCode().getValue() / maxLines),
-                    55 + (200 * cls.getCls().getLinesOfCode().getValue() / maxLines),
+                    255 - (200 * cls.getCls().getLinesOfCode().getValue() / maxLines),
+                    255 - (200 * cls.getCls().getLinesOfCode().getValue() / maxLines),
                     255));
         }
     }

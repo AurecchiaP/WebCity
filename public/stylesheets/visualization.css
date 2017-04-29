@@ -2,7 +2,7 @@
     display: none;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(240,240,240,1);
+    background-color: rgba(240, 240, 240, 1);
 }
 
 #canvas {
@@ -31,17 +31,43 @@
     flex-direction: column;
     text-align: center;
     position: relative;
-    background-color: rgba(240,240,240,1);
-    outline: 10px solid rgba(255,255,255, 0.5);
+    background-color: rgba(240, 240, 240, 1);
+    outline: 10px solid rgba(255, 255, 255, 0.5);
     z-index: 10;
-    color: rgba(0,0,0,0.8);
+    color: rgba(0, 0, 0, 0.8);
     margin: 12vh 7vh 7vh 0;
     float: right;
     padding: 5vh 1vh 1vh 1vh;
 }
 
-#versions {
+#navbar-visualization-items {
     display: none;
+}
+
+#search-list {
+    position: absolute;
+    z-index: 100;
+    display: none;
+    overflow-y: scroll;
+    scrollbar-base-color: black;
+    scrollbar-arrow-color: grey;
+    max-height: 25vh;
+}
+
+#search-list:hover {
+    display: block;
+}
+
+#commits-list {
+    position: absolute;
+    z-index: 100;
+    display: none;
+    overflow-y: scroll;
+    scrollbar-base-color: black;
+    scrollbar-arrow-color: grey;
+    max-height: 25vh;
+    right: 0;
+    top: 2.5em;
 }
 
 .dropdownItems {
@@ -50,7 +76,6 @@
     scrollbar-arrow-color: grey;
     max-height: 25vh;
 }
-
 
 .statistic {
     padding-bottom: 4vh;
@@ -70,4 +95,30 @@
     margin: 0;
     text-align: center;
     font-weight: bolder;
+}
+
+#info-button {
+    position: absolute;
+    bottom: 1em;
+    right: 1em;
+    color: rgba(52, 54, 66, 1);
+    transition: all 0.1s;
+}
+
+#info-button:hover {
+    color: rgba(102, 104, 116, 1);
+}
+
+#info-content {
+    z-index: 100;
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    margin: 20vh 20vw 20vh 20vw;
+}
+
+#info-content-dismiss {
+    padding-right: .8em;
 }

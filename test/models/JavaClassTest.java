@@ -1,6 +1,5 @@
 package models;
 
-import junit.framework.TestCase;
 import models.metrics.LinesOfCode;
 import models.metrics.NumberOfAttributes;
 import models.metrics.NumberOfMethods;

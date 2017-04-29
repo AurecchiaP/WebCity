@@ -20,26 +20,38 @@
     </head>
     <body>
 
-        <p id="version">@version</p>
 
         <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
-            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <a class="navbar-brand" href="#">WebCity</a>
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav mr-auto">
 
-                </ul>
-                @* Versions dropdown *@
-                <div id="versions" class="btn-group">
-                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span id="current-version">Version</span>
-                    </button>
+                <div id="navbar-visualization-items">
+                    @* Search input *@
+                    <div id="search-container" class="col-2">
+                        <input class="form-control" type="search" placeholder="Search..." id="search-input">
+                        <div id="search-list">
+                        </div>
+                    </div>
 
-                    <div id="dropdownList" class="dropdownItems dropdown-menu dropdown-menu-right">
+                    <ul class="navbar-nav mr-auto">
+                    </ul>
 
+                    @* Commits dropdown *@
+                    <div class="btn-group">
+                        <button id="commits-dropdown" class="btn btn-secondary btn-sm dropdown-toggle" type="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span id="current-commit">commit</span>
+                        </button>
+
+                        <div id="commits-list" class="dropdown-items">
+
+                        </div>
                     </div>
                 </div>
             </div>
@@ -55,13 +67,12 @@
                         <button id="submitButton" class="btn btn-secondary" type="button">Submit</button>
                     </span>
                 </div>
-
                 @* Progress bar *@
                 <div id="progressBar" class="progress">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="10" aria-valuemin="10" aria-valuemax="100" style="width: 0%">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                    aria-valuenow="10" aria-valuemin="10" aria-valuemax="100" style="width: 0%">
                     </div>
                 </div>
-
                 @* Alert messages *@
                 <div class="alertMessages">
                     <div id="successMessage" class="alert alert-info fade show" role="alert">
@@ -117,8 +128,64 @@
                     </li>
                 </ul>
             </div>
-        </div>
 
+            @* Information button *@
+            <i id="info-button" class="fa fa-question-circle fa-lg" aria-hidden="true"></i>
+
+            @* Information content *@
+            <div id="info-content" class="card">
+
+                @* tabs *@
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#controls" role="tab">Controls</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#about" role="tab">About</a>
+                    </li>
+                    <ul class="navbar-nav mr-auto">
+                    </ul>
+                    <button type="button" class="close" id="info-content-dismiss">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </ul>
+
+                @* tabs content *@
+                <div class="tab-content">
+                    <div class="tab-pane active" id="controls" role="tabpanel">
+                        <div class="card-block">
+                            @*<h4 class="card-title">Card title</h4>*@
+                            <h6 class="card-subtitle mb-2 text-muted">Zoom</h6>
+                            <p class="card-text">
+                                scroll up to zoom in, scroll down to zoom out.
+                            </p>
+                            <br>
+                            <h6 class="card-subtitle mb-2 text-muted">Pitch and yaw</h6>
+                            <p class="card-text">
+                                hold left click and move the cursor.
+                            </p>
+                            <br>
+                            <h6 class="card-subtitle mb-2 text-muted">Move</h6>
+                            <p class="card-text">
+                                right click and move the cursor to move the visualization.
+                            </p>
+                            <br>
+                            <h6 class="card-subtitle mb-2 text-muted">Pin</h6>
+                            <p class="card-text">
+                                press 'g' while the cursor is on an element to pin it; to unpin, pin the same element
+                                twice or pin when the cursor is not hovering an element.
+                            </p>
+                            <br>
+                            <h6 class="card-subtitle mb-2 text-muted">Source code</h6>
+                            <p class="card-text">
+                                right click on a class to see it's source code on GitHub.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="about" role="tabpanel">...</div>
+                </div>
+            </div>
+        </div>
 
         <script type="text/javascript" src="@routes.HomeController.javascriptRoutes"></script>
         <script src="@routes.Assets.versioned("javascripts/jquery-3.1.1.min.js")" type="text/javascript"></script>

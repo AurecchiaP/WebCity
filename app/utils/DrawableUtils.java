@@ -72,7 +72,6 @@ public abstract class DrawableUtils {
      */
     public static DrawablePackage getMaxDrawable(List<RectanglePacking> packings) {
 
-        //FIXME refactor into a class
         // map of all the packages present between all the versions
         Map<String, DrawablePackage> totalPackages = new HashMap<>();
         // Map(packageName, Map(className, DrawableClass))
@@ -165,9 +164,9 @@ public abstract class DrawableUtils {
             maxDrw.setVisible(true);
             // if the package has some classes, place them
             if (maxDrw.getClassesBin() != null) {
+
                 // set the correct classes to visible
                 maxDrw.getDrawableClasses().forEach(maxDrwCls -> {
-                    //fixme don't use arraylists
                     boolean found = false;
                     for (DrawableClass packingDrwCls : packing.getDrwPackages().get(maxDrw.getPkg().getName()).getDrawableClasses()) {
                         found = false;
