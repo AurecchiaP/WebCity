@@ -11,6 +11,7 @@ function addCommits(commits) {
 }
 
 function getCommit(e) {
+    var commit = e.target.innerHTML.split("<")[0];
 
     var r = jsRoutes.controllers.HomeController.getCommit();
     $.ajax({
@@ -18,12 +19,12 @@ function getCommit(e) {
         type: r.type,
         contentType: "application/json; charset=utf-8",
         data: {
-            commit: e.target.innerText
+            commit: commit
         },
         success: function (data) {
             console.log("valid commit");
             var json = JSON.parse(data);
-            currentCommit = e.target.innerText;
+            currentCommit = commit;
             $('#current-commit').text(currentCommit);
             clearVisualization();
             draw(json.visualization);

@@ -289,7 +289,7 @@ public class HomeController extends Controller {
      * returns the visualisation data for a given version of the repository
      */
     public Result getCommit() {
-        String commit = formFactory.form().bindFromRequest().get("commit").split("\n")[0];
+        String commit = formFactory.form().bindFromRequest().get("commit");
         System.out.println("version required: " + commit);
 
         // look for the packing that commit corresponds to

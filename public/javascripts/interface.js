@@ -163,6 +163,10 @@ function setSearchResults() {
 
     searchListItems.on('click', function (e) {
         var newSearchObject = meshes[searchListItems.index(e.target)];
+        var vector = new THREE.Vector3();
+        vector.setFromMatrixPosition( newSearchObject.matrixWorld );
+        controls.target.set( vector.x, vector.y, vector.z );
+        controls.update();
         // if an object is already selected
         if (searchObject) {
             searchSelectedItem.classList.remove("active");

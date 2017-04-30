@@ -122,3 +122,14 @@
 #info-content-dismiss {
     padding-right: .8em;
 }
+
+#record-button {
+    color:rgba(220, 220, 220, 1);
+    transition: all 0.1s;
+    line-height: 3.5vh;
+    margin-right: 1em;
+}
+
+#record-button:hover {
+    color: white;
+}

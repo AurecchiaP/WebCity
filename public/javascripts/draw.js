@@ -244,6 +244,12 @@ function loaded(totalClasses) {
         $("#info-content").css("display", "none");
     });
 
+    $("#record-button").on("click", function () {
+        $('body').css('cursor', 'none');
+        var list = $("#commits-list").children();
+        callNext(list, 0);
+    });
+
     setSearchResults();
 
     // add events for visualization callbacks
@@ -253,6 +259,18 @@ function loaded(totalClasses) {
     window.addEventListener('mousewheel', onWheel, false);
     window.addEventListener('contextmenu', onContextMenu, false);
     render();
+}
+
+function callNext(list, idx) {
+    list[idx].click();
+    idx++;
+    if (idx < list.length) {
+        setTimeout(function () {
+            callNext(list, idx)
+        }, 1000);
+    } else {
+        $('body').css('cursor', 'default');
+    }
 }
 
 
