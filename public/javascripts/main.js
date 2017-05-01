@@ -4,6 +4,7 @@ var canvas, mouse;
 var pinnedObject, isPinned, pinnedColor;
 var raycaster;
 var light;
+var recorder;
 var vector = new THREE.Vector3();
 
 var intersects = [];
@@ -95,7 +96,17 @@ function init(json) {
     controls.enableDamping = true;
     controls.dampingFactor = 0.25;
 
+    $("#info-button").on("click", function () {
+        $("#info-content").css("display", "block");
+    });
+
+    $("#info-content-dismiss").on("click", function () {
+        $("#info-content").css("display", "none");
+    });
+
+
     draw(json);
+    setupRecorder();
 }
 
 

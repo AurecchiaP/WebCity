@@ -3,6 +3,7 @@ var scale;
 var packageHeight;
 var box;
 var classes = [];
+var recorder, recording;
 
 
 /**
@@ -236,18 +237,17 @@ function loaded(totalClasses) {
         event.preventDefault();
     });
 
-    $("#info-button").on("click", function () {
-        $("#info-content").css("display", "block");
-    });
-
-    $("#info-content-dismiss").on("click", function () {
-        $("#info-content").css("display", "none");
-    });
-
+    $("#record-button").unbind( "click" );
     $("#record-button").on("click", function () {
-        $('body').css('cursor', 'none');
-        var list = $("#commits-list").children();
-        callNext(list, 0);
+        if (!recording) {
+            $("#record-button").css("color", "red");
+            $('body').css('cursor', 'none');
+            var list = $("#commits-list").children();
+            callNext(list, 0);
+        }
+        else {
+            $("#record-button").css("color", "rgba(220, 220, 220, 1)");
+        }
     });
 
     setSearchResults();
@@ -264,6 +264,8 @@ function loaded(totalClasses) {
 function callNext(list, idx) {
     list[idx].click();
     idx++;
+    // debug
+    // if (idx < 3) {
     if (idx < list.length) {
         setTimeout(function () {
             callNext(list, idx)
