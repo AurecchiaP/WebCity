@@ -3,7 +3,8 @@ var scale;
 var packageHeight;
 var box;
 var classes = [];
-var recorder, recording;
+var recorder, recording = false;
+var commitsList;
 
 
 /**
@@ -222,7 +223,7 @@ function loaded(totalClasses) {
     renderer.shadowMap.needsUpdate = true;
 
     var commitsDropdown = $("#commits-dropdown");
-    var commitsList = $("#commits-list");
+    commitsList = $("#commits-list");
 
     commitsDropdown.on('focus', function () {
         commitsList.css('display', 'block');
@@ -237,27 +238,14 @@ function loaded(totalClasses) {
         event.preventDefault();
     });
 
-    $("#record-button").unbind( "click" );
-    $("#record-button").on("click", function () {
-        if (!recording) {
-            $("#record-button").css("color", "red");
-            $('body').css('cursor', 'none');
-            var list = $("#commits-list").children();
-            callNext(list, 0);
-        }
-        else {
-            $("#record-button").css("color", "rgba(220, 220, 220, 1)");
-        }
-    });
-
     setSearchResults();
 
     // add events for visualization callbacks
     window.addEventListener('resize', onWindowResize, false);
+    window.addEventListener('click', altClick, false);
     window.addEventListener('mousemove', onMouseMove, false);
     window.addEventListener("keydown", onKeyPress, false);
     window.addEventListener('mousewheel', onWheel, false);
-    window.addEventListener('contextmenu', onContextMenu, false);
     render();
 }
 
@@ -265,13 +253,11 @@ function callNext(list, idx) {
     list[idx].click();
     idx++;
     // debug
-    // if (idx < 3) {
-    if (idx < list.length) {
+    // if (idx < 30) {
+    if (recording && idx < list.length) {
         setTimeout(function () {
             callNext(list, idx)
-        }, 1000);
-    } else {
-        $('body').css('cursor', 'default');
+        }, 250);
     }
 }
 

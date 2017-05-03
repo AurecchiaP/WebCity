@@ -91,6 +91,9 @@ function getData(id) {
             // initialize th visualization
             var json = JSON.parse(data);
             console.log(json);
+            var repository = json.details.repository.split("/");
+            repositoryName = repository[1];
+            repositoryOwner = repository[0];
             repositoryUrl = json.details.repositoryUrl;
             addCommits(json.commits);
             currentCommit = json.commits[0].name;
@@ -147,7 +150,7 @@ function setSearchResults() {
     for (var i = 0; i < meshes.length; ++i) {
         if (meshes[i].type === "class") {
             searchList.append(" <a href='#' class='search-list-item list-group-item list-group-item-action'>"
-                + meshes[i].filename + ":" + meshes[i].name + "<br><small>" + meshes[i].type + "</small></a>");
+                + meshes[i].filename + "." + meshes[i].name + "<br><small>" + meshes[i].type + "</small></a>");
 
         } else {
             searchList.append(" <a href='#' class='search-list-item list-group-item list-group-item-action'>"
@@ -163,10 +166,6 @@ function setSearchResults() {
 
     searchListItems.on('click', function (e) {
         var newSearchObject = meshes[searchListItems.index(e.target)];
-        var vector = new THREE.Vector3();
-        vector.setFromMatrixPosition( newSearchObject.matrixWorld );
-        controls.target.set( vector.x, vector.y, vector.z );
-        controls.update();
         // if an object is already selected
         if (searchObject) {
             searchSelectedItem.classList.remove("active");
@@ -180,6 +179,12 @@ function setSearchResults() {
                 return;
             }
         }
+        // point camera at selected mesh
+        var vector = new THREE.Vector3();
+        vector.setFromMatrixPosition( newSearchObject.matrixWorld );
+        controls.target.set( vector.x, vector.y, vector.z );
+        controls.update();
+
         searchSelectedItem = e.target;
         searchSelectedItem.classList.add("active");
         searchObject = newSearchObject;

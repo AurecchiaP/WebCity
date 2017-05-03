@@ -228,8 +228,7 @@ public class HomeController extends Controller {
         Map <String, String> details = new HashMap<>();
 
         // fixme reponame != repo url
-        details.put("repositoryOwner", repoName);
-        details.put("repositoryName", repoName);
+        details.put("repository", repoName);
         details.put("repositoryUrl", currentRepo);
 
         // create json object

@@ -1,28 +1,33 @@
-
-
 /**
  * called from main; sets up the data and functions to be able to record the canvas
  */
 function setupRecorder() {
-    console.log("setupRecorder");
-    recording = false;
-
-    var recorder = new RecordRTC(canvas.firstChild, {
-        type: 'canvas'
-    });
     document.getElementById('record-button').onclick = function () {
         if (recording) {
             recording = false;
             recorder.stopRecording(function () {
                 var blob = recorder.getBlob();
-                saveData(blob, "video.webm");
+                saveData(blob, repositoryName + ".webm");
+                // this.clearRecordedData();
                 // var url = URL.createObjectURL(blob);
                 // window.open(url);
             });
+            $("#record-button").css("color", "rgba(220, 220, 220, 1)");
         }
         else {
+            $("#record-button").css("color", "red");
+            recorder = new RecordRTC(canvas.firstChild, {
+                type: 'canvas'
+            });
             recording = true;
+            // recorder.recordingDuration(5000, function () {
+            //     recorder.stopRecording(function () {
+            //         var blob = this.getBlob();
+            //     });
+            // });
             recorder.startRecording();
+            var list = commitsList.children();
+            callNext(list, 0);
         }
     }
 }

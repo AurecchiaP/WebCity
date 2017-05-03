@@ -3,6 +3,7 @@ package utils;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -18,14 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Utility class that takes the path of the root of a local repository and parses its contents, starting if possible
- * from the folder "main". For each package found a JavaPackage is created, containing possibly other JavaPackage or
- * JavaClass. The parsing of the .Java file found is done with the library JavaParser.
+ * Utility class that takes the path of the root of a local repository and parses its contents. For each package found
+ * a JavaPackage is created, containing possibly other JavaPackage or JavaClass. The parsing of the .Java file found
+ * is done with the library JavaParser.
  */
-
 public class BasicParser {
-
-    // FIXME change this to thesis/repository (?) when using the download feature
+    
     private static String repoPath;
 
     /**
@@ -37,7 +36,6 @@ public class BasicParser {
      */
     public static JavaPackage parseRepo(String path) {
         repoPath = path;
-        // look for the main folder
         return makePackage(path);
     }
 
@@ -126,7 +124,6 @@ public class BasicParser {
         // for each class found
         @Override
         public void visit(ClassOrInterfaceDeclaration n, Void arg) {
-
 
             // if the node class n has some content, set it's number of lines
             if (n.getBegin().isPresent() && n.getEnd().isPresent()) {

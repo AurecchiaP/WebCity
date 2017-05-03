@@ -31,6 +31,7 @@ function init(json) {
     raycaster = new THREE.Raycaster();
 
     scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xf0f0f0);
 
     scale = 1250 / Math.max(json.width, json.depth);
 
@@ -104,7 +105,6 @@ function init(json) {
         $("#info-content").css("display", "none");
     });
 
-
     draw(json);
     setupRecorder();
 }
@@ -113,8 +113,6 @@ function init(json) {
 /**
  * updates the texts based on the hovered object, and updates the render
  */
-
-// var w;
 var c = 0;
 function render() {
     camera.getWorldDirection(vector);

@@ -5,20 +5,19 @@ function onWheel(e) {
     controls.update();
     render();
 }
-
-
 /**
- * handles right click
+ * handles alt + leftClick
  */
-function onContextMenu(e) {
-
-    intersects = raycaster.intersectObjects(meshes);
-    if (intersects.length > 0 && intersects[0].object.type === "class") {
-        var cls = intersects[0].object;
-        var url = repositoryUrl + "/tree/" + currentCommit + cls.filename;
-        var win = window.open(url, '_blank');
-        win.focus();
-        // TODO find a way to get the code, then maybe use bootstrap popovers
+function altClick(e) {
+    if (event.altKey === true) {
+        intersects = raycaster.intersectObjects(meshes);
+        if (intersects.length > 0 && intersects[0].object.type === "class") {
+            var cls = intersects[0].object;
+            var url = repositoryUrl + "/tree/" + currentCommit + cls.filename;
+            var win = window.open(url, '_blank');
+            win.focus();
+            // TODO find a way to get the code, then maybe use bootstrap popovers
+        }
     }
 }
 
@@ -43,8 +42,8 @@ function onKeyPress(e) {
             render();
             break;
 
-        // key g, pin object
-        case 71:
+        // key 'p', pin object
+        case 80:
             var intersects = raycaster.intersectObjects(meshes);
 
             if (pinnedObject) {
