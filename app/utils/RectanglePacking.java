@@ -380,7 +380,7 @@ public class RectanglePacking {
         // heuristic; assume every class is as big as the biggest class to find a lower bound for the size of the
         // package
         return
-                (classes.get(0).getCls().getAttributes().getValue() + 5 + padding * 2) // the biggest class
+                ((classes.get(0).getCls().getAttributes().getValue() * 3) + 5 + padding * 2) // the biggest class
                 *
                 ((int) Math.ceil(Math.sqrt(classes.size()))); // an upper bound on the number of classes
     }

@@ -63,7 +63,7 @@ function poll() {
 
             //update the progress bar with the data received from server
             var json = JSON.parse(data);
-            $('.progress-bar').css('width', json.percentage+'%').attr('aria-valuenow', json.percentage).html(json.taskName);
+            $('.progress-bar').css('width', json.percentage + '%').attr('aria-valuenow', json.percentage).html(json.taskName);
             // $('.progress-bar').css('width', json.percentage+'%').attr('aria-valuenow', json.percentage).html(+ json.task - 2 + '/3');
             // $('.progress-bar').css('width', json.percentage + '%');
 
@@ -117,13 +117,17 @@ var searchListItems;
 
 searchInput.on('keyup', function () {
     var input = searchInput.val();
-    if (input !== "") {
-        for (var i = 0; i < searchListItems.length; ++i) {
-            if (searchListItems[i].innerText.includes(input)) {
-                searchListItems[i].style.display = "block";
-            } else {
-                searchListItems[i].style.display = "none";
-            }
+    var it;
+    for (var i = 0; i < searchListItems.length; ++i) {
+        it = searchListItems[i];
+        if (it.innerText.includes(input)) {
+            it.style.display = "block";
+        } else {
+            it.style.display = "none";
+        }
+        if ( i % 100 === 0) {
+            setTimeout(function () {
+            }, 0);
         }
     }
 
@@ -159,10 +163,6 @@ function setSearchResults() {
 
     }
     searchListItems = $('.search-list-item');
-    // initially set all search results as invisible
-    for (var j = 0; j < searchListItems.length; ++j) {
-        searchListItems[j].style.display = "none";
-    }
 
     searchListItems.on('click', function (e) {
         var newSearchObject = meshes[searchListItems.index(e.target)];
@@ -181,8 +181,8 @@ function setSearchResults() {
         }
         // point camera at selected mesh
         var vector = new THREE.Vector3();
-        vector.setFromMatrixPosition( newSearchObject.matrixWorld );
-        controls.target.set( vector.x, vector.y, vector.z );
+        vector.setFromMatrixPosition(newSearchObject.matrixWorld);
+        controls.target.set(vector.x, vector.y, vector.z);
         controls.update();
 
         searchSelectedItem = e.target;

@@ -1,3 +1,12 @@
+
+/**
+ * canvas doesn't propagate events, so when we click it the old active element doesn't lose focus;
+ * therefore we manually blur the old focused element when we click the canvas
+ */
+function canvasClick() {
+    document.activeElement.blur();
+}
+
 /**
  * handles wheel scrolls/zoom
  */

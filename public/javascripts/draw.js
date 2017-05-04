@@ -106,8 +106,8 @@ function drawClass(drwCls) {
     classes.push(drwCls);
 
     // adding 10 to attributes and methods, to have a lower bound (else we won't see the class)
-    var clsHeight = (drwCls.cls.methods + 5) * scale;
-    var clsWidth = (drwCls.cls.attributes + 5) * scale;
+    var clsHeight = ((drwCls.cls.methods * 3) + 5) * scale;
+    var clsWidth = ((drwCls.cls.attributes * 3) + 5) * scale;
 
     var posX = drwCls.cx * scale;
     var posY = drwCls.cy * scale;
@@ -241,6 +241,7 @@ function loaded(totalClasses) {
     setSearchResults();
 
     // add events for visualization callbacks
+    canvas.addEventListener('click', canvasClick, false);
     window.addEventListener('resize', onWindowResize, false);
     window.addEventListener('click', altClick, false);
     window.addEventListener('mousemove', onMouseMove, false);
