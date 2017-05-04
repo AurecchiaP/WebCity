@@ -154,7 +154,7 @@ function setSearchResults() {
     for (var i = 0; i < meshes.length; ++i) {
         if (meshes[i].type === "class") {
             searchList.append(" <a href='#' class='search-list-item list-group-item list-group-item-action'>"
-                + meshes[i].filename + "." + meshes[i].name + "<br><small>" + meshes[i].type + "</small></a>");
+                + meshes[i].filename + ":" + meshes[i].name + "<br><small>" + meshes[i].type + "</small></a>");
 
         } else {
             searchList.append(" <a href='#' class='search-list-item list-group-item list-group-item-action'>"
@@ -189,7 +189,7 @@ function setSearchResults() {
         searchSelectedItem.classList.add("active");
         searchObject = newSearchObject;
         searchObject.material.visible = true;
-        searchObject.material.color.set(0xFF0000);
+        searchObject.material.color.set(0xA9CF54);
         renderer.render(scene, camera);
         renderer.render(scene, camera);
     });

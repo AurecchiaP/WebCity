@@ -1,7 +1,7 @@
 var scene, camera, renderer, controls;
 var geometry, material, mesh;
 var canvas, mouse;
-var pinnedObject, isPinned, pinnedColor;
+var pinnedObject;
 var raycaster;
 var light;
 var recorder;
@@ -129,7 +129,7 @@ function render() {
         // get the closest intersection
         hoveredCube = intersects[0];
 
-        if (!isPinned) {
+        if (!pinnedObject) {
 
             if (hoveredCube.object.type === "package") {
                 nameText.innerText = hoveredCube.object.name;
@@ -154,7 +154,7 @@ function render() {
         }
     }
     else {
-        if (!isPinned) {
+        if (!pinnedObject) {
             nameText.innerText = "";
 
             statistic1.firstElementChild.nextElementSibling.innerText = "0";

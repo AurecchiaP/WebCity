@@ -55,19 +55,28 @@ function onKeyPress(e) {
         case 80:
             var intersects = raycaster.intersectObjects(meshes);
 
-            if (pinnedObject) {
-                pinnedObject.object.material.visible = false;
-                pinnedObject.object.material.color.set(pinnedColor);
-                pinnedObject = null;
-                isPinned = false;
-            }
-
+            // if we clicked "p" when hovering an object
             if (intersects.length > 0) {
+
+                // if there is an already pinned object
+                if (pinnedObject) {
+                    // unpin the previously pinned object
+                    pinnedObject.object.material.visible = false;
+
+                    // if we pinned the same object twice, unpin it
+                    if (pinnedObject.object.uuid === intersects[0].object.uuid) {
+                        pinnedObject = undefined;
+                        renderer.render(scene, camera);
+                        renderer.render(scene, camera);
+                        return;
+                    }
+                }
+
+                // pin the new object
                 pinnedObject = intersects[0];
                 pinnedColor = pinnedObject.object.material.color;
                 pinnedObject.object.material.visible = true;
-                pinnedObject.object.material.color.set(0xF1BB4E);
-                isPinned = true;
+                pinnedObject.object.material.color.set(0xF77A52);
                 if (hoveredCube.object.type === "package") {
                     nameText.innerText = hoveredCube.object.name;
                     statistic1.firstElementChild.innerText = "contained classes";
