@@ -27,7 +27,14 @@ function setupRecorder() {
             // });
             recorder.startRecording();
             var list = commitsList.children();
-            callNext(list, 0);
+            if (commitsListFirstSelected >= 0 && commitsListLastSelected > commitsListLastSelected) {
+                console.log(commitsListFirstSelected);
+                console.log(commitsListLastSelected);
+                callNext(list, commitsListFirstSelected);
+            }
+            else {
+                console.log("invalid first or last commit selected");
+            }
         }
     }
 }

@@ -105,6 +105,15 @@ function init(json) {
         $("#info-content").css("display", "none");
     });
 
+    $("#record-card-button").on("click", function () {
+        $("#record-card").css("display", "block");
+    });
+
+    $("#record-card-dismiss").on("click", function () {
+        $("#record-card").css("display", "none");
+    });
+
+
     draw(json);
     setupRecorder();
 }

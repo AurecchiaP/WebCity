@@ -11,6 +11,7 @@ function addCommits(commits) {
 }
 
 function getCommit(e) {
+    console.log("getCommit");
     var commit = e.target.innerHTML.split("<")[0];
 
     var r = jsRoutes.controllers.HomeController.getCommit();

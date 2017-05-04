@@ -40,7 +40,60 @@
                     </div>
 
                     <div>
-                        <i id="record-button" class="fa fa-video-camera" aria-hidden="true"></i>
+                        <i id="record-card-button" class="fa fa-video-camera" aria-hidden="true"></i>
+                    </div>
+
+                    <div id="record-card" class="card">
+
+                        @* tabs *@
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#" role="tab">Record</a>
+                            </li>
+                            <ul class="navbar-nav mr-auto">
+                            </ul>
+                            <button type="button" class="close content-dismiss" id="record-card-dismiss">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </ul>
+
+                        @* tabs content *@
+                        <div class="tab-content">
+                            <div class="card-block">
+                                <p class="card-text">
+                                    Select a first and last commit, and click record to generate and download a
+                                    video of the current visualisation.
+                                </p>
+                                <div>
+
+                                </div>
+                                <span>first:</span>
+                                <div class="btn-group">
+                                    <button id="commits-dropdown-first" class="btn btn-secondary btn-sm dropdown-toggle" type="button"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span id="current-commit-first">commit</span>
+                                    </button>
+                                    <div id="commits-list-first" class="dropdown-items">
+                                    </div>
+                                </div>
+
+                                <span>last:</span>
+                                <div class="btn-group">
+                                    <button id="commits-dropdown-last" class="btn btn-secondary btn-sm dropdown-toggle" type="button"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span id="current-commit-last">commit</span>
+                                    </button>
+
+                                    <div id="commits-list-last" class="dropdown-items">
+
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <button id="record-button" class="btn btn-secondary float-right" type="button">Record</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <ul class="navbar-nav mr-auto">
@@ -149,7 +202,7 @@
                     </li>
                     <ul class="navbar-nav mr-auto">
                     </ul>
-                    <button type="button" class="close" id="info-content-dismiss">
+                    <button type="button" class="close content-dismiss" id="info-content-dismiss">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </ul>

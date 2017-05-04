@@ -4,7 +4,9 @@ var packageHeight;
 var box;
 var classes = [];
 var recorder, recording = false;
-var commitsList;
+var commitsList, commitsListFirst, commitsListLast;
+var commitsListFirstSelected = -1;
+var commitsListLastSelected = -1;
 
 
 /**
@@ -223,7 +225,11 @@ function loaded(totalClasses) {
     renderer.shadowMap.needsUpdate = true;
 
     var commitsDropdown = $("#commits-dropdown");
+    var commitsDropdownFirst = $("#commits-dropdown-first");
+    var commitsDropdownLast = $("#commits-dropdown-last");
     commitsList = $("#commits-list");
+    commitsListFirst = $("#commits-list-first");
+    commitsListLast = $("#commits-list-last");
 
     commitsDropdown.on('focus', function () {
         commitsList.css('display', 'block');
@@ -233,8 +239,36 @@ function loaded(totalClasses) {
         commitsList.css('display', 'none');
     });
 
+    commitsDropdownFirst.on('focus', function () {
+        commitsListFirst.css('display', 'block');
+    });
+
+    commitsDropdownFirst.on('blur', function () {
+        commitsListFirst.css('display', 'none');
+    });
+
+    commitsDropdownLast.on('focus', function () {
+        commitsListLast.css('display', 'block');
+    });
+
+    commitsDropdownLast.on('blur', function () {
+        commitsListLast.css('display', 'none');
+    });
+
     commitsList.on('mousedown', function (e) {
         commitsDropdown.text(e.target.innerText.split(/\r?\n/)[0]);
+        event.preventDefault();
+    });
+
+    commitsListFirst.on('mousedown', function (e) {
+        commitsDropdownFirst.text(e.target.innerText.split(/\r?\n/)[0]);
+        commitsListFirstSelected = commitsListFirst.children().index(e.target);
+        event.preventDefault();
+    });
+
+    commitsListLast.on('mousedown', function (e) {
+        commitsDropdownLast.text(e.target.innerText.split(/\r?\n/)[0]);
+        commitsListLastSelected = commitsListLast.children().index(e.target);
         event.preventDefault();
     });
 
@@ -255,7 +289,7 @@ function callNext(list, idx) {
     idx++;
     // debug
     // if (idx < 30) {
-    if (recording && idx < list.length) {
+    if (recording && (idx < commitsListLastSelected && idx < list.length)) {
         setTimeout(function () {
             callNext(list, idx)
         }, 250);
