@@ -294,12 +294,12 @@ function loaded(totalClasses) {
     render();
 }
 
-function callNext(list, idx) {
+function callNext(list, idx, last) {
     list[idx].click();
     idx++;
     // debug
     // if (idx < 30) {
-    if (recording && (idx < commitsListLastSelected && idx < list.length)) {
+    if (recording && (idx < last && idx < list.length)) {
         setTimeout(function () {
             callNext(list, idx)
         }, 250);

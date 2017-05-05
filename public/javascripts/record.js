@@ -12,25 +12,18 @@ function setupRecorder() {
                 // var url = URL.createObjectURL(blob);
                 // window.open(url);
             });
-            $("#record-button").css("color", "rgba(220, 220, 220, 1)");
+            $("#record-card-button").css("color", "rgba(220, 220, 220, 1)");
         }
         else {
-            $("#record-button").css("color", "red");
-            recorder = new RecordRTC(canvas.firstChild, {
-                type: 'canvas'
-            });
-            recording = true;
-            // recorder.recordingDuration(5000, function () {
-            //     recorder.stopRecording(function () {
-            //         var blob = this.getBlob();
-            //     });
-            // });
-            recorder.startRecording();
             var list = commitsList.children();
-            if (commitsListFirstSelected >= 0 && commitsListLastSelected > commitsListLastSelected) {
-                console.log(commitsListFirstSelected);
-                console.log(commitsListLastSelected);
-                callNext(list, commitsListFirstSelected);
+            if (commitsListFirstSelected >= 0 && commitsListLastSelected > commitsListFirstSelected) {
+                recorder = new RecordRTC(canvas.firstChild, {
+                    type: 'canvas'
+                });
+                recording = true;
+                $("#record-card-button").css("color", "rgba(220, 0, 0, 1)");
+                recorder.startRecording();
+                callNext(list, commitsListFirstSelected, commitsListLastSelected);
             }
             else {
                 console.log("invalid first or last commit selected");
