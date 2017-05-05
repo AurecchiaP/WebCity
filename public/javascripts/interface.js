@@ -115,22 +115,34 @@ var searchInput = $('#search-input');
 var searchList = $('#search-list');
 var searchListItems;
 
+var searchWorker;
+
 searchInput.on('keyup', function () {
     var input = searchInput.val();
-    var it;
-    for (var i = 0; i < searchListItems.length; ++i) {
-        it = searchListItems[i];
-        if (it.innerText.includes(input)) {
-            it.style.display = "block";
-        } else {
-            it.style.display = "none";
+    // if we didn't instantiate the worker it means that the browser doesn't support them
+    if (typeof(searchWorker) !== "undefined") {
+
+        // make the list of classes into a plain list (can't send HTML elements to web workers)
+        var data = [];
+        for (var j = 0; j < searchListItems.length; ++j) {
+            data[j] = searchListItems[j].innerText;
         }
-        if ( i % 100 === 0) {
-            setTimeout(function () {
-            }, 0);
+
+        // send data to web worker
+        searchWorker.postMessage([input, data]);
+    }
+    // else go through the list manually
+    else {
+        var it;
+        for (var i = 0; i < searchListItems.length; ++i) {
+            it = searchListItems[i];
+            if (it.innerText.includes(input)) {
+                it.style.display = "block";
+            } else {
+                it.style.display = "none";
+            }
         }
     }
-
 });
 
 searchInput.on('focus', function () {

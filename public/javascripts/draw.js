@@ -273,6 +273,16 @@ function loaded(totalClasses) {
     });
 
     setSearchResults();
+    if (typeof(Worker) !== "undefined") {
+        if (typeof(searchWorker) === "undefined") {
+            searchWorker = new Worker("assets/javascripts/search_workers.js");
+            searchWorker.addEventListener('message', function (e) {
+                for (var i = 0; i < searchListItems.length; ++i) {
+                    searchListItems[i].style.display = e.data[i];
+                }
+            }, false);
+        }
+    }
 
     // add events for visualization callbacks
     canvas.addEventListener('click', canvasClick, false);
