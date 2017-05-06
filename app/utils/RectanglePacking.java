@@ -426,11 +426,11 @@ public class RectanglePacking {
 
         // positions of each class
         int xPos = bin.getX1();
-        int yPos = bin.getY1() + (lineHeight/2) + padding;
+        int yPos = bin.getY1() + padding;
         int classSize;
 
         // find the positions of the classes
-        for (int i = 0; i < totalClasses; ++i) {
+        for (int i = 0; i < classes.size(); i++) {
             DrawableClass cls = classes.get(i);
             classSize = (cls.getCls().getAttributes().getValue() * 3) + 5;
 
@@ -444,7 +444,7 @@ public class RectanglePacking {
             xPos += (classSize / 2) + padding;
             cls.setCx(xPos);
             xPos += (classSize / 2) + padding;
-            cls.setCy(yPos);
+            cls.setCy(yPos + (classSize / 2));
             cls.setZ(drwPkg.getZ());
 
             cls.setColor(RGBtoInt(

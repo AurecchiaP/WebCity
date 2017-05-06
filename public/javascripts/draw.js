@@ -297,12 +297,25 @@ function loaded(totalClasses) {
 function callNext(list, idx, last) {
     list[idx].click();
     idx++;
-    // debug
-    // if (idx < 30) {
-    if (recording && (idx < last && idx < list.length)) {
+    if (recording && (idx <= last && idx < list.length)) {
         setTimeout(function () {
-            callNext(list, idx)
-        }, 250);
+            callNext(list, idx, last);
+        }, 500);
+    }
+    else {
+        setTimeout(function () {
+            if (recording) {
+                recording = false;
+                recorder.stopRecording(function () {
+                    var blob = recorder.getBlob();
+                    saveData(blob, repositoryName + ".webm");
+                    // this.clearRecordedData();
+                    // var url = URL.createObjectURL(blob);
+                    // window.open(url);
+                });
+                $("#record-card-button").css("color", "rgba(220, 220, 220, 1)");
+            }
+        }, 500);
     }
 }
 

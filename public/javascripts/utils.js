@@ -5,13 +5,12 @@ function addCommits(commits) {
     var items = $('.dropdown-items');
     for(var i = 0; i < commits.length; ++i) {
         items.append("<a href='#' class='list-group-item list-group-item-action'>" +
-            commits[i].name + "<small>" + commits[i].date + "</small></a>");
+            commits[i].name + "<br>" + commits[i].date + "</a>");
     }
     items.on('click', $('.dropdown-item'), getCommit);
 }
 
 function getCommit(e) {
-    console.log("getCommit");
     var commit = e.target.innerHTML.split("<")[0];
 
     var r = jsRoutes.controllers.HomeController.getCommit();
