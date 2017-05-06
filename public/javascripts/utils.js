@@ -20,6 +20,7 @@ function getCommit(e) {
         type: r.type,
         contentType: "application/json; charset=utf-8",
         data: {
+            repository: currentRepo,
             commit: commit
         },
         success: function (data) {

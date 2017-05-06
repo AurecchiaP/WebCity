@@ -2,6 +2,7 @@ var submitButton = document.getElementById("submitButton");
 var btn = document.getElementById("testBtn");
 var inputField = document.getElementById("inputField");
 var currentCommit, repositoryOwner, repositoryName, repositoryUrl;
+var currentRepo;
 
 
 /**
@@ -9,6 +10,7 @@ var currentCommit, repositoryOwner, repositoryName, repositoryUrl;
  */
 
 submitButton.onclick = function () {
+    currentRepo = inputField.value;
 
     // send repo link to server
     var r = jsRoutes.controllers.HomeController.visualization();
@@ -17,7 +19,7 @@ submitButton.onclick = function () {
         type: r.type,
         contentType: "application/json; charset=utf-8",
         data: {
-            repository: inputField.value
+            repository: currentRepo
         },
         success: function () {
 
@@ -82,6 +84,9 @@ function getData(id) {
         url: r.url,
         type: r.type,
         contentType: "application/json; charset=utf-8",
+        data: {
+            repository: currentRepo
+        },
         success: function (data) {
 
             // stop polling
