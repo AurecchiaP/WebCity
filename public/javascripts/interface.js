@@ -2,6 +2,7 @@ var submitButton = document.getElementById("submitButton");
 var btn = document.getElementById("testBtn");
 var inputField = document.getElementById("inputField");
 var currentCommit, repositoryOwner, repositoryName, repositoryUrl;
+var currentRepo;
 
 
 /**
@@ -9,6 +10,7 @@ var currentCommit, repositoryOwner, repositoryName, repositoryUrl;
  */
 
 submitButton.onclick = function () {
+    currentRepo = inputField.value;
 
     // send repo link to server
     var r = jsRoutes.controllers.HomeController.visualization();
@@ -17,7 +19,7 @@ submitButton.onclick = function () {
         type: r.type,
         contentType: "application/json; charset=utf-8",
         data: {
-            repository: inputField.value
+            repository: currentRepo
         },
         success: function () {
 
@@ -63,7 +65,7 @@ function poll() {
 
             //update the progress bar with the data received from server
             var json = JSON.parse(data);
-            $('.progress-bar').css('width', json.percentage+'%').attr('aria-valuenow', json.percentage).html(json.taskName);
+            $('.progress-bar').css('width', json.percentage + '%').attr('aria-valuenow', json.percentage).html(json.taskName);
             // $('.progress-bar').css('width', json.percentage+'%').attr('aria-valuenow', json.percentage).html(+ json.task - 2 + '/3');
             // $('.progress-bar').css('width', json.percentage + '%');
 
@@ -82,6 +84,9 @@ function getData(id) {
         url: r.url,
         type: r.type,
         contentType: "application/json; charset=utf-8",
+        data: {
+            repository: currentRepo
+        },
         success: function (data) {
 
             // stop polling
@@ -91,6 +96,9 @@ function getData(id) {
             // initialize th visualization
             var json = JSON.parse(data);
             console.log(json);
+            var repository = json.details.repository.split("/");
+            repositoryName = repository[1];
+            repositoryOwner = repository[0];
             repositoryUrl = json.details.repositoryUrl;
             addCommits(json.commits);
             currentCommit = json.commits[0].name;
@@ -112,18 +120,34 @@ var searchInput = $('#search-input');
 var searchList = $('#search-list');
 var searchListItems;
 
+var searchWorker;
+
 searchInput.on('keyup', function () {
     var input = searchInput.val();
-    if (input !== "") {
+    // if we didn't instantiate the worker it means that the browser doesn't support them
+    if (typeof(searchWorker) !== "undefined") {
+
+        // make the list of classes into a plain list (can't send HTML elements to web workers)
+        var data = [];
+        for (var j = 0; j < searchListItems.length; ++j) {
+            data[j] = searchListItems[j].innerText;
+        }
+
+        // send data to web worker
+        searchWorker.postMessage([input, data]);
+    }
+    // else go through the list manually
+    else {
+        var it;
         for (var i = 0; i < searchListItems.length; ++i) {
-            if (searchListItems[i].innerText.includes(input)) {
-                searchListItems[i].style.display = "block";
+            it = searchListItems[i];
+            if (it.innerText.includes(input)) {
+                it.style.display = "block";
             } else {
-                searchListItems[i].style.display = "none";
+                it.style.display = "none";
             }
         }
     }
-
 });
 
 searchInput.on('focus', function () {
@@ -156,10 +180,6 @@ function setSearchResults() {
 
     }
     searchListItems = $('.search-list-item');
-    // initially set all search results as invisible
-    for (var j = 0; j < searchListItems.length; ++j) {
-        searchListItems[j].style.display = "none";
-    }
 
     searchListItems.on('click', function (e) {
         var newSearchObject = meshes[searchListItems.index(e.target)];
@@ -176,11 +196,17 @@ function setSearchResults() {
                 return;
             }
         }
+        // point camera at selected mesh
+        var vector = new THREE.Vector3();
+        vector.setFromMatrixPosition(newSearchObject.matrixWorld);
+        controls.target.set(vector.x, vector.y, vector.z);
+        controls.update();
+
         searchSelectedItem = e.target;
         searchSelectedItem.classList.add("active");
         searchObject = newSearchObject;
         searchObject.material.visible = true;
-        searchObject.material.color.set(0xFF0000);
+        searchObject.material.color.set(0xA9CF54);
         renderer.render(scene, camera);
         renderer.render(scene, camera);
     });

@@ -3,6 +3,10 @@ var scale;
 var packageHeight;
 var box;
 var classes = [];
+var recorder, recording = false;
+var commitsList, commitsListFirst, commitsListLast;
+var commitsListFirstSelected = -1;
+var commitsListLastSelected = -1;
 
 
 /**
@@ -104,8 +108,8 @@ function drawClass(drwCls) {
     classes.push(drwCls);
 
     // adding 10 to attributes and methods, to have a lower bound (else we won't see the class)
-    var clsHeight = (drwCls.cls.methods + 5) * scale;
-    var clsWidth = (drwCls.cls.attributes + 5) * scale;
+    var clsHeight = ((drwCls.cls.methods * 3) + 5) * scale;
+    var clsWidth = ((drwCls.cls.attributes * 3) + 5) * scale;
 
     var posX = drwCls.cx * scale;
     var posY = drwCls.cy * scale;
@@ -221,7 +225,11 @@ function loaded(totalClasses) {
     renderer.shadowMap.needsUpdate = true;
 
     var commitsDropdown = $("#commits-dropdown");
-    var commitsList = $("#commits-list");
+    var commitsDropdownFirst = $("#commits-dropdown-first");
+    var commitsDropdownLast = $("#commits-dropdown-last");
+    commitsList = $("#commits-list");
+    commitsListFirst = $("#commits-list-first");
+    commitsListLast = $("#commits-list-last");
 
     commitsDropdown.on('focus', function () {
         commitsList.css('display', 'block');
@@ -231,28 +239,84 @@ function loaded(totalClasses) {
         commitsList.css('display', 'none');
     });
 
+    commitsDropdownFirst.on('focus', function () {
+        commitsListFirst.css('display', 'block');
+    });
+
+    commitsDropdownFirst.on('blur', function () {
+        commitsListFirst.css('display', 'none');
+    });
+
+    commitsDropdownLast.on('focus', function () {
+        commitsListLast.css('display', 'block');
+    });
+
+    commitsDropdownLast.on('blur', function () {
+        commitsListLast.css('display', 'none');
+    });
+
     commitsList.on('mousedown', function (e) {
         commitsDropdown.text(e.target.innerText.split(/\r?\n/)[0]);
         event.preventDefault();
     });
 
-    $("#info-button").on("click", function () {
-        $("#info-content").css("display", "block");
+    commitsListFirst.on('mousedown', function (e) {
+        commitsDropdownFirst.text(e.target.innerText.split(/\r?\n/)[0]);
+        commitsListFirstSelected = commitsListFirst.children().index(e.target);
+        event.preventDefault();
     });
 
-    $("#info-content-dismiss").on("click", function () {
-        $("#info-content").css("display", "none");
+    commitsListLast.on('mousedown', function (e) {
+        commitsDropdownLast.text(e.target.innerText.split(/\r?\n/)[0]);
+        commitsListLastSelected = commitsListLast.children().index(e.target);
+        event.preventDefault();
     });
 
     setSearchResults();
+    if (typeof(Worker) !== "undefined") {
+        if (typeof(searchWorker) === "undefined") {
+            searchWorker = new Worker("assets/javascripts/search_workers.js");
+            searchWorker.addEventListener('message', function (e) {
+                for (var i = 0; i < searchListItems.length; ++i) {
+                    searchListItems[i].style.display = e.data[i];
+                }
+            }, false);
+        }
+    }
 
     // add events for visualization callbacks
+    canvas.addEventListener('click', canvasClick, false);
     window.addEventListener('resize', onWindowResize, false);
+    window.addEventListener('click', altClick, false);
     window.addEventListener('mousemove', onMouseMove, false);
     window.addEventListener("keydown", onKeyPress, false);
     window.addEventListener('mousewheel', onWheel, false);
-    window.addEventListener('contextmenu', onContextMenu, false);
     render();
+}
+
+function callNext(list, idx, last) {
+    list[idx].click();
+    idx++;
+    if (recording && (idx <= last && idx < list.length)) {
+        setTimeout(function () {
+            callNext(list, idx, last);
+        }, 500);
+    }
+    else {
+        setTimeout(function () {
+            if (recording) {
+                recording = false;
+                recorder.stopRecording(function () {
+                    var blob = recorder.getBlob();
+                    saveData(blob, repositoryName + ".webm");
+                    // this.clearRecordedData();
+                    // var url = URL.createObjectURL(blob);
+                    // window.open(url);
+                });
+                $("#record-card-button").css("color", "rgba(220, 220, 220, 1)");
+            }
+        }, 500);
+    }
 }
 
 

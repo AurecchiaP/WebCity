@@ -1,9 +1,10 @@
 var scene, camera, renderer, controls;
 var geometry, material, mesh;
 var canvas, mouse;
-var pinnedObject, isPinned, pinnedColor;
+var pinnedObject;
 var raycaster;
 var light;
+var recorder;
 var vector = new THREE.Vector3();
 
 var intersects = [];
@@ -30,6 +31,7 @@ function init(json) {
     raycaster = new THREE.Raycaster();
 
     scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xf0f0f0);
 
     scale = 1250 / Math.max(json.width, json.depth);
 
@@ -95,15 +97,31 @@ function init(json) {
     controls.enableDamping = true;
     controls.dampingFactor = 0.25;
 
+    $("#info-button").on("click", function () {
+        $("#info-content").css("display", "block");
+    });
+
+    $("#info-content-dismiss").on("click", function () {
+        $("#info-content").css("display", "none");
+    });
+
+    $("#record-card-button").on("click", function () {
+        $("#record-card").css("display", "block");
+    });
+
+    $("#record-card-dismiss").on("click", function () {
+        $("#record-card").css("display", "none");
+    });
+
+
     draw(json);
+    setupRecorder();
 }
 
 
 /**
  * updates the texts based on the hovered object, and updates the render
  */
-
-// var w;
 var c = 0;
 function render() {
     camera.getWorldDirection(vector);
@@ -120,7 +138,7 @@ function render() {
         // get the closest intersection
         hoveredCube = intersects[0];
 
-        if (!isPinned) {
+        if (!pinnedObject) {
 
             if (hoveredCube.object.type === "package") {
                 nameText.innerText = hoveredCube.object.name;
@@ -145,7 +163,7 @@ function render() {
         }
     }
     else {
-        if (!isPinned) {
+        if (!pinnedObject) {
             nameText.innerText = "";
 
             statistic1.firstElementChild.nextElementSibling.innerText = "0";

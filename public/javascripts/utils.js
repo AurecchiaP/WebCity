@@ -5,12 +5,13 @@ function addCommits(commits) {
     var items = $('.dropdown-items');
     for(var i = 0; i < commits.length; ++i) {
         items.append("<a href='#' class='list-group-item list-group-item-action'>" +
-            commits[i].name + "<small>" + commits[i].date + "</small></a>");
+            commits[i].name + "<br>" + commits[i].date + "</a>");
     }
     items.on('click', $('.dropdown-item'), getCommit);
 }
 
 function getCommit(e) {
+    var commit = e.target.innerHTML.split("<")[0];
 
     var r = jsRoutes.controllers.HomeController.getCommit();
     $.ajax({
@@ -18,12 +19,13 @@ function getCommit(e) {
         type: r.type,
         contentType: "application/json; charset=utf-8",
         data: {
-            commit: e.target.innerText
+            repository: currentRepo,
+            commit: commit
         },
         success: function (data) {
             console.log("valid commit");
             var json = JSON.parse(data);
-            currentCommit = e.target.innerText;
+            currentCommit = commit;
             $('#current-commit').text(currentCommit);
             clearVisualization();
             draw(json.visualization);

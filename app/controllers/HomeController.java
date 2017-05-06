@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
+import models.RepositoryModel;
 import models.drawables.DrawablePackage;
 import models.history.JavaPackageHistory;
 import models.Commit;
@@ -39,13 +40,10 @@ import static utils.JSON.toJSON;
 
 public class HomeController extends Controller {
 
-    private String currentRepo;
     private double percentage = 0;
     private int taskNumber = 0;
     private String taskName;
-    private DrawablePackage maxDrw;
-    private List<RectanglePacking> packings;
-    private List<Commit> commits;
+    private Map<String, RepositoryModel> rms = new HashMap<>();
 
     @Inject
     private FormFactory formFactory;
@@ -77,10 +75,10 @@ public class HomeController extends Controller {
      * downloads the linked repository, parses it, does the rectangle packing, and returns the data to be visualized
      */
     public Result getVisualizationData() {
-        commits = new ArrayList<>();
-
-        // remove the old downloaded repository
-//        deleteDir(new File(Play.current().path() + "/repository"));
+        String currentRepo = formFactory.form().bindFromRequest().get("repository");
+        DrawablePackage maxDrw;
+        List<RectanglePacking> packings;
+        List<Commit> commits = new ArrayList<>();
 
         // try to download the given repository
         Git git = null;
@@ -228,8 +226,7 @@ public class HomeController extends Controller {
         Map <String, String> details = new HashMap<>();
 
         // fixme reponame != repo url
-        details.put("repositoryOwner", repoName);
-        details.put("repositoryName", repoName);
+        details.put("repository", repoName);
         details.put("repositoryUrl", currentRepo);
 
         // create json object
@@ -241,6 +238,9 @@ public class HomeController extends Controller {
         jsonObject.add("maxDrw", gson.fromJson(new Gson().toJson(maxDrw), JsonElement.class));
         jsonObject.add("details", gson.fromJson(new Gson().toJson(details), JsonElement.class));
 
+        RepositoryModel rm = new RepositoryModel(maxDrw, packings, commits);
+        rms.put(currentRepo, rm);
+
         // send data to client
         return ok(gson.toJson(jsonObject));
     }
@@ -250,20 +250,16 @@ public class HomeController extends Controller {
      * route for the visualisation page
      */
     public Result visualization() {
-        String repo = formFactory.form().bindFromRequest().get("repository");
-        System.out.println("input repository: " + repo);
-
-        // empty input uses local repo, for debugging
-        currentRepo = repo;
+        String currentRepo = formFactory.form().bindFromRequest().get("repository");
+        System.out.println("input repository: " + currentRepo);
 
         final LsRemoteCommand lsCmd = new LsRemoteCommand(null)
-                .setRemote(repo);
+                .setRemote(currentRepo);
         try {
             // print for debugging
 //                System.out.println(lsCmd.call().toString());
             lsCmd.call();
             System.out.println("Valid repository.");
-            currentRepo = repo;
             return ok();
 
         } catch (GitAPIException e) {
@@ -289,7 +285,13 @@ public class HomeController extends Controller {
      * returns the visualisation data for a given version of the repository
      */
     public Result getCommit() {
-        String commit = formFactory.form().bindFromRequest().get("commit").split("\n")[0];
+        String currentRepo = formFactory.form().bindFromRequest().get("repository");
+        RepositoryModel rm = rms.get(currentRepo);
+        DrawablePackage maxDrw = rm.getMaxDrw();
+        List<RectanglePacking> packings = rm.getPackings();
+        List<Commit> commits = rm.getCommits();
+
+        String commit = formFactory.form().bindFromRequest().get("commit");
         System.out.println("version required: " + commit);
 
         // look for the packing that commit corresponds to

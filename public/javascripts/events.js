@@ -1,3 +1,12 @@
+
+/**
+ * canvas doesn't propagate events, so when we click it the old active element doesn't lose focus;
+ * therefore we manually blur the old focused element when we click the canvas
+ */
+function canvasClick() {
+    document.activeElement.blur();
+}
+
 /**
  * handles wheel scrolls/zoom
  */
@@ -5,20 +14,19 @@ function onWheel(e) {
     controls.update();
     render();
 }
-
-
 /**
- * handles right click
+ * handles alt + leftClick
  */
-function onContextMenu(e) {
-
-    intersects = raycaster.intersectObjects(meshes);
-    if (intersects.length > 0 && intersects[0].object.type === "class") {
-        var cls = intersects[0].object;
-        var url = repositoryUrl + "/tree/" + currentCommit + cls.filename;
-        var win = window.open(url, '_blank');
-        win.focus();
-        // TODO find a way to get the code, then maybe use bootstrap popovers
+function altClick(e) {
+    if (event.altKey === true) {
+        intersects = raycaster.intersectObjects(meshes);
+        if (intersects.length > 0 && intersects[0].object.type === "class") {
+            var cls = intersects[0].object;
+            var url = repositoryUrl + "/tree/" + currentCommit + cls.filename;
+            var win = window.open(url, '_blank');
+            win.focus();
+            // TODO find a way to get the code, then maybe use bootstrap popovers
+        }
     }
 }
 
@@ -43,23 +51,32 @@ function onKeyPress(e) {
             render();
             break;
 
-        // key g, pin object
-        case 71:
+        // key 'p', pin object
+        case 80:
             var intersects = raycaster.intersectObjects(meshes);
 
-            if (pinnedObject) {
-                pinnedObject.object.material.visible = false;
-                pinnedObject.object.material.color.set(pinnedColor);
-                pinnedObject = null;
-                isPinned = false;
-            }
-
+            // if we clicked "p" when hovering an object
             if (intersects.length > 0) {
+
+                // if there is an already pinned object
+                if (pinnedObject) {
+                    // unpin the previously pinned object
+                    pinnedObject.object.material.visible = false;
+
+                    // if we pinned the same object twice, unpin it
+                    if (pinnedObject.object.uuid === intersects[0].object.uuid) {
+                        pinnedObject = undefined;
+                        renderer.render(scene, camera);
+                        renderer.render(scene, camera);
+                        return;
+                    }
+                }
+
+                // pin the new object
                 pinnedObject = intersects[0];
                 pinnedColor = pinnedObject.object.material.color;
                 pinnedObject.object.material.visible = true;
-                pinnedObject.object.material.color.set(0xF1BB4E);
-                isPinned = true;
+                pinnedObject.object.material.color.set(0xF77A52);
                 if (hoveredCube.object.type === "package") {
                     nameText.innerText = hoveredCube.object.name;
                     statistic1.firstElementChild.innerText = "contained classes";

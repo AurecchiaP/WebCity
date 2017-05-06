@@ -1,7 +1,7 @@
 #container {
     display: none;
     width: 100vw;
-    height: 100vh;
+    height: 95vh;
     background-color: rgba(240, 240, 240, 1);
 }
 
@@ -59,22 +59,22 @@
 }
 
 #commits-list {
-    position: absolute;
-    z-index: 100;
-    display: none;
-    overflow-y: scroll;
-    scrollbar-base-color: black;
-    scrollbar-arrow-color: grey;
-    max-height: 25vh;
     right: 0;
-    top: 2.5em;
 }
 
-.dropdownItems {
+#commits-list-first #commits-list-last {
+    left: 0;
+}
+
+.dropdown-items {
     overflow-y: scroll;
+    position: absolute;
+    z-index: 100;
     scrollbar-base-color: black;
     scrollbar-arrow-color: grey;
     max-height: 25vh;
+    top: 2.5em;
+    display: none;
 }
 
 .statistic {
@@ -109,7 +109,7 @@
     color: rgba(102, 104, 116, 1);
 }
 
-#info-content {
+#info-content, #record-card {
     z-index: 100;
     display: none;
     position: absolute;
@@ -119,6 +119,17 @@
     margin: 20vh 20vw 20vh 20vw;
 }
 
-#info-content-dismiss {
-    padding-right: .8em;
+.content-dismiss {
+    padding-right: .8em !important;
+}
+
+
+#record-card-button {
+    color: rgba(220, 220, 220, 1);
+    transition: all 0.1s;
+    line-height: 3.5vh;
+}
+
+#record-button {
+    margin-bottom: 1em;
 }

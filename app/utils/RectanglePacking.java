@@ -119,8 +119,8 @@ public class RectanglePacking {
                 dummyParentBin.mergeBin(dummyBinBin);
                 int perimeter =
                         ((dummyParentBin.getX2() - dummyParentBin.getX1()) * 2)
-                        +
-                        ((dummyParentBin.getY2() - dummyParentBin.getY1()) * 2);
+                                +
+                                ((dummyParentBin.getY2() - dummyParentBin.getY1()) * 2);
 
                 if (perimeter < minimumWaste) {
                     minimumWaste = perimeter;
@@ -203,8 +203,8 @@ public class RectanglePacking {
                 dummyLocalBin.mergeBin(dummyBinBin);
                 int perimeter =
                         ((dummyLocalBin.getX2() - dummyLocalBin.getX1()) * 2)
-                        +
-                        ((dummyLocalBin.getY2() - dummyLocalBin.getY1()) * 2);
+                                +
+                                ((dummyLocalBin.getY2() - dummyLocalBin.getY1()) * 2);
 
                 if (perimeter < minimumWaste) {
                     minimumWaste = perimeter;
@@ -379,10 +379,15 @@ public class RectanglePacking {
 
         // heuristic; assume every class is as big as the biggest class to find a lower bound for the size of the
         // package
-        return
-                (classes.get(0).getCls().getAttributes().getValue() + 5 + padding * 2) // the biggest class
-                *
-                ((int) Math.ceil(Math.sqrt(classes.size()))); // an upper bound on the number of classes
+
+        int size = 0;
+        for (int i = 0; i < (int) Math.ceil(Math.sqrt(classes.size())); ++i) {
+            size += (classes.get(i).getCls().getAttributes().getValue() * 3) + 5 + padding * 2;
+        }
+        return size;
+//                ((classes.get(0).getCls().getAttributes().getValue() * 3) + 5 + padding * 2) // the biggest class
+//                *
+//                ((int) Math.ceil(Math.sqrt(classes.size()))); // an upper bound on the number of classes
     }
 
 
@@ -412,26 +417,43 @@ public class RectanglePacking {
 
         List<DrawableClass> classes = drwPkg.getDrawableClasses();
         int totalClasses = classes.size();
-        // calculate how many classes we can fit on one edge of the bin
-        int classesPerWidth = (int) Math.ceil(Math.sqrt(totalClasses)) + 1;
 
-        // calculate how far apart each class has to be
-        int gridSpacing = (bin.getX2() - bin.getX1()) / (classesPerWidth);
+        // if there are no classes, return
+        if (totalClasses == 0) return;
 
-        // find the positions of the classes on the grid
-        for (int i = 0; i < totalClasses; ++i) {
+        // height between each line of classes
+        int lineHeight = (classes.get(0).getCls().getAttributes().getValue() * 3) + 5;
+
+        // positions of each class
+        int xPos = bin.getX1();
+        int yPos = bin.getY1() + padding;
+        int classSize;
+
+        // find the positions of the classes
+        for (int i = 0; i < classes.size(); i++) {
             DrawableClass cls = classes.get(i);
-            int x = i % (classesPerWidth - 1) + 1;
-            int y = i / (classesPerWidth - 1) + 1;
-            cls.setCx(bin.getX1() + gridSpacing * x);
-            cls.setCy(bin.getY1() + gridSpacing * y);
+            classSize = (cls.getCls().getAttributes().getValue() * 3) + 5;
+
+            // if this X line is full, set X back to beginning and increase Y
+            if (xPos + classSize + (padding * 2) > bin.getX2()) {
+                xPos = bin.getX1();
+                yPos += lineHeight + padding;
+                lineHeight = (cls.getCls().getAttributes().getValue() * 3) + 5;
+
+            }
+            xPos += (classSize / 2) + padding;
+            cls.setCx(xPos);
+            xPos += (classSize / 2) + padding;
+            cls.setCy(yPos + (classSize / 2));
             cls.setZ(drwPkg.getZ());
+
             cls.setColor(RGBtoInt(
                     255 - (200 * cls.getCls().getLinesOfCode().getValue() / maxLines),
                     255 - (200 * cls.getCls().getLinesOfCode().getValue() / maxLines),
                     255));
         }
     }
+
 
     public String getVersion() {
         return version;
