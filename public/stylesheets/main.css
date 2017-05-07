@@ -35,20 +35,6 @@ body {
 
 .navbar {
     z-index: 50;
-    background-color: rgba(52,54,66,1) !important;
-}
-
-.navbar-brand {
-    color: rgba(255,255,255,0.75) !important;
-}
-
-.btn-secondary {
-    background-color: rgba(52,54,66,1) !important;
-    color: rgba(255,255,255,0.75) !important;
-}
-
-.btn-secondary:hover {
-    background-color: rgba(82,84,96,1) !important;
 }
 
 
@@ -60,6 +46,7 @@ body {
     padding: 0 1em 0 0;
     z-index: 60;
 }
+
 
 .alertMessages {
     position: relative;
@@ -74,4 +61,8 @@ body {
 
 .progress {
     background-color: rgba(82,84,96,.3) !important;
+}
+
+.grid {
+    display: grid;
 }

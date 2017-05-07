@@ -39,7 +39,6 @@ import static utils.JSON.toJSON;
 public class HomeController extends Controller {
 
     private double percentage = 0;
-    private int taskNumber = 0;
     private String taskName;
     private Map<String, RepositoryModel> rms = new HashMap<>();
 
@@ -88,7 +87,7 @@ public class HomeController extends Controller {
 
         File directory = new File(Play.current().path() + "/repository/" + repoName + "/.git/");
 
-        if(rms.containsKey(currentRepo)) {
+        if (rms.containsKey(currentRepo)) {
             System.out.println("Loading local visualization data.");
             RepositoryModel rm = rms.get(currentRepo);
 
@@ -115,7 +114,6 @@ public class HomeController extends Controller {
         // if we have cached this repository before
         try {
             if (directory.exists()) {
-
                 git = Git.open(directory);
                 git.checkout().setName("master").call();
             } else {
@@ -138,8 +136,6 @@ public class HomeController extends Controller {
                                 // new task has started; reset downloaded data for this task to 0
                                 downloadedData = 0;
 
-                                // increase task number
-                                ++taskNumber;
                                 taskName = title;
                                 totalData = totalWork;
                             }
@@ -157,6 +153,7 @@ public class HomeController extends Controller {
 
                             @Override
                             public void endTask() {
+                                percentage = 100.0;
                             }
 
                             @Override
@@ -206,7 +203,6 @@ public class HomeController extends Controller {
             ObjectInputStream ois = null;
 
             try {
-
                 fin = new FileInputStream(Play.current().path() + "/repository/" + repoName + "/history.ser");
                 ois = new ObjectInputStream(fin);
                 jph = (JavaPackageHistory) ois.readObject();
@@ -234,8 +230,6 @@ public class HomeController extends Controller {
                     }
                 }
             }
-
-
         } else {
             System.out.println("Start parsing...");
 
@@ -318,8 +312,6 @@ public class HomeController extends Controller {
 
         compareWithMax(maxDrw, packings.get(0));
 
-        taskNumber = 0;
-
         git.close();
 
         details.put("repository", repoName);
@@ -369,9 +361,9 @@ public class HomeController extends Controller {
      * while the data is being sent from server to client, the client will poll the server to know the percentage
      */
     public Result poll() {
+        String currentRepo = formFactory.form().bindFromRequest().get("repository");
         JsonObject obj = new JsonObject();
         obj.addProperty("percentage", percentage);
-        obj.addProperty("task", taskNumber);
         obj.addProperty("taskName", taskName);
         return ok(obj.toString());
     }

@@ -10,7 +10,7 @@ var currentRepo;
  */
 
 submitButton.onclick = function () {
-    currentRepo = inputField.value;
+    currentRepo = inputField.value.replace(".git", "");
 
     // send repo link to server
     var r = jsRoutes.controllers.HomeController.visualization();
@@ -61,13 +61,30 @@ function poll() {
         url: r.url,
         type: r.type,
         contentType: "application/json; charset=utf-8",
+        data: {
+            repository: currentRepo
+        },
         success: function (data) {
 
             //update the progress bar with the data received from server
             var json = JSON.parse(data);
-            $('.progress-bar').css('width', json.percentage + '%').attr('aria-valuenow', json.percentage).html(json.taskName);
-            // $('.progress-bar').css('width', json.percentage+'%').attr('aria-valuenow', json.percentage).html(+ json.task - 2 + '/3');
-            // $('.progress-bar').css('width', json.percentage + '%');
+            if (json.taskName == "Receiving objects") {
+                $('.progress-bar').css('width', json.percentage / 3.33 + '%').attr('aria-valuenow', json.percentage).html(json.taskName);
+
+            }
+            else if (json.taskName == "Resolving deltas") {
+                $('.progress-bar').css('width', 33.3 + (json.percentage / 3.33) + '%').attr('aria-valuenow', json.percentage).html(json.taskName);
+            }
+
+            else if(json.percentage == "100.0" && json.taskName == "Updating references") {
+                console.log("in");
+                $('.progress-bar').css('width', 100.0 + '%').attr('aria-valuenow', json.percentage).html("Parsing (this might take a while)");
+            }
+
+            else if (json.taskName == "Updating references") {
+
+                $('.progress-bar').css('width', 66.6 + (json.percentage / 3.33) + '%').attr('aria-valuenow', json.percentage).html(json.taskName);
+            }
 
         }, error: function () {
             console.log("poll error");
@@ -170,19 +187,19 @@ function setSearchResults() {
     // populate the searchList
     for (var i = 0; i < meshes.length; ++i) {
         if (meshes[i].type === "class") {
-            searchList.append(" <a href='#' class='search-list-item list-group-item list-group-item-action'>"
-                + meshes[i].filename + ":" + meshes[i].name + "<br><small>" + meshes[i].type + "</small></a>");
+            searchList.append(" <button class='search-list-item list-group-item list-group-item-action'><div class='grid'>"
+                + meshes[i].filename + ":" + meshes[i].name + "<small>" + meshes[i].type + "</small></div></button>");
 
         } else {
-            searchList.append(" <a href='#' class='search-list-item list-group-item list-group-item-action'>"
-                + meshes[i].name + "<br><small>" + meshes[i].type + "</small></a>");
+            searchList.append(" <button class='search-list-item list-group-item list-group-item-action'><div class='grid'>"
+                + meshes[i].name + "<small>" + meshes[i].type + "</small></div></button>");
         }
 
     }
     searchListItems = $('.search-list-item');
 
     searchListItems.on('click', function (e) {
-        var newSearchObject = meshes[searchListItems.index(e.target)];
+        var newSearchObject = meshes[searchListItems.index(e.currentTarget)];
         // if an object is already selected
         if (searchObject) {
             searchSelectedItem.classList.remove("active");
