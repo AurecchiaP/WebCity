@@ -11,7 +11,6 @@ import models.Commit;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.errors.*;
-import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -25,12 +24,11 @@ import models.JavaPackage;
 import utils.HistoryUtils;
 import utils.RectanglePacking;
 
-import java.io.IOException;
+import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 
-import java.io.File;
 import java.util.*;
 
 import static utils.DrawableUtils.compareWithMax;
@@ -79,6 +77,8 @@ public class HomeController extends Controller {
         DrawablePackage maxDrw;
         List<RectanglePacking> packings;
         List<Commit> commits = new ArrayList<>();
+        Map<String, String> details = new HashMap<>();
+
 
         // try to download the given repository
         Git git = null;
@@ -87,6 +87,30 @@ public class HomeController extends Controller {
         String repoName = currentRepo.replace("https://github.com/", "");
 
         File directory = new File(Play.current().path() + "/repository/" + repoName + "/.git/");
+
+        if(rms.containsKey(currentRepo)) {
+            System.out.println("Loading local visualization data.");
+            RepositoryModel rm = rms.get(currentRepo);
+
+            packings = rm.getPackings();
+            commits = rm.getCommits();
+            maxDrw = rm.getMaxDrw();
+
+
+            details.put("repository", repoName);
+            details.put("repositoryUrl", currentRepo);
+
+            // create json object
+            Gson gson = new Gson();
+            final JsonObject jsonObject = new JsonObject();
+            // add visualization data
+            jsonObject.add("visualization", gson.fromJson(toJSON(maxDrw), JsonElement.class));
+            jsonObject.add("commits", gson.fromJson(new Gson().toJson(commits), JsonElement.class));
+            jsonObject.add("details", gson.fromJson(new Gson().toJson(details), JsonElement.class));
+
+            // send data to client
+            return ok(gson.toJson(jsonObject));
+        }
 
         // if we have cached this repository before
         try {
@@ -167,33 +191,108 @@ public class HomeController extends Controller {
             return badRequest();
         }
 
-        // parse the .java files of the repository
-        BasicParser.parseRepo(Play.current().path() + "/repository");
 
         JavaPackageHistory jph = null;
 
         HistoryUtils historyUtils = new HistoryUtils();
 
-        System.out.println("reponame " + repoName);
-        System.out.println("Start parsing...");
-        // iterate all the commits of the repo
-        for (Commit commit : commits) {
+        System.out.println("Repository name: " + repoName);
 
-            // set repository to the next version
+        File serialized = new File(Play.current().path() + "/repository/" + repoName + "/history.ser");
+        if (serialized.exists() && !serialized.isDirectory()) {
+            System.out.println("Found serialized object.");
+
+            FileInputStream fin = null;
+            ObjectInputStream ois = null;
+
             try {
+
+                fin = new FileInputStream(Play.current().path() + "/repository/" + repoName + "/history.ser");
+                ois = new ObjectInputStream(fin);
+                jph = (JavaPackageHistory) ois.readObject();
+
+                System.out.println("Done reading serialized object.");
+
+            } catch (Exception ex) {
+                System.out.println("Couldn't read serialized object.");
+                ex.printStackTrace();
+            } finally {
+
+                if (fin != null) {
+                    try {
+                        fin.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (ois != null) {
+                    try {
+                        ois.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+
+        } else {
+            System.out.println("Start parsing...");
+
+            // iterate all the commits of the repo
+            for (Commit commit : commits) {
+
+                // set repository to the next version
+                try {
 //                git.checkout().setCreateBranch(true).setName("test_" + version).setStartPoint(version).call();
-                git.checkout().setName(commit.getName()).call();
+                    git.checkout().setName(commit.getName()).call();
 
-                // parse the current version
-                JavaPackage temp = BasicParser.parseRepo(Play.current().path() + "/repository/" + repoName);
-                jph = historyUtils.toHistory(commit.getName(), temp);
+                    // parse the current version
+                    JavaPackage temp = BasicParser.parseRepo(Play.current().path() + "/repository/" + repoName);
+                    jph = historyUtils.toHistory(commit.getName(), temp);
 
-            } catch (GitAPIException e) {
-                e.printStackTrace();
+                } catch (GitAPIException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            System.out.println("Done parsing.");
+
+            System.out.println("Start serializing object.");
+
+
+            FileOutputStream fout = null;
+            ObjectOutputStream oos = null;
+            try {
+
+                fout = new FileOutputStream(Play.current().path() + "/repository/" + repoName + "/history.ser");
+                oos = new ObjectOutputStream(fout);
+                oos.writeObject(jph);
+
+                System.out.println("Done serializing object.");
+
+            } catch (Exception ex) {
+                System.out.println("Couldn't serialize object.");
+                ex.printStackTrace();
+            } finally {
+
+                if (oos != null) {
+                    try {
+                        oos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (fout != null) {
+                    try {
+                        fout.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
-
-        System.out.println("Done parsing.");
 
         // a list of rectangle packings for all the commits
         packings = new ArrayList<>();
@@ -223,9 +322,6 @@ public class HomeController extends Controller {
 
         git.close();
 
-        Map <String, String> details = new HashMap<>();
-
-        // fixme reponame != repo url
         details.put("repository", repoName);
         details.put("repositoryUrl", currentRepo);
 
@@ -235,7 +331,6 @@ public class HomeController extends Controller {
         // add visualization data
         jsonObject.add("visualization", gson.fromJson(toJSON(maxDrw), JsonElement.class));
         jsonObject.add("commits", gson.fromJson(new Gson().toJson(commits), JsonElement.class));
-        jsonObject.add("maxDrw", gson.fromJson(new Gson().toJson(maxDrw), JsonElement.class));
         jsonObject.add("details", gson.fromJson(new Gson().toJson(details), JsonElement.class));
 
         RepositoryModel rm = new RepositoryModel(maxDrw, packings, commits);

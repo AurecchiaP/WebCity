@@ -1,5 +1,6 @@
 package models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 /**
  * A model for Java packages
  */
-public class JavaPackage {
+public class JavaPackage implements Serializable {
 
     private String name;
     private List<JavaPackage> childPackages;

@@ -1,9 +1,11 @@
 package models.metrics;
 
+import java.io.Serializable;
+
 /**
  * metric class that represents the number of lines of code in a class
  */
-public class LinesOfCode extends Metric<Integer> {
+public class LinesOfCode extends Metric<Integer> implements Serializable {
 
     private int loc;
 

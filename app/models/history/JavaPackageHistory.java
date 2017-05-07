@@ -2,6 +2,7 @@ package models.history;
 
 import models.JavaPackage;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,7 @@ import java.util.Map;
  * packageHistories is a list of different JavaPackage instances, each of which represent the JavaPackage in a different
  * version of the system.
  */
-public class JavaPackageHistory {
+public class JavaPackageHistory implements Serializable {
     private String name;
 
     private List<JavaPackageHistory> jpChildren;

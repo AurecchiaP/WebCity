@@ -2,6 +2,7 @@ package models.history;
 
 import models.JavaClass;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
  * classHistories is a list of different javaClass instances, each of which represent the JavaClass in a different
  * version of the system.
  */
-public class JavaClassHistory {
+public class JavaClassHistory implements Serializable {
 
     private String name;
     private List<JavaClass> classHistories;

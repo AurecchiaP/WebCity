@@ -5,10 +5,12 @@ import models.metrics.Metric;
 import models.metrics.NumberOfAttributes;
 import models.metrics.NumberOfMethods;
 
+import java.io.Serializable;
+
 /**
  * A model for Java classes. The attributes for the position will later be moved
  */
-public class JavaClass {
+public class JavaClass implements Serializable {
 
     private String filename;
     private String name;

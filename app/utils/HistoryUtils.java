@@ -5,6 +5,7 @@ import models.JavaPackage;
 import models.history.JavaClassHistory;
 import models.history.JavaPackageHistory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,7 +61,6 @@ public class HistoryUtils {
                 jcHistory.addClassHistory(cls);
             }
         }
-
 
         jpHistory.put(version, pkg);
         // if there already exists a history for this specific package(name)
