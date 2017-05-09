@@ -22,9 +22,15 @@ submitButton.onclick = function () {
         data: {
             repository: currentRepo
         },
-        success: function () {
-
+        success: function (data) {
             // the linked repo is valid
+
+            var json = JSON.parse(data);
+            console.log(json);
+
+
+            $("#commits-number").text("number of commits:" + json.commits.length);
+            $("#tags-number").text("number of tags:" + json.tags.length);
 
             // show success message and progress bar
             $("#successMessage").css('opacity', '1');
@@ -34,9 +40,11 @@ submitButton.onclick = function () {
 
             document.getElementById("progressBar").style.width = "100%";
 
+            $('#submit-card').css('display', 'block');
+
             // start downloading
-            var id = setInterval(poll, 1000);
-            getData(id);
+            // var id = setInterval(poll, 1000);
+            // getData(id, type);
 
 
             console.log("valid repository");
@@ -53,6 +61,11 @@ submitButton.onclick = function () {
         }
     });
 };
+
+$("#visualize-button").on("click", function() {
+        var id = setInterval(poll, 1000);
+        getData(id, $("#type-select").val());
+});
 
 /**
  * polls the server to get percentage on the download
@@ -100,14 +113,16 @@ function poll() {
 /**
  * call server to get the data for the visualization
  */
-function getData(id) {
+function getData(id, type) {
+
     var r = jsRoutes.controllers.HomeController.getVisualizationData();
     $.ajax({
         url: r.url,
         type: r.type,
         contentType: "application/json; charset=utf-8",
         data: {
-            repository: currentRepo
+            repository: currentRepo,
+            type: type
         },
         success: function (data) {
 

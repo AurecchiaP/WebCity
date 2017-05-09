@@ -66,3 +66,7 @@ body {
 .grid {
     display: grid;
 }
+
+#submit-card {
+    display: none;
+}

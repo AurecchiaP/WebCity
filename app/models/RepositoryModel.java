@@ -1,6 +1,7 @@
 package models;
 
 import models.drawables.DrawablePackage;
+import org.eclipse.jgit.lib.Ref;
 import utils.RectanglePacking;
 
 import java.util.Collections;
@@ -15,11 +16,13 @@ public class RepositoryModel {
     private DrawablePackage maxDrw;
     private List<RectanglePacking> packings;
     private List<Commit> commits;
+    private List<Ref> tags;
 
-    public RepositoryModel(DrawablePackage maxDrw, List<RectanglePacking> packings, List<Commit> commits) {
+    public RepositoryModel(DrawablePackage maxDrw, List<RectanglePacking> packings, List<Commit> commits, List<Ref> tags) {
         this.maxDrw = maxDrw;
         this.packings = packings;
         this.commits = commits;
+        this.tags = tags;
     }
 
     public DrawablePackage getMaxDrw() {
@@ -46,5 +49,14 @@ public class RepositoryModel {
     public void setCommits(List<Commit> commits) {
         this.commits.clear();
         this.commits.addAll(commits);
+    }
+
+    public List<Ref> getTags() {
+        return Collections.unmodifiableList(tags);
+    }
+
+    public void setTags(List<Ref> tags) {
+        this.tags.clear();
+        this.tags.addAll(tags);
     }
 }

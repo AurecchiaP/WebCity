@@ -162,7 +162,7 @@
         </nav>
 
         <div id="main-content">
-
+            
             @* Input and submit button *@
             <div class="col-lg-6">
                 <div class="input-group">
@@ -171,6 +171,22 @@
                         <button id="submitButton" class="btn btn-secondary" type="button">Submit</button>
                     </span>
                 </div>
+
+                <div id="submit-card" class="card">
+                    <div class="card-block">
+                        <p id="commits-number" class="card-text"></p>
+                        <p id="tags-number" class="card-text"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="type-select">Choose visualization type</label>
+                        <select class="form-control" id="type-select">
+                            <option>Tags</option>
+                            <option>Commits</option>
+                        </select>
+                    </div>
+                    <button id="visualize-button" class="btn btn-secondary" type="button">visualize</button>
+                </div>
+
                 @* Progress bar *@
                 <div id="progressBar" class="progress">
                     <div class="progress-bar progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
