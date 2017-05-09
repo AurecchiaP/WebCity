@@ -5,7 +5,8 @@ function addCommits(commits) {
     var items = $('.dropdown-items');
     for(var i = 0; i < commits.length; ++i) {
         items.append("<a href='#' class='list-group-item list-group-item-action'>" +
-            commits[i].name + "<br>" + commits[i].date + "</a>");
+            commits[i].name + "<br>" + commits[i].description + "<br>" +
+            "<small>" + commits[i].author + ", " + commits[i].date + "</small></a>");
     }
     items.on('click', $('.dropdown-item'), getCommit);
 }

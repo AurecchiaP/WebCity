@@ -19,8 +19,15 @@ function setupRecorder() {
             if (commitsListFirstSelected >= 0 && commitsListLastSelected > commitsListFirstSelected) {
                 recorder = new RecordRTC(canvas.firstChild, {
                     type: 'canvas'
+
                 });
                 recording = true;
+                // canvas.style.width = "2560px";
+                // canvas.style.height = "1440px";
+                // canvas.style.width = "3840px";
+                // canvas.style.height = "2160px";
+                // canvas.style.width = "640px";
+                // canvas.style.height = "320px";
                 $("#record-card-button").css("color", "rgba(220, 0, 0, 1)");
                 recorder.startRecording();
                 callNext(list, commitsListFirstSelected, commitsListLastSelected);

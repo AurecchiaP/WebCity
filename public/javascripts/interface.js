@@ -11,6 +11,7 @@ var currentRepo;
 
 submitButton.onclick = function () {
     currentRepo = inputField.value.replace(".git", "");
+    $('#submitButton').addClass('disabled');
 
     // send repo link to server
     var r = jsRoutes.controllers.HomeController.visualization();
@@ -41,6 +42,7 @@ submitButton.onclick = function () {
             console.log("valid repository");
 
         }, error: function () {
+            $('#submitButton').removeClass('disabled');
 
             // show error message
             $("#errorMessage").css('opacity', '1');
@@ -69,21 +71,24 @@ function poll() {
             //update the progress bar with the data received from server
             var json = JSON.parse(data);
             if (json.taskName == "Receiving objects") {
-                $('.progress-bar').css('width', json.percentage / 3.33 + '%').attr('aria-valuenow', json.percentage).html(json.taskName);
+                $('.progress-bar').css('width', json.percentage / 2.5 + '%')
+                    .attr('aria-valuenow', json.percentage).html(json.taskName);
 
             }
             else if (json.taskName == "Resolving deltas") {
-                $('.progress-bar').css('width', 33.3 + (json.percentage / 3.33) + '%').attr('aria-valuenow', json.percentage).html(json.taskName);
+                $('.progress-bar').css('width', 25 + (json.percentage / 2.5) + '%')
+                    .attr('aria-valuenow', json.percentage).html(json.taskName);
             }
 
-            else if(json.percentage == "100.0" && json.taskName == "Updating references") {
-                console.log("in");
-                $('.progress-bar').css('width', 100.0 + '%').attr('aria-valuenow', json.percentage).html("Parsing (this might take a while)");
+            else if (json.percentage == "100.0" && json.taskName == "Updating references") {
+                $('.progress-bar').css('width', 75 + (json.parsingPercentage / 2.5) + '%')
+                    .attr('aria-valuenow', json.parsingPercentage).html("Parsing (this might take a while)");
             }
 
             else if (json.taskName == "Updating references") {
 
-                $('.progress-bar').css('width', 66.6 + (json.percentage / 3.33) + '%').attr('aria-valuenow', json.percentage).html(json.taskName);
+                $('.progress-bar').css('width', 50 + (json.percentage / 2.5) + '%')
+                    .attr('aria-valuenow', json.percentage).html(json.taskName);
             }
 
         }, error: function () {

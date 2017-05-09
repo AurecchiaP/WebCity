@@ -40,6 +40,7 @@ public class HomeController extends Controller {
 
     private double percentage = 0;
     private String taskName;
+    private double parsingPercentage;
     private Map<String, RepositoryModel> rms = new HashMap<>();
 
     @Inject
@@ -175,8 +176,12 @@ public class HomeController extends Controller {
             for (RevCommit revCommit : revCommits) {
                 PersonIdent authorIdent = revCommit.getAuthorIdent();
                 Date authorDate = authorIdent.getWhen();
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                commits.add(new Commit(revCommit.getName(), authorIdent.getName(), dateFormat.format(authorDate)));
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                commits.add(new Commit(
+                        revCommit.getName(),
+                        authorIdent.getName(),
+                        dateFormat.format(authorDate),
+                        revCommit.getShortMessage()));
             }
         } catch (IOException e) {
             System.out.println("IO error");
@@ -234,7 +239,8 @@ public class HomeController extends Controller {
             System.out.println("Start parsing...");
 
             // iterate all the commits of the repo
-            for (Commit commit : commits) {
+            for (int i = 0; i < commits.size(); i++) {
+                Commit commit = commits.get(i);
 
                 // set repository to the next version
                 try {
@@ -248,6 +254,8 @@ public class HomeController extends Controller {
                 } catch (GitAPIException e) {
                     e.printStackTrace();
                 }
+
+                parsingPercentage = (double) i / commits.size() * 100;
             }
 
             System.out.println("Done parsing.");
@@ -365,6 +373,7 @@ public class HomeController extends Controller {
         JsonObject obj = new JsonObject();
         obj.addProperty("percentage", percentage);
         obj.addProperty("taskName", taskName);
+        obj.addProperty("parsingPercentage", parsingPercentage);
         return ok(obj.toString());
     }
 

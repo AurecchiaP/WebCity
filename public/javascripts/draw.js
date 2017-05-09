@@ -8,6 +8,8 @@ var commitsList, commitsListFirst, commitsListLast;
 var commitsListFirstSelected = -1;
 var commitsListLastSelected = -1;
 
+var counter = 0;
+
 
 /**
  * function that takes care of drawing the packages and classes
@@ -108,8 +110,8 @@ function drawClass(drwCls) {
     classes.push(drwCls);
 
     // adding 10 to attributes and methods, to have a lower bound (else we won't see the class)
-    var clsHeight = ((drwCls.cls.methods * 3) + 5) * scale;
-    var clsWidth = ((drwCls.cls.attributes * 3) + 5) * scale;
+    var clsHeight = ((drwCls.cls.methods * 5) + 20) * scale;
+    var clsWidth = ((drwCls.cls.attributes * 5) + 20) * scale;
 
     var posX = drwCls.cx * scale;
     var posY = drwCls.cy * scale;

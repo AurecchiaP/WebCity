@@ -382,7 +382,7 @@ public class RectanglePacking {
 
         int size = 0;
         for (int i = 0; i < (int) Math.ceil(Math.sqrt(classes.size())); ++i) {
-            size += (classes.get(i).getCls().getAttributes().getValue() * 3) + 5 + padding * 2;
+            size += (classes.get(i).getCls().getAttributes().getValue() * 5) + 20 + padding * 2;
         }
         return size;
 //                ((classes.get(0).getCls().getAttributes().getValue() * 3) + 5 + padding * 2) // the biggest class
@@ -422,7 +422,7 @@ public class RectanglePacking {
         if (totalClasses == 0) return;
 
         // height between each line of classes
-        int lineHeight = (classes.get(0).getCls().getAttributes().getValue() * 3) + 5;
+        int lineHeight = (classes.get(0).getCls().getAttributes().getValue() * 5) + 20;
 
         // positions of each class
         int xPos = bin.getX1();
@@ -432,13 +432,13 @@ public class RectanglePacking {
         // find the positions of the classes
         for (int i = 0; i < classes.size(); i++) {
             DrawableClass cls = classes.get(i);
-            classSize = (cls.getCls().getAttributes().getValue() * 3) + 5;
+            classSize = (cls.getCls().getAttributes().getValue() * 5) + 20;
 
             // if this X line is full, set X back to beginning and increase Y
             if (xPos + classSize + (padding * 2) > bin.getX2()) {
                 xPos = bin.getX1();
                 yPos += lineHeight + padding;
-                lineHeight = (cls.getCls().getAttributes().getValue() * 3) + 5;
+                lineHeight = (cls.getCls().getAttributes().getValue() * 5) + 20;
 
             }
             xPos += (classSize / 2) + padding;
