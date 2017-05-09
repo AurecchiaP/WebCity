@@ -113,6 +113,15 @@ function init(json) {
         $("#record-card").css("display", "none");
     });
 
+    $("#options-card-button").on("click", function () {
+        $("#options-card").css("display", "block");
+    });
+
+    $("#options-card-dismiss").on("click", function () {
+        $("#options-card").css("display", "none");
+    });
+
+    $("#reload-button").on("click", reloadVisualization);
 
     draw(json);
     setupRecorder();

@@ -36,3 +36,30 @@ function getCommit(e) {
         }
     });
 }
+
+function reloadVisualization() {
+    var r = jsRoutes.controllers.HomeController.reloadVisualization();
+    $.ajax({
+        url: r.url,
+        type: r.type,
+        contentType: "application/json; charset=utf-8",
+        data: {
+            repository: currentRepo,
+            commit: currentCommit,
+            padding: $('#padding-input').val() || padding,
+            minClassSize: $('#minClassesSize-input').val() || minClassSize
+},
+        success: function (data) {
+            minClassSize = parseInt($('#minClassesSize-input').val() || minClassSize);
+            padding = parseInt($('#padding-input').val() || padding);
+            console.log("valid reload");
+            var json = JSON.parse(data);
+            clearVisualization();
+            draw(json.visualization);
+
+
+        }, error: function () {
+            console.log("invalid reload");
+        }
+    });
+}

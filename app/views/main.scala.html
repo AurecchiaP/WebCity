@@ -90,7 +90,54 @@
                                 </div>
 
                                 <div>
-                                    <button id="record-button" class="btn btn-secondary float-right" type="button">Record</button>
+                                    <button id="record-button" class="btn btn-secondary float-right" type="button">
+                                        Record</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <i id="options-card-button" class="fa fa-cog" aria-hidden="true"></i>
+                    </div>
+
+                    <div id="options-card" class="card">
+
+                        @* tabs *@
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#" role="tab">Options</a>
+                            </li>
+                            <ul class="navbar-nav mr-auto">
+                            </ul>
+                            <button type="button" class="close content-dismiss" id="options-card-dismiss">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </ul>
+
+                        @* tabs content *@
+                        <div class="tab-content">
+                            <div class="card-block">
+                                <p class="card-text">
+                                    Select a first and last commit, and click record to generate and download a
+                                    video of the current visualisation.
+                                </p>
+                                <div>
+
+                                    <input id="padding-input" type="text" class="form-control"
+                                    placeholder="Padding" aria-describedby="basic-addon1">
+                                    <br>
+                                    <input id="minClassesSize-input" type="text" class="form-control"
+                                    placeholder="Minimum classes size" aria-describedby="basic-addon2">
+
+                                </div>
+
+                                <div class="btn-group">
+                                </div>
+
+                                <div>
+                                    <button id="reload-button" class="btn btn-secondary float-right" type="button">
+                                        Reload</button>
                                 </div>
                             </div>
                         </div>

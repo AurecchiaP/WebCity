@@ -1,6 +1,8 @@
 var meshes = [];
 var scale;
-var packageHeight;
+var packageHeight = 20;
+var minClassSize = 20;
+var padding = 20;
 var box;
 var classes = [];
 var recorder, recording = false;
@@ -16,7 +18,6 @@ var counter = 0;
  * @param {object} drwPkg - the root package of the visualization to be drawn
  */
 function draw(drwPkg) {
-    packageHeight = 20;
 
     // create the meshes for all the packages and classes
     var totalClasses = recDraw(drwPkg);
@@ -110,8 +111,8 @@ function drawClass(drwCls) {
     classes.push(drwCls);
 
     // adding 10 to attributes and methods, to have a lower bound (else we won't see the class)
-    var clsHeight = ((drwCls.cls.methods * 5) + 20) * scale;
-    var clsWidth = ((drwCls.cls.attributes * 5) + 20) * scale;
+    var clsHeight = (drwCls.cls.methods + minClassSize) * scale;
+    var clsWidth = (drwCls.cls.attributes + minClassSize) * scale;
 
     var posX = drwCls.cx * scale;
     var posY = drwCls.cy * scale;

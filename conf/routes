@@ -7,6 +7,7 @@ GET     /visualization              controllers.HomeController.visualization
 GET     /poll                       controllers.HomeController.poll
 GET     /getVisualizationData       controllers.HomeController.getVisualizationData
 GET     /getVersion                 controllers.HomeController.getCommit
+GET     /reloadVisualization                 controllers.HomeController.reloadVisualization
 
 
 GET     /javascriptRoutes           controllers.HomeController.javascriptRoutes

@@ -57,7 +57,8 @@ public class HomeController extends Controller {
                         routes.javascript.HomeController.getVisualizationData(),
                         routes.javascript.HomeController.visualization(),
                         routes.javascript.HomeController.poll(),
-                        routes.javascript.HomeController.getCommit()
+                        routes.javascript.HomeController.getCommit(),
+                        routes.javascript.HomeController.reloadVisualization()
                 )
         ).as("text/javascript");
     }
@@ -308,7 +309,7 @@ public class HomeController extends Controller {
             DrawablePackage drw = historyToDrawable(commit.getName(), jph);
 
             // do the rectangle packing
-            packings.add(new RectanglePacking(drw, null, commit.getName()));
+            packings.add(new RectanglePacking(drw, null,20, 20, commit.getName()));
         }
 
         System.out.println("Done packing.");
@@ -316,7 +317,7 @@ public class HomeController extends Controller {
         // find the biggest drawable, considering all commits
         maxDrw = getMaxDrawable(packings);
 
-        new RectanglePacking(maxDrw, maxDrw, "max");
+        new RectanglePacking(maxDrw, maxDrw, 20, 20, "max");
 
         compareWithMax(maxDrw, packings.get(0));
 
@@ -391,6 +392,38 @@ public class HomeController extends Controller {
         System.out.println("version required: " + commit);
 
         // look for the packing that commit corresponds to
+        for (int i = 0; i < commits.size(); ++i) {
+            if (commits.get(i).getName().equals(commit)) {
+                compareWithMax(maxDrw, packings.get(i));
+                break;
+            }
+        }
+
+        // create json object
+        Gson gson = new Gson();
+        final JsonObject jsonObject = new JsonObject();
+        // add visualization data
+        jsonObject.add("visualization", gson.fromJson(toJSON(maxDrw), JsonElement.class));
+        // add list of commits
+        jsonObject.add("maxDrw", gson.fromJson(new Gson().toJson(maxDrw), JsonElement.class));
+
+        // send data to client
+        return ok(gson.toJson(jsonObject));
+    }
+
+    public Result reloadVisualization() {
+        String currentRepo = formFactory.form().bindFromRequest().get("repository");
+        String commit = formFactory.form().bindFromRequest().get("commit");
+        int padding = Integer.parseInt(formFactory.form().bindFromRequest().get("padding"));
+        int minClassSize = Integer.parseInt(formFactory.form().bindFromRequest().get("minClassSize"));
+
+        RepositoryModel rm = rms.get(currentRepo);
+        DrawablePackage maxDrw = rm.getMaxDrw();
+        List<RectanglePacking> packings = rm.getPackings();
+        List<Commit> commits = rm.getCommits();
+
+        new RectanglePacking(maxDrw, maxDrw, padding, minClassSize, "max");
+
         for (int i = 0; i < commits.size(); ++i) {
             if (commits.get(i).getName().equals(commit)) {
                 compareWithMax(maxDrw, packings.get(i));
