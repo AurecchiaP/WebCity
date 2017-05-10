@@ -38,7 +38,7 @@ public class RectanglePacking {
         // maximum depth of recursion
         int recDepth = 0;
 
-        getPackageHeuristicMaxWidth(drwPkg, recDepth);
+            getPackageHeuristicMaxWidth(drwPkg, recDepth);
 
         // traverse again, this time to find the positions for drwPackages and classes, using recDepth to set the color
         recDepth = 0;
@@ -75,7 +75,9 @@ public class RectanglePacking {
         }
 
         // sort the children drwPackages by their size, in descending order
-        drwPkg.sortChildren();
+//        if(maxDrw == null) {
+            drwPkg.sortChildren();
+//        }
         return drwPkg.getWidth();
     }
 

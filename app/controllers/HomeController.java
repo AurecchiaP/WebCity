@@ -77,8 +77,9 @@ public class HomeController extends Controller {
     public Result getVisualizationData() {
         String currentRepo = formFactory.form().bindFromRequest().get("repository");
         String type = formFactory.form().bindFromRequest().get("type");
+        System.out.println(type);
         DrawablePackage maxDrw;
-        List<RectanglePacking> packings;
+        Map<String, RectanglePacking> packings;
         List<Commit> commits;
         List<Ref> tags = new ArrayList<>();
         List<Ref> peeledTags = new ArrayList<>();
@@ -101,6 +102,18 @@ public class HomeController extends Controller {
 
         RepositoryModel rm = rms.get(currentRepo);
         commits = rm.getCommits();
+        tags = rm.getTags();
+
+        for (Ref ref : tags) {
+            Ref peeledRef = git.getRepository().peel(ref);
+            if (peeledRef.getPeeledObjectId() != null) {
+                System.out.println("peeledref " + peeledRef);
+                peeledTags.add(peeledRef);
+            } else {
+                System.out.println("ref " + ref);
+                peeledTags.add(ref);
+            }
+        }
 
 
         JavaPackageHistory jph = null;
@@ -109,7 +122,7 @@ public class HomeController extends Controller {
 
         System.out.println("Repository name: " + repoName);
 
-        File serialized = new File(Play.current().path() + "/repository/" + repoName + "/history_commits.ser");
+        File serialized = new File(Play.current().path() + "/repository/" + repoName + "/history_" + type + ".ser");
         if (serialized.exists() && !serialized.isDirectory()) {
             System.out.println("Found serialized object.");
 
@@ -117,7 +130,7 @@ public class HomeController extends Controller {
             ObjectInputStream ois = null;
 
             try {
-                fin = new FileInputStream(Play.current().path() + "/repository/" + repoName + "/history_commits.ser");
+                fin = new FileInputStream(Play.current().path() + "/repository/" + repoName + "/history_" + type + ".ser");
                 ois = new ObjectInputStream(fin);
                 jph = (JavaPackageHistory) ois.readObject();
 
@@ -153,26 +166,13 @@ public class HomeController extends Controller {
                 e.printStackTrace();
             }
 
-            for (Ref ref : tags) {
-                Ref peeledRef = git.getRepository().peel(ref);
-                if (peeledRef.getPeeledObjectId() != null) {
-                    System.out.println("peeledref " + peeledRef);
-                    peeledTags.add(peeledRef);
-                } else {
-                    System.out.println("ref " + ref);
-                    peeledTags.add(ref);
-                }
-            }
-
-
-            if (type.equals("commits")) {
+            if (type.equals("Commits")) {
                 // iterate all the commits of the repo
                 for (int i = 0; i < commits.size(); i++) {
                     Commit commit = commits.get(i);
 
                     // set repository to the next version
                     try {
-//                git.checkout().setCreateBranch(true).setName("test_" + version).setStartPoint(version).call();
                         git.checkout().setName(commit.getName()).call();
 
                         // parse the current version
@@ -219,7 +219,7 @@ public class HomeController extends Controller {
             ObjectOutputStream oos = null;
             try {
 
-                fout = new FileOutputStream(Play.current().path() + "/repository/" + repoName + "/history_commits.ser");
+                fout = new FileOutputStream(Play.current().path() + "/repository/" + repoName + "/history_" + type + ".ser");
                 oos = new ObjectOutputStream(fout);
                 oos.writeObject(jph);
 
@@ -249,13 +249,13 @@ public class HomeController extends Controller {
         }
 
         // a list of rectangle packings for all the commits
-        packings = new ArrayList<>();
+        packings = new HashMap<>();
 
         System.out.println("Start packing...");
 
         List<Commit> commitTags = new ArrayList<>();
 
-        if (type.equals("commits")) {
+        if (type.equals("Commits")) {
 
             for (Commit commit : commits) {
 
@@ -263,7 +263,7 @@ public class HomeController extends Controller {
                 DrawablePackage drw = historyToDrawable(commit.getName(), jph);
 
                 // do the rectangle packing
-                packings.add(new RectanglePacking(drw, null, 20, 20, commit.getName()));
+                packings.put(commit.getName(), new RectanglePacking(drw, null, 20,20, commit.getName()));
             }
         } else {
             for (Ref tag : peeledTags) {
@@ -276,7 +276,7 @@ public class HomeController extends Controller {
                         DrawablePackage drw = historyToDrawable(commit.getName(), jph);
 
                         // do the rectangle packing
-                        packings.add(new RectanglePacking(drw, null, 20, 20, commit.getName()));
+                        packings.put(commit.getName(), new RectanglePacking(drw, null, 20, 20, commit.getName()));
                         break;
                     }
                 }
@@ -285,14 +285,24 @@ public class HomeController extends Controller {
 
         System.out.println("Done packing.");
 
+
         // find the biggest drawable, considering all commits
-        maxDrw = getMaxDrawable(packings);
+        System.out.println(packings.values().size());
+        maxDrw = getMaxDrawable(new ArrayList<>(packings.values()));
 
         // FIXME at this point we don't need the packings anymore, only the list of classes/packages in every version
 
         new RectanglePacking(maxDrw, maxDrw, 20, 20, "max");
 
-        compareWithMax(maxDrw, packings.get(0));
+
+        // FIXME commits/commitsTags
+        if(type.equals("Commits")) {
+            compareWithMax(maxDrw, packings.get(commits.get(0).getName()));
+        }
+        else {
+            compareWithMax(maxDrw, packings.get(commitTags.get(0).getName()));
+        }
+
 
         git.close();
 
@@ -304,7 +314,7 @@ public class HomeController extends Controller {
         final JsonObject jsonObject = new JsonObject();
         // add visualization data
         jsonObject.add("visualization", gson.fromJson(toJSON(maxDrw), JsonElement.class));
-        if (type.equals("commits")) {
+        if (type.equals("Commits")) {
             jsonObject.add("commits", gson.fromJson(new Gson().toJson(commits), JsonElement.class));
         } else {
             jsonObject.add("commits", gson.fromJson(new Gson().toJson(commitTags), JsonElement.class));
@@ -372,9 +382,9 @@ public class HomeController extends Controller {
 
         File directory = new File(Play.current().path() + "/repository/" + repoName + "/.git/");
 
-        if (rms.containsKey(currentRepo)) {
-            return 0;
-        }
+//        if (rms.containsKey(currentRepo)) {
+//            return 0;
+//        }
 
         // if we have cached this repository before
         try {
@@ -450,7 +460,7 @@ public class HomeController extends Controller {
 
             List<Ref> tags = git.tagList().call();
 
-            RepositoryModel rm = new RepositoryModel(null, new ArrayList<>(), commits, tags);
+            RepositoryModel rm = new RepositoryModel(null, new HashMap<>(), commits, tags);
             rms.put(currentRepo, rm);
 
             return 0;
@@ -486,19 +496,15 @@ public class HomeController extends Controller {
         String currentRepo = formFactory.form().bindFromRequest().get("repository");
         RepositoryModel rm = rms.get(currentRepo);
         DrawablePackage maxDrw = rm.getMaxDrw();
-        List<RectanglePacking> packings = rm.getPackings();
+        Map<String, RectanglePacking> packings = rm.getPackings();
         List<Commit> commits = rm.getCommits();
 
         String commit = formFactory.form().bindFromRequest().get("commit");
         System.out.println("version required: " + commit);
 
         // look for the packing that commit corresponds to
-        for (int i = 0; i < commits.size(); ++i) {
-            if (commits.get(i).getName().equals(commit)) {
-                compareWithMax(maxDrw, packings.get(i));
-                break;
-            }
-        }
+
+        compareWithMax(maxDrw, packings.get(commit));
 
         // create json object
         Gson gson = new Gson();
@@ -514,23 +520,13 @@ public class HomeController extends Controller {
 
     public Result reloadVisualization() {
         String currentRepo = formFactory.form().bindFromRequest().get("repository");
-        String commit = formFactory.form().bindFromRequest().get("commit");
         int padding = Integer.parseInt(formFactory.form().bindFromRequest().get("padding"));
         int minClassSize = Integer.parseInt(formFactory.form().bindFromRequest().get("minClassSize"));
 
         RepositoryModel rm = rms.get(currentRepo);
         DrawablePackage maxDrw = rm.getMaxDrw();
-        List<RectanglePacking> packings = rm.getPackings();
-        List<Commit> commits = rm.getCommits();
 
         new RectanglePacking(maxDrw, maxDrw, padding, minClassSize, "max");
-
-        for (int i = 0; i < commits.size(); ++i) {
-            if (commits.get(i).getName().equals(commit)) {
-                compareWithMax(maxDrw, packings.get(i));
-                break;
-            }
-        }
 
         // create json object
         Gson gson = new Gson();

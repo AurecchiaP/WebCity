@@ -6,6 +6,7 @@ import utils.RectanglePacking;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -14,11 +15,11 @@ import java.util.List;
 public class RepositoryModel {
 
     private DrawablePackage maxDrw;
-    private List<RectanglePacking> packings;
+    private Map<String, RectanglePacking> packings;
     private List<Commit> commits;
     private List<Ref> tags;
 
-    public RepositoryModel(DrawablePackage maxDrw, List<RectanglePacking> packings, List<Commit> commits, List<Ref> tags) {
+    public RepositoryModel(DrawablePackage maxDrw, Map<String, RectanglePacking> packings, List<Commit> commits, List<Ref> tags) {
         this.maxDrw = maxDrw;
         this.packings = packings;
         this.commits = commits;
@@ -33,13 +34,13 @@ public class RepositoryModel {
         this.maxDrw = maxDrw;
     }
 
-    public List<RectanglePacking> getPackings() {
-        return Collections.unmodifiableList(packings);
+    public Map<String, RectanglePacking> getPackings() {
+        return Collections.unmodifiableMap(packings);
     }
 
-    public void setPackings(List<RectanglePacking> packings) {
+    public void setPackings(Map<String, RectanglePacking> packings) {
         this.packings.clear();
-        this.packings.addAll(packings);
+        this.packings.putAll(packings);
     }
 
     public List<Commit> getCommits() {
