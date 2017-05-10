@@ -77,7 +77,6 @@ public class HomeController extends Controller {
     public Result getVisualizationData() {
         String currentRepo = formFactory.form().bindFromRequest().get("repository");
         String type = formFactory.form().bindFromRequest().get("type");
-        System.out.println(type);
         DrawablePackage maxDrw;
         Map<String, RectanglePacking> packings;
         List<Commit> commits;
@@ -107,10 +106,8 @@ public class HomeController extends Controller {
         for (Ref ref : tags) {
             Ref peeledRef = git.getRepository().peel(ref);
             if (peeledRef.getPeeledObjectId() != null) {
-                System.out.println("peeledref " + peeledRef);
                 peeledTags.add(peeledRef);
             } else {
-                System.out.println("ref " + ref);
                 peeledTags.add(ref);
             }
         }
@@ -287,15 +284,10 @@ public class HomeController extends Controller {
 
 
         // find the biggest drawable, considering all commits
-        System.out.println(packings.values().size());
         maxDrw = getMaxDrawable(new ArrayList<>(packings.values()));
-
-        // FIXME at this point we don't need the packings anymore, only the list of classes/packages in every version
 
         new RectanglePacking(maxDrw, maxDrw, 20, 20, "max");
 
-
-        // FIXME commits/commitsTags
         if(type.equals("Commits")) {
             compareWithMax(maxDrw, packings.get(commits.get(0).getName()));
         }
@@ -324,7 +316,6 @@ public class HomeController extends Controller {
         rm.setMaxDrw(maxDrw);
         rm.setPackings(packings);
 
-        //fixme needed?
         rms.put(currentRepo, rm);
 
         // send data to client
@@ -520,13 +511,18 @@ public class HomeController extends Controller {
 
     public Result reloadVisualization() {
         String currentRepo = formFactory.form().bindFromRequest().get("repository");
+        String commit = formFactory.form().bindFromRequest().get("commit");
         int padding = Integer.parseInt(formFactory.form().bindFromRequest().get("padding"));
         int minClassSize = Integer.parseInt(formFactory.form().bindFromRequest().get("minClassSize"));
 
         RepositoryModel rm = rms.get(currentRepo);
-        DrawablePackage maxDrw = rm.getMaxDrw();
+        Map<String, RectanglePacking> packings = rm.getPackings();
+
+        DrawablePackage maxDrw = getMaxDrawable(new ArrayList<>(packings.values()));
 
         new RectanglePacking(maxDrw, maxDrw, padding, minClassSize, "max");
+
+        compareWithMax(maxDrw, packings.get(commit));
 
         // create json object
         Gson gson = new Gson();

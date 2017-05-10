@@ -303,7 +303,7 @@ function callNext(list, idx, last) {
     if (recording && (idx <= last && idx < list.length)) {
         setTimeout(function () {
             callNext(list, idx, last);
-        }, 500);
+        }, 100);
     }
     else {
         setTimeout(function () {
@@ -318,7 +318,7 @@ function callNext(list, idx, last) {
                 });
                 $("#record-card-button").css("color", "rgba(220, 220, 220, 1)");
             }
-        }, 500);
+        }, 100);
     }
 }
 

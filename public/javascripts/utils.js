@@ -91,6 +91,7 @@ function reloadVisualization() {
             padding = parseInt($('#padding-input').val() || padding);
             console.log("valid reload");
             var json = JSON.parse(data);
+            console.log(json);
             clearVisualization();
             draw(json.visualization);
 

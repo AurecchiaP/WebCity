@@ -2,7 +2,7 @@ body {
     margin: 0;
     padding: 0;
     cursor: default;
-    overflow-y: hidden;
+    overflow: hidden;
 }
 
 #main-content {

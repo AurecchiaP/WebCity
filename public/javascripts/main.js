@@ -70,7 +70,11 @@ function init(json) {
     // var helper = new THREE.CameraHelper(light.shadow.camera);
     // scene.add(helper);
 
-    renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+    renderer = new THREE.WebGLRenderer({
+        preserveDrawingBuffer: true,
+        antialias: true,
+        alpha: true
+    });
     renderer.shadowMap.enabled = true;
 
     renderer.shadowMap.autoUpdate = false;
