@@ -183,13 +183,15 @@ public class HomeController extends Controller {
                     parsingPercentage = (double) i / commits.size() * 100;
                 }
             } else {
-                for (Ref tag : peeledTags) {
-                    String tagId = tag.getObjectId().getName();
+                List<Ref> orderedTags = new ArrayList<>();
                     for (int i = 0; i < commits.size(); i++) {
                         Commit commit = commits.get(i);
+                        for (Ref tag : peeledTags) {
+                            String tagId = tag.getObjectId().getName();
 
                         if (tagId.equals(commit.getName())) {
                             try {
+                                orderedTags.add(tag);
                                 git.checkout().setName(commit.getName()).call();
 
                                 // parse the current version
@@ -205,6 +207,7 @@ public class HomeController extends Controller {
                         }
                     }
                 }
+                peeledTags = orderedTags;
             }
 
             System.out.println("Done parsing.");
@@ -358,7 +361,7 @@ public class HomeController extends Controller {
         }
     }
 
-    public int downloadRepo(String currentRepo) {
+    private int downloadRepo(String currentRepo) {
         DrawablePackage maxDrw;
         List<RectanglePacking> packings;
         List<Commit> commits = new ArrayList<>();
