@@ -19,6 +19,7 @@ var counter = 0;
  */
 function draw(drwPkg) {
 
+    scale = 1250 / Math.max(drwPkg.width, drwPkg.depth);
     // create the meshes for all the packages and classes
     var totalClasses = recDraw(drwPkg);
 

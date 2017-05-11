@@ -60,10 +60,12 @@
 
 #commits-list {
     right: 0;
+    max-width: 50vw;
 }
 
 #commits-list-first #commits-list-last {
     left: 0;
+    max-width: 50vw;
 }
 
 .dropdown-items {
