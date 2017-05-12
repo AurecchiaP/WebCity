@@ -6,7 +6,7 @@ function addCommits(commits) {
     for(var i = 0; i < commits.length; ++i) {
         items.append("<a href='#' class='list-group-item list-group-item-action'>" +
             commits[i].name + "<br>" + commits[i].description + "<br>" +
-            "<small>" + commits[i].author + ", " + commits[i].date + "</small></a>");
+             + commits[i].author + ", " + commits[i].date + "</a>");
     }
     items.on('click', $('.dropdown-item'), getCommit);
 }
@@ -20,7 +20,8 @@ function getCommit(e) {
         commit = e.target.innerHTML.split("<")[0];
     }
 
-    $("#commits-dropdown")[0].innerText = commit;
+    $("#commits-dropdown")[0].innerText = commit || currentCommit;
+
 
     var r = jsRoutes.controllers.HomeController.getCommit();
     $.ajax({
@@ -33,7 +34,7 @@ function getCommit(e) {
         },
         success: function (data) {
             currentCommit = commit;
-            console.log("valid commit: " + commit);
+            // console.log("valid commit: " + commit);
             var json = JSON.parse(data);
             clearVisualization();
             draw(json.visualization);

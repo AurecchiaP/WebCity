@@ -158,6 +158,7 @@ var searchList = $('#search-list');
 var searchListItems;
 
 var searchWorker;
+var recordWorker;
 
 searchInput.on('keyup', function () {
     var input = searchInput.val();

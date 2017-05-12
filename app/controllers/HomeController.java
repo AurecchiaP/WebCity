@@ -106,8 +106,10 @@ public class HomeController extends Controller {
         for (Ref ref : tags) {
             Ref peeledRef = git.getRepository().peel(ref);
             if (peeledRef.getPeeledObjectId() != null) {
+                System.out.println(peeledRef.getObjectId().getName());
                 peeledTags.add(peeledRef);
             } else {
+                System.out.println(ref.getObjectId().getName());
                 peeledTags.add(ref);
             }
         }

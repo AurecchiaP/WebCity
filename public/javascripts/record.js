@@ -5,13 +5,22 @@ function setupRecorder() {
     document.getElementById('record-button').onclick = function () {
         if (recording) {
             recording = false;
-            recorder.stopRecording(function () {
-                var blob = recorder.getBlob();
-                saveData(blob, repositoryName + ".webm");
-                // this.clearRecordedData();
-                // var url = URL.createObjectURL(blob);
-                // window.open(url);
-            });
+            // var file = new File("/Users/paolo/Downloads/img000.png");
+            // var reader = new FileReader();
+            // reader.onload = function(e) {
+            //     var arrayBuffer = reader.result;
+            //     console.log(arrayBuffer);
+            //     console.log("done");
+            // };
+            // console.log("going to read");
+            // reader.readAsArrayBuffer(file);
+            // recorder.stopRecording(function () {
+            //     var blob = recorder.getBlob();
+            //     saveData(blob, repositoryName + ".webm");
+            //     // this.clearRecordedData();
+            //     // var url = URL.createObjectURL(blob);
+            //     // window.open(url);
+            // });
             $("#record-card-button").css("color", "rgba(220, 220, 220, 1)");
         }
         else {
@@ -27,20 +36,24 @@ function setupRecorder() {
 
             var list = commitsList.children();
             if (commitsListFirstSelected >= 0 && commitsListLastSelected > commitsListFirstSelected) {
-                recorder = new RecordRTC(canvas.firstChild, {
-                    type: 'canvas'
-
-                });
+                // recorder = new RecordRTC(canvas.firstChild, {
+                //     type: 'canvas'
+                //
+                // });
                 recording = true;
                 // canvas.style.width = "2560px";
                 // canvas.style.height = "1440px";
-                canvas.style.width = "3840px";
-                canvas.style.height = "2160px";
+                // canvas.style.width = "3840px";
+                // canvas.style.height = "2160px";
                 // canvas.style.width = "640px";
                 // canvas.style.height = "320px";
                 $("#record-card-button").css("color", "rgba(220, 0, 0, 1)");
-                recorder.startRecording();
-                callNext(list, commitsListFirstSelected, commitsListLastSelected);
+                // recorder.startRecording();
+                // callNext(list, commitsListFirstSelected, commitsListLastSelected);
+                CNidx = commitsListFirstSelected;
+                CNlist = list;
+                CNlast = commitsListLastSelected;
+                callNext(CNlist, CNidx, CNlast);
             }
             else {
                 console.log("invalid first or last commit selected");
