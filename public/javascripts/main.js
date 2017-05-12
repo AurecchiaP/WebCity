@@ -37,9 +37,7 @@ function init(json) {
 
     light = new THREE.DirectionalLight(0xffffff, 0.5);
 
-
-    // light.position.set(-100,-100,200);
-    light.position.set(0, 0, 0);
+    light.position.set(-100,100, 200);
 
     // shadow settings
     light.castShadow = true;
@@ -54,21 +52,24 @@ function init(json) {
     light.shadow.camera.fov = 90;
 
     // hardcoded for this light position and light target
-    light.shadow.camera.left = -500;
-    light.shadow.camera.right = 500;
-    light.shadow.camera.top = 500;
-    light.shadow.camera.bottom = -500;
+    light.shadow.camera.left = -800;
+    light.shadow.camera.right = 1200;
+    light.shadow.camera.top = 1000;
+    light.shadow.camera.bottom = -1000;
 
     light.shadow.bias = 0.00001;
 
     scene.add(light, light.target);
 
+    // light.target.position.set(-100, -100, -100);
+    // light.position.set(0, 0, 0);
+
 
     var ambientLight = new THREE.AmbientLight(0xffffff, 0.3); // soft white light
     scene.add(ambientLight);
 
-    // var helper = new THREE.CameraHelper(light.shadow.camera);
-    // scene.add(helper);
+    var helper = new THREE.CameraHelper(light.shadow.camera);
+    scene.add(helper);
 
     renderer = new THREE.WebGLRenderer({
         preserveDrawingBuffer: true,
@@ -93,6 +94,7 @@ function init(json) {
 
     // OrbitControls to move around the visualization
     controls = new THREE.OrbitControls(camera, renderer.domElement);
+
 
     // max and min distance on z axis
     controls.maxDistance = 6500;
@@ -139,8 +141,8 @@ var c = 0;
 function render() {
     camera.getWorldDirection(vector);
 
-    light.position.copy(camera.position);
-    light.target.position.set(light.position.x + vector.x, light.position.y + vector.y, light.position.z + vector.z);
+    // light.target.position.set(light.position.x + vector.x, light.position.y + vector.y, light.position.z + vector.z);
+    light.target.position.copy(mesh.position);
 
     // ray-casting still slows down a bit, not as much as before
     raycaster.setFromCamera(mouse, camera);

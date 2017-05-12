@@ -44,7 +44,9 @@ function onKeyPress(e) {
 
         // directional keys, pan
         case keys.UP:
-            render();
+            controls.rotateLeft(5);
+            renderer.render(scene, camera);
+            renderer.render(scene, camera);
             break;
         case keys.BOTTOM:
             render();

@@ -123,6 +123,7 @@ public class HomeController extends Controller {
 
         File serialized = new File(Play.current().path() + "/repository/" + repoName + "/history_" + type + ".ser");
         if (serialized.exists() && !serialized.isDirectory()) {
+            taskName = "Loading visualization";
             System.out.println("Found serialized object.");
 
             FileInputStream fin = null;
@@ -331,7 +332,6 @@ public class HomeController extends Controller {
     /**
      * route for the visualisation page
      */
-
     public Result visualization() {
         String currentRepo = formFactory.form().bindFromRequest().get("repository");
         System.out.println("input repository: " + currentRepo);
@@ -387,6 +387,7 @@ public class HomeController extends Controller {
             if (directory.exists()) {
                 git = Git.open(directory);
                 git.checkout().setName("master").call();
+                git.pull();
             } else {
                 System.out.println("Downloading depo...");
                 git = Git.cloneRepository()
@@ -493,7 +494,7 @@ public class HomeController extends Controller {
         RepositoryModel rm = rms.get(currentRepo);
         DrawablePackage maxDrw = rm.getMaxDrw();
         Map<String, RectanglePacking> packings = rm.getPackings();
-        List<Commit> commits = rm.getCommits();
+//        List<Commit> commits = rm.getCommits();
 
         String commit = formFactory.form().bindFromRequest().get("commit");
         System.out.println("version required: " + commit);

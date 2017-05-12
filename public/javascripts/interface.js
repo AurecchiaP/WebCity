@@ -12,6 +12,8 @@ var currentRepo;
 submitButton.onclick = function () {
     currentRepo = inputField.value.replace(".git", "");
     $('#submitButton').addClass('disabled');
+    document.getElementById("progressBar").style.width = "100%";
+    var id = setInterval(poll, 1000);
 
     // send repo link to server
     var r = jsRoutes.controllers.HomeController.visualization();
@@ -25,6 +27,9 @@ submitButton.onclick = function () {
         success: function (data) {
             // the linked repo is valid
 
+            clearInterval(id);
+
+
             var json = JSON.parse(data);
             console.log(json);
 
@@ -32,13 +37,7 @@ submitButton.onclick = function () {
             $("#commits-number").text("number of commits:" + json.commits.length);
             $("#tags-number").text("number of tags:" + json.tags.length);
 
-            // show success message and progress bar
-            $("#successMessage").css('opacity', '1');
-            setTimeout(function () {
-                $("#successMessage").css('opacity', '0');
-            }, 2000);
-
-            document.getElementById("progressBar").style.width = "100%";
+            document.getElementById("progressBar").style.width = "0%";
 
             $('#submit-card').css('display', 'block');
 
@@ -51,6 +50,7 @@ submitButton.onclick = function () {
 
         }, error: function () {
             $('#submitButton').removeClass('disabled');
+            document.getElementById("progressBar").style.width = "0%";
 
             // show error message
             $("#errorMessage").css('opacity', '1');
@@ -62,9 +62,11 @@ submitButton.onclick = function () {
     });
 };
 
-$("#visualize-button").on("click", function() {
-        var id = setInterval(poll, 1000);
-        getData(id, $("#type-select").val());
+$("#visualize-button").on("click", function () {
+    $('#visualize-button').addClass('disabled');
+    document.getElementById("progressBar").style.width = "100%";
+    var id = setInterval(poll, 1000);
+    getData(id, $("#type-select").val());
 });
 
 /**
@@ -83,24 +85,28 @@ function poll() {
 
             //update the progress bar with the data received from server
             var json = JSON.parse(data);
-            if (json.taskName == "Receiving objects") {
-                $('.progress-bar').css('width', json.percentage / 2.5 + '%')
+            console.log(json);
+
+            if (json.taskName == "Loading visualization") {
+                $('.progress-bar').css('width', '100%')
+                    .attr('aria-valuenow', json.parsingPercentage).html(json.taskName);
+            }
+            else if (json.parsingPercentage != "0") {
+                $('.progress-bar').css('width', json.parsingPercentage + '%')
+                    .attr('aria-valuenow', json.parsingPercentage).html("Parsing");
+            }
+            else if (json.taskName == "Receiving objects") {
+                $('.progress-bar').css('width', json.percentage / 3 + '%')
                     .attr('aria-valuenow', json.percentage).html(json.taskName);
 
             }
             else if (json.taskName == "Resolving deltas") {
-                $('.progress-bar').css('width', 25 + (json.percentage / 2.5) + '%')
+                $('.progress-bar').css('width', 33.3 + (json.percentage / 3) + '%')
                     .attr('aria-valuenow', json.percentage).html(json.taskName);
             }
 
-            else if (json.percentage == "100.0" && json.taskName == "Updating references") {
-                $('.progress-bar').css('width', 75 + (json.parsingPercentage / 2.5) + '%')
-                    .attr('aria-valuenow', json.parsingPercentage).html("Parsing (this might take a while)");
-            }
-
             else if (json.taskName == "Updating references") {
-
-                $('.progress-bar').css('width', 50 + (json.percentage / 2.5) + '%')
+                $('.progress-bar').css('width', 0 + (json.percentage) + '%')
                     .attr('aria-valuenow', json.percentage).html(json.taskName);
             }
 
@@ -142,7 +148,7 @@ function getData(id, type) {
             $('#current-commit').text(currentCommit);
             init(json.visualization);
         }, error: function () {
-
+            $('#submitButton').removeClass('disabled');
             // stop polling
             clearInterval(id);
             console.log("data fetch error");

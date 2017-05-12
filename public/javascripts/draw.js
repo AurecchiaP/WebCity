@@ -278,6 +278,7 @@ for (var i = 0; i < 8; ++i) {
  */
 function loaded(totalClasses) {
     if (recording) {
+        renderer.shadowMap.needsUpdate = true;
         render();
         callNext();
         return;
@@ -358,12 +359,16 @@ function loaded(totalClasses) {
 
     // canvas.style.width = "640px";
     // canvas.style.height = "320px";
-    // canvas.style.width = "1920px";
-    // canvas.style.height = "1080px";
+    canvas.style.width = "1920px";
+    canvas.style.height = "1080px";
     // canvas.style.width = "3840px";
     // canvas.style.height = "2160px";
-    canvas.style.width = "2560px";
-    canvas.style.height = "1440px";
+    // canvas.style.width = "2560px";
+    // canvas.style.height = "1440px";
+
+
+    mesh.rotation.x = -Math.PI / 2;
+
 
 
     // add events for visualization callbacks
