@@ -5,51 +5,47 @@ function setupRecorder() {
     document.getElementById('record-button').onclick = function () {
         if (recording) {
             recording = false;
-            // var file = new File("/Users/paolo/Downloads/img000.png");
-            // var reader = new FileReader();
-            // reader.onload = function(e) {
-            //     var arrayBuffer = reader.result;
-            //     console.log(arrayBuffer);
-            //     console.log("done");
-            // };
-            // console.log("going to read");
-            // reader.readAsArrayBuffer(file);
-            // recorder.stopRecording(function () {
-            //     var blob = recorder.getBlob();
-            //     saveData(blob, repositoryName + ".webm");
-            //     // this.clearRecordedData();
-            //     // var url = URL.createObjectURL(blob);
-            //     // window.open(url);
-            // });
             $("#record-card-button").css("color", "rgba(220, 220, 220, 1)");
         }
         else {
 
 
-            /* screenshot
-            canvas.style.width = "3840px";
-            canvas.style.height = "2160px";
-            var image = renderer.domElement.toDataURL("image/png").replace("image/png", "image/octet-stream");  // here is the most important part because if you dont replace you will get a DOM 18 exception.
-            window.location.href=image;
-            return;
-            */
-
             var list = commitsList.children();
             if (commitsListFirstSelected >= 0 && commitsListLastSelected > commitsListFirstSelected) {
-                // recorder = new RecordRTC(canvas.firstChild, {
-                //     type: 'canvas'
-                //
-                // });
                 recording = true;
-                // canvas.style.width = "2560px";
-                // canvas.style.height = "1440px";
-                // canvas.style.width = "3840px";
-                // canvas.style.height = "2160px";
-                // canvas.style.width = "640px";
-                // canvas.style.height = "320px";
+                var resolution = $("#resolution-input").val();
+
+                if (resolution === "1920x1080") {
+                    console.log("res set 1080p");
+                    canvas.style.width = "1920px";
+                    canvas.style.height = "1080px";
+                    canvas.style.left = -960 + document.body.clientWidth / 2 + "px";
+                }
+                else if (resolution === "2560x1440") {
+                    console.log("res set 1440p");
+                    canvas.style.width = "2560px";
+                    canvas.style.height = "1440px";
+                    console.log(document.body.clientWidth);
+                    canvas.style.left = -1280 + document.body.clientWidth / 2 + "px";
+                }
+                else if (resolution === "3840x2160") {
+                    console.log("res set 2160p");
+                    canvas.style.width = "3840px";
+                    canvas.style.height = "2160px";
+                    canvas.style.left = -1920 + document.body.clientWidth / 2 + "px";
+                }
+                else {
+                }
+                // canvas.style.top = "-50%";
+                // canvas.style.left = "-1000px";
+                renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+                camera.aspect = canvas.clientWidth / canvas.clientHeight;
+                camera.updateProjectionMatrix();
+
+                renderer.shadowMap.needsUpdate = true;
+                render();
+
                 $("#record-card-button").css("color", "rgba(220, 0, 0, 1)");
-                // recorder.startRecording();
-                // callNext(list, commitsListFirstSelected, commitsListLastSelected);
                 CNidx = commitsListFirstSelected;
                 CNlist = list;
                 CNlast = commitsListLastSelected;

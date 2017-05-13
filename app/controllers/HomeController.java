@@ -44,6 +44,7 @@ public class HomeController extends Controller {
     private double parsingPercentage;
     private Map<String, RepositoryModel> rms = new HashMap<>();
 
+
     @Inject
     private FormFactory formFactory;
 
@@ -294,12 +295,12 @@ public class HomeController extends Controller {
 
         new RectanglePacking(maxDrw, maxDrw, 20, 20, "max");
 
-        if(type.equals("Commits")) {
-            compareWithMax(maxDrw, packings.get(commits.get(0).getName()));
-        }
-        else {
-            compareWithMax(maxDrw, packings.get(commitTags.get(0).getName()));
-        }
+//        if(type.equals("Commits")) {
+//            compareWithMax(maxDrw, packings.get(commits.get(0).getName()));
+//        }
+//        else {
+//            compareWithMax(maxDrw, packings.get(commitTags.get(0).getName()));
+//        }
 
 
         git.close();
@@ -314,8 +315,10 @@ public class HomeController extends Controller {
         jsonObject.add("visualization", gson.fromJson(toJSON(maxDrw), JsonElement.class));
         if (type.equals("Commits")) {
             jsonObject.add("commits", gson.fromJson(new Gson().toJson(commits), JsonElement.class));
+            jsonObject.add("visibles", gson.fromJson(new Gson().toJson(packings.get(commits.get(0).getName()).getDrws()), JsonElement.class));
         } else {
             jsonObject.add("commits", gson.fromJson(new Gson().toJson(commitTags), JsonElement.class));
+            jsonObject.add("visibles", gson.fromJson(new Gson().toJson(packings.get(commitTags.get(0).getName()).getDrws()), JsonElement.class));
         }
         jsonObject.add("details", gson.fromJson(new Gson().toJson(details), JsonElement.class));
 
@@ -492,7 +495,7 @@ public class HomeController extends Controller {
     public Result getCommit() {
         String currentRepo = formFactory.form().bindFromRequest().get("repository");
         RepositoryModel rm = rms.get(currentRepo);
-        DrawablePackage maxDrw = rm.getMaxDrw();
+//        DrawablePackage maxDrw = rm.getMaxDrw();
         Map<String, RectanglePacking> packings = rm.getPackings();
 //        List<Commit> commits = rm.getCommits();
 
@@ -500,16 +503,16 @@ public class HomeController extends Controller {
         System.out.println("version required: " + commit);
 
         // look for the packing that commit corresponds to
-
-        compareWithMax(maxDrw, packings.get(commit));
+//        compareWithMax(maxDrw, packings.get(commit));
 
         // create json object
         Gson gson = new Gson();
         final JsonObject jsonObject = new JsonObject();
         // add visualization data
-        jsonObject.add("visualization", gson.fromJson(toJSON(maxDrw), JsonElement.class));
+//        jsonObject.add("visualization", gson.fromJson(toJSON(maxDrw), JsonElement.class));
+        jsonObject.add("visibles", gson.fromJson(new Gson().toJson(packings.get(commit).getDrws()), JsonElement.class));
         // add list of commits
-        jsonObject.add("maxDrw", gson.fromJson(new Gson().toJson(maxDrw), JsonElement.class));
+//        jsonObject.add("maxDrw", gson.fromJson(new Gson().toJson(maxDrw), JsonElement.class));
 
         // send data to client
         return ok(gson.toJson(jsonObject));

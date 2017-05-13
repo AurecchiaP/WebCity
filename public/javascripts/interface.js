@@ -1,8 +1,9 @@
 var submitButton = document.getElementById("submitButton");
 var btn = document.getElementById("testBtn");
 var inputField = document.getElementById("inputField");
-var currentCommit, repositoryOwner, repositoryName, repositoryUrl;
+var currentCommit, commitsNumber, repositoryOwner, repositoryName, repositoryUrl;
 var currentRepo;
+var visualization, currentVisibles;
 
 
 /**
@@ -34,8 +35,8 @@ submitButton.onclick = function () {
             console.log(json);
 
 
-            $("#commits-number").text("number of commits:" + json.commits.length);
-            $("#tags-number").text("number of tags:" + json.tags.length);
+            $("#commits-number").text("Number of commits: " + json.commits.length);
+            $("#tags-number").text("Number of tags: " + json.tags.length);
 
             document.getElementById("progressBar").style.width = "0%";
 
@@ -85,7 +86,6 @@ function poll() {
 
             //update the progress bar with the data received from server
             var json = JSON.parse(data);
-            console.log(json);
 
             if (json.taskName == "Loading visualization") {
                 $('.progress-bar').css('width', '100%')
@@ -146,7 +146,9 @@ function getData(id, type) {
             addCommits(json.commits);
             currentCommit = json.commits[0].name;
             $('#current-commit').text(currentCommit);
-            init(json.visualization);
+            visualization = json.visualization;
+            currentVisibles = json.visibles;
+            init(visualization);
         }, error: function () {
             $('#submitButton').removeClass('disabled');
             // stop polling

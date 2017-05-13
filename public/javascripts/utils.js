@@ -3,7 +3,7 @@
  */
 function addCommits(commits) {
     var items = $('.dropdown-items');
-    console.log(commits);
+    commitsNumber = commits.length;
     for(var i = 0; i < commits.length; ++i) {
         items.append("<a href='#' class='list-group-item list-group-item-action'>" +
             commits[i].name + "<br>" + commits[i].description + "<br>" + commits[i].author + ", " + commits[i].date + "</a>");
@@ -20,29 +20,23 @@ function getCommit(e) {
         commit = e.target.innerHTML.split("<")[0];
     }
 
+
     $("#commits-dropdown")[0].innerText = commit || currentCommit;
 
-
-    var r = jsRoutes.controllers.HomeController.reloadVisualization();
+    var r = jsRoutes.controllers.HomeController.getCommit();
     $.ajax({
         url: r.url,
         type: r.type,
         contentType: "application/json; charset=utf-8",
         data: {
             repository: currentRepo,
-            commit: commit,
-            padding: $('#padding-input').val() || padding,
-            minClassSize: $('#minClassesSize-input').val() || minClassSize
+            commit: commit || currentCommit
         },
         success: function (data) {
-            minClassSize = parseInt($('#minClassesSize-input').val() || minClassSize);
-            padding = parseInt($('#padding-input').val() || padding);
-            packageHeight =  parseInt($('#packageHeight-input').val() || packageHeight);
-            console.log("valid reload");
             var json = JSON.parse(data);
-            console.log(json);
+            currentVisibles = json.visibles;
             clearVisualization();
-            draw(json.visualization);
+            draw(visualization);
 
 
         }, error: function () {
@@ -69,9 +63,9 @@ function reloadVisualization() {
             packageHeight =  parseInt($('#packageHeight-input').val() || packageHeight);
             console.log("valid reload");
             var json = JSON.parse(data);
-            console.log(json);
+            visualization = json.visualization;
             clearVisualization();
-            draw(json.visualization);
+            draw(visualization);
 
 
         }, error: function () {

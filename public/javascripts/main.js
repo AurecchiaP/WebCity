@@ -68,8 +68,8 @@ function init(json) {
     var ambientLight = new THREE.AmbientLight(0xffffff, 0.3); // soft white light
     scene.add(ambientLight);
 
-    var helper = new THREE.CameraHelper(light.shadow.camera);
-    scene.add(helper);
+    // var helper = new THREE.CameraHelper(light.shadow.camera);
+    // scene.add(helper);
 
     renderer = new THREE.WebGLRenderer({
         preserveDrawingBuffer: true,

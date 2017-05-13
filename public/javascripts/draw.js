@@ -18,7 +18,23 @@ var counter = 0;
  * @param {object} drwPkg - the root package of the visualization to be drawn
  */
 function draw(drwPkg) {
-
+    // if(recording) {
+        // if ($("#resolution-input").val() === "2560x1440") {
+        //     canvas.style.width = "2560px";
+        //     canvas.style.height = "1440px";
+        //     canvas.style.top = "-50%";
+        //     canvas.style.left = "-50%";
+        // }
+    // }
+    // else
+    // {
+    //     canvas.style.width = "100vw";
+    //     canvas.style.height = "100vh";
+    //     canvas.style.top = "0";
+    //     canvas.style.left = "0";
+    // }
+    canvas.firstChild.style.width = "100%";
+    canvas.firstChild.style.height = "100%";
     scale = 1250 / Math.max(drwPkg.width, drwPkg.depth);
     // create the meshes for all the packages and classes
     var totalClasses = recDraw(drwPkg);
@@ -86,7 +102,9 @@ function clearVisualization() {
  */
 function recDraw(drwPkg) {
     var totalClasses = 0;
-    if (!drwPkg.visible || (drwPkg.width === 0 && drwPkg.depth === 0)) return 0;
+    // if (!drwPkg.visible || (drwPkg.width === 0 && drwPkg.depth === 0)) return 0;
+    if (!currentVisibles[drwPkg.pkg.name]) return 0;
+    // if ((drwPkg.width === 0 && drwPkg.depth === 0)) return 0;
     // recursion on the child packages, to be drawn first
     for (var i = 0; i < drwPkg.drawablePackages.length; ++i) {
         totalClasses += recDraw(drwPkg.drawablePackages[i]);
@@ -108,7 +126,9 @@ function recDraw(drwPkg) {
  */
 function drawClass(drwCls) {
 
-    if (!drwCls.visible) return;
+    if (currentVisibles) {
+        if (!currentVisibles[drwCls.cls.filename]) return;
+    }
     classes.push(drwCls);
 
     // adding 10 to attributes and methods, to have a lower bound (else we won't see the class)
@@ -278,6 +298,12 @@ for (var i = 0; i < 8; ++i) {
  */
 function loaded(totalClasses) {
     if (recording) {
+
+        // fixme test if with these 3 lines it's slower
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+        camera.aspect = canvas.clientWidth / canvas.clientHeight;
+        camera.updateProjectionMatrix();
+
         renderer.shadowMap.needsUpdate = true;
         render();
         callNext();
@@ -359,15 +385,17 @@ function loaded(totalClasses) {
 
     // canvas.style.width = "640px";
     // canvas.style.height = "320px";
-    canvas.style.width = "1920px";
-    canvas.style.height = "1080px";
+    // canvas.style.width = "1920px";
+    // canvas.style.height = "1080px";
     // canvas.style.width = "3840px";
     // canvas.style.height = "2160px";
+    // canvas.firstChild.style.width = "3840px";
+    // canvas.firstChild.style.height = "2160px";
     // canvas.style.width = "2560px";
     // canvas.style.height = "1440px";
 
 
-    mesh.rotation.x = -Math.PI / 2;
+    // mesh.rotation.x = -Math.PI / 2;
 
 
 
@@ -434,13 +462,13 @@ function callNext() {
     // window.URL.revokeObjectURL(image);
 
 
-    CNlist[CNidx].click();
+    // CNlist[CNidx].click();
     // idx++;
-    CNidx++;
+    // CNidx++;
     if (recording && (CNidx <= CNlast && CNidx < CNlist.length)) {
-        // setTimeout(function () {
-        //     callNext(list, idx, last);
-        // }, 100);
+        CNlist[CNidx].click();
+        // idx++;
+        CNidx++;
     }
     else {
         setTimeout(function () {
@@ -451,10 +479,12 @@ function callNext() {
                 // runCommand("-i img%03d.png output.mp4");
                 // runCommand("ffmpeg -loop 1 -i img000.png -c:v libx264 -t 30 -pix_fmt yuv420p out.mp4");
                 // runCommand('-r 24 -i img%03d.jpg output.mp4');
+                var split = Math.ceil(commitsNumber/8);
+                console.log(split);
                 for (var i = 0; i < 8; ++i) {
                     recordWorkers[i].postMessage({
                         type: "command",
-                arguments: ['-r', '24', '-start_number', i*16,  '-i', 'img%03d.jpg', '-v', 'verbose', '-vframes', 16, '-pix_fmt', 'yuv420p', 'output.mp4'],
+                arguments: ['-r', '24', '-start_number', i*split,  '-i', 'img%03d.jpg', '-v', 'verbose', '-vframes', split, '-pix_fmt', 'yuv420p', 'output.mp4'],
                         files: files
                     });
                 }

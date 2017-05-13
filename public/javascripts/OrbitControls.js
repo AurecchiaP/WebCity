@@ -285,13 +285,13 @@ THREE.OrbitControls = function ( object, domElement ) {
 
     function rotateLeft( angle ) {
 
-        sphericalDelta.theta += angle;
+        sphericalDelta.theta -= angle;
 
     }
 
     function rotateUp( angle ) {
 
-        sphericalDelta.phi += angle;
+        sphericalDelta.phi -= angle;
 
     }
 
@@ -763,7 +763,7 @@ THREE.OrbitControls = function ( object, domElement ) {
         if ( scope.enabled === false || scope.enableZoom === false || ( state !== STATE.NONE && state !== STATE.ROTATE ) ) return;
 
         event.preventDefault();
-        event.stopPropagation();
+        // event.stopPropagation();
 
         handleMouseWheel( event );
 

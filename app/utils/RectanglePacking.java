@@ -1,6 +1,7 @@
 package utils;
 
 
+import models.drawables.Drawable;
 import models.drawables.DrawableClass;
 import models.drawables.DrawablePackage;
 
@@ -18,6 +19,7 @@ public class RectanglePacking {
     private static int padding = 20;
     private static int minClassSize = 20;
     private Map<String, DrawablePackage> drwPackages;
+    private Map<String, Boolean> drws;
 
 
     /**
@@ -33,6 +35,7 @@ public class RectanglePacking {
 
         // will contain a reference to all the drwPackages contained
         drwPackages = new HashMap<>();
+        drws = new HashMap<>();
 
         // traverse recursively the drwPackages to find out the maximum size needed for the visualization and the
         // maximum depth of recursion
@@ -317,6 +320,13 @@ public class RectanglePacking {
             parentOpenBins.addAll(temp);
         }
 
+        if(drwPkg.getPkg().getClassTotal() > 0) {
+            drws.put(drwPkg.getPkg().getName(), true);
+            for (DrawableClass drwCls : drwPkg.getDrawableClasses()) {
+                drws.put(drwCls.getCls().getFilename(), true);
+            }
+        }
+
         return localBin;
     }
 
@@ -470,4 +480,10 @@ public class RectanglePacking {
     public Map<String, DrawablePackage> getDrwPackages() {
         return Collections.unmodifiableMap(drwPackages);
     }
+
+    public Map<String, Boolean> getDrws() {
+        return Collections.unmodifiableMap(drws);
+    }
+
+
 }
