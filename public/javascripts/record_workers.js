@@ -50,7 +50,8 @@ onmessage = function(event) {
         postMessage({
             'type' : 'done',
             'data' : result,
-            'time' : totalTime
+            'time' : totalTime,
+            'name' : message.name
         });
     }
 };

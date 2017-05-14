@@ -73,3 +73,10 @@ function reloadVisualization() {
         }
     });
 }
+
+function containsUndefined(arr) {
+    for(var i = 0; i < arr.length; ++i) {
+        if (arr[i] === undefined) return true;
+    }
+    return false;
+}

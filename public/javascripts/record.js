@@ -15,10 +15,17 @@ function setupRecorder() {
                 recording = true;
                 var resolution = $("#resolution-input").val();
 
-                if (resolution === "1920x1080") {
+                if (resolution === "1280x720") {
+                    console.log("res set 720p");
+                    canvas.style.width = "1280px";
+                    canvas.style.height = "720px";
+                    canvas.style.left = -640 + document.body.clientWidth / 2 + "px";
+                }
+                else if (resolution === "1920x1080") {
                     console.log("res set 1080p");
                     canvas.style.width = "1920px";
                     canvas.style.height = "1080px";
+                    console.log(document.body.clientWidth);
                     canvas.style.left = -960 + document.body.clientWidth / 2 + "px";
                 }
                 else if (resolution === "2560x1440") {
@@ -36,8 +43,6 @@ function setupRecorder() {
                 }
                 else {
                 }
-                // canvas.style.top = "-50%";
-                // canvas.style.left = "-1000px";
                 renderer.setSize(canvas.clientWidth, canvas.clientHeight);
                 camera.aspect = canvas.clientWidth / canvas.clientHeight;
                 camera.updateProjectionMatrix();

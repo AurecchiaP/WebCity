@@ -37,7 +37,7 @@ function init(json) {
 
     light = new THREE.DirectionalLight(0xffffff, 0.5);
 
-    light.position.set(-100,100, 200);
+    light.position.set(-100, 500, 200);
 
     // shadow settings
     light.castShadow = true;
@@ -48,14 +48,19 @@ function init(json) {
 
     // change values depending on angle of light
     light.shadow.camera.near = 0;
-    light.shadow.camera.far = 5000;
+    light.shadow.camera.far = 2000;
     light.shadow.camera.fov = 90;
 
+
+    var width = json.width * scale;
+    var depth = json.depth * scale;
+    var max = Math.max(width, depth);
+
     // hardcoded for this light position and light target
-    light.shadow.camera.left = -800;
-    light.shadow.camera.right = 1200;
-    light.shadow.camera.top = 1000;
-    light.shadow.camera.bottom = -1000;
+    light.shadow.camera.left = -(0.5 * max);
+    light.shadow.camera.right = max;
+    light.shadow.camera.top = 1.5 * max;
+    light.shadow.camera.bottom = 0;
 
     light.shadow.bias = 0.00001;
 

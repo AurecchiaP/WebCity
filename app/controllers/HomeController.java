@@ -275,7 +275,7 @@ public class HomeController extends Controller {
                 for (Commit commit : commits) {
 
                     if (tagId.equals(commit.getName())) {
-                        commitTags.add(commit);
+                        commitTags.add(0, commit);
                         // make the packages into drawables to be used for rectangle packing
                         DrawablePackage drw = historyToDrawable(commit.getName(), jph);
 
