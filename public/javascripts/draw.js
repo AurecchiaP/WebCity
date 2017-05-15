@@ -11,6 +11,7 @@ var commitsListFirstSelected = -1;
 var commitsListLastSelected = -1;
 
 var counter = 0;
+var firstDraw = true;
 
 
 /**
@@ -43,13 +44,13 @@ function draw(drwPkg) {
     });
     mesh = new THREE.Mesh(geometry, material);
 
-    // bounding box to know size of total mesh; then move camera to its center, and update OrbitControls accordingly
-    if (!box) {
-        box = new THREE.Box3().setFromObject(mesh);
-        camera.position.x -= -box.getSize().x / 2;
-        camera.position.y -= -box.getSize().y / 2;
-        controls.target.set(box.getSize().x / 2, box.getSize().y / 2, 0);
+
+    if (firstDraw) {
+        var center = getCenterPoint(mesh);
+        camera.position.setX(center.x);
+        controls.target.set(center.x, center.y, center.z);
         controls.update();
+        firstDraw = false;
     }
 
     // add the mesh to the scene and notify that the visualization is ready
@@ -57,6 +58,20 @@ function draw(drwPkg) {
     mesh.receiveShadow = true;
     scene.add(mesh);
     loaded(totalClasses);
+}
+
+function getCenterPoint(mesh) {
+    var middle = new THREE.Vector3();
+    var geometry = mesh.geometry;
+
+    geometry.computeBoundingBox();
+
+    middle.x = (geometry.boundingBox.max.x + geometry.boundingBox.min.x) / 2;
+    middle.y = (geometry.boundingBox.max.y + geometry.boundingBox.min.y) / 2;
+    middle.z = (geometry.boundingBox.max.z + geometry.boundingBox.min.z) / 2;
+
+    mesh.localToWorld( middle );
+    return middle;
 }
 
 /**
@@ -349,16 +364,28 @@ function callNext() {
 
     if (count < 10) {
         files.push({
-            "name": "img00" + count++ + ".jpg",
+            "name": "img0000" + count++ + ".jpg",
             "data": convertDataURIToBinary(image)
         });
     }
     else if (count < 100) {
         files.push({
+            "name": "img000" + count++ + ".jpg",
+            "data": convertDataURIToBinary(image)
+        });
+    } else if(count < 1000) {
+        files.push({
+            "name": "img00" + count++ + ".jpg",
+            "data": convertDataURIToBinary(image)
+        });
+    }
+    else if(count < 10000) {
+        files.push({
             "name": "img0" + count++ + ".jpg",
             "data": convertDataURIToBinary(image)
         });
-    } else {
+    }
+    else {
         files.push({
             "name": "img" + count++ + ".jpg",
             "data": convertDataURIToBinary(image)
@@ -373,6 +400,8 @@ function callNext() {
         setTimeout(function () {
             if (recording) {
                 recording = false;
+                $("#record-button").text("Record");
+                $("#record-button").addClass("disabled");
                 canvas.style.width = "100%";
                 canvas.style.height = "100%";
                 canvas.style.left = "0";
@@ -385,10 +414,9 @@ function callNext() {
 
                 var split = Math.ceil(commitsNumber / 8);
                 for (var i = 0; i < 8; ++i) {
-                    console.log(files);
                     recordWorkers[i].postMessage({
                         type: "command",
-                        arguments: ['-r', '24', '-start_number', i * split, '-i', 'img%03d.jpg', '-v', 'verbose', '-vframes', split, 'vid' + i + '.mp4'],
+                        arguments: ['-r', '24', '-start_number', i * split, '-i', 'img%05d.jpg', '-v', 'verbose', '-vframes', split, 'vid' + i + '.mp4'],
                         files: files,
                         name: i
                     });

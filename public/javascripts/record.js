@@ -6,6 +6,10 @@ function setupRecorder() {
     document.getElementById('record-button').onclick = function () {
         if (recording) {
             recording = false;
+            videoData = [];
+            files = [];
+            count = 0;
+            $("#record-button").text("Record");
             $("#record-card-button").css("color", "rgba(220, 220, 220, 1)");
         }
         else {
@@ -19,6 +23,8 @@ function setupRecorder() {
             if (commitsListFirstSelected >= 0 && commitsListLastSelected > commitsListFirstSelected) {
                 recording = true;
                 var resolution = $("#resolution-input").val();
+
+                $("#record-button").text("Cancel");
 
                 if (resolution === "1280x720") {
                     console.log("res set 720p");
@@ -132,8 +138,8 @@ function setupRecordWorkers() {
                     }
 
                     if (message.name === "concat") {
+                        $("#record-button").removeClass("disabled");
                         var a = window.document.createElement('a');
-
                         a.href = window.URL.createObjectURL(blob);
                         a.download = buffer.name;
                         document.body.appendChild(a);
