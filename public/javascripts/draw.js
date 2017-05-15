@@ -195,8 +195,8 @@ function drawPackage(drwPkg, totalClasses) {
     mesh.name = drwPkg.pkg.name;
     var classes = 0;
     for (var j = 0; j < drwPkg.drawableClasses.length; ++j) {
-        var cls = drwPkg.drawableClasses[j];
-        if (cls.visible) classes += 1;
+        var drwCls = drwPkg.drawableClasses[j];
+        if (currentVisibles[drwCls.cls.filename]) classes += 1;
     }
     mesh.classes = classes;
 
@@ -220,68 +220,8 @@ function drawPackage(drwPkg, totalClasses) {
     scene.add(mesh);
     return classes;
 }
-
-
-var recordWorkers = [];
+var recordWorkers;
 var videoData = [];
-for (var i = 0; i < 8; ++i) {
-    recordWorkers[i] = new Worker("assets/javascripts/record_workers.js");
-    recordWorkers[i].onmessage = function (event) {
-        var message = event.data;
-        if (message.type === "ready") {
-            this.postMessage({
-                type: "command",
-                arguments: ["-help"]
-            });
-        } else if (message.type === "stdout") {
-            // console.log(message.data);
-        } else if (message.type === "start") {
-            // console.log(message.data);
-        } else if (message.type === "done") {
-            var buffers = message.data;
-            // console.log(message);
-
-            if (buffers.length) {
-                var buffer = buffers[0];
-                var arr = buffer.data;
-                var byteArray = new Uint8Array(arr);
-                var blob = new Blob([byteArray], {type: 'application/octet-stream'});
-
-                if (Number.isInteger(message.name)) {
-                    videoData[message.name] = {
-                        "name": "vid" + message.name + ".mp4",
-                        "data": byteArray
-                    };
-                }
-
-                if (!containsUndefined(videoData)) {
-                    this.postMessage({
-                        type: "command",
-                        arguments: ['-i', 'vid0.mp4', '-i', 'vid1.mp4', '-i', 'vid2.mp4', '-i', 'vid3.mp4',
-                            '-i', 'vid4.mp4', '-i', 'vid5.mp4', '-i', 'vid6.mp4', '-i', 'vid7.mp4', '-filter_complex',
-                            '[0:v:0] [1:v:0] [2:v:0] [3:v:0] [4:v:0] [5:v:0] [6:v:0] [7:v:0] concat=n=8:v=1 [v]',
-                            '-map','[v]', repositoryName + '.mp4'],
-                        files: videoData,
-                        name : "concat"
-                    });
-                    videoData = [];
-                    files = [];
-                }
-
-                if (message.name === "concat") {
-                    var a = window.document.createElement('a');
-
-                    a.href = window.URL.createObjectURL(blob);
-                    a.download = buffer.name;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                }
-            }
-        }
-    };
-}
-
 
 /**
  * readies the page when the visualization is loaded
@@ -445,9 +385,10 @@ function callNext() {
 
                 var split = Math.ceil(commitsNumber / 8);
                 for (var i = 0; i < 8; ++i) {
+                    console.log(files);
                     recordWorkers[i].postMessage({
                         type: "command",
-                        arguments: ['-r', '24', '-start_number', i * split, '-i', 'img%03d.jpg', '-v', 'verbose', '-vframes', split, 'vid'+i+'.mp4'],
+                        arguments: ['-r', '24', '-start_number', i * split, '-i', 'img%03d.jpg', '-v', 'verbose', '-vframes', split, 'vid' + i + '.mp4'],
                         files: files,
                         name: i
                     });
@@ -458,7 +399,6 @@ function callNext() {
         }, 100);
     }
 }
-
 
 
 /**

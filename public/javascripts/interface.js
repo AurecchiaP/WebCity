@@ -2,7 +2,7 @@ var submitButton = document.getElementById("submitButton");
 var btn = document.getElementById("testBtn");
 var inputField = document.getElementById("inputField");
 var currentCommit, commitsNumber, repositoryOwner, repositoryName, repositoryUrl;
-var currentRepo;
+var currentRepo, type;
 var visualization, currentVisibles;
 
 
@@ -67,7 +67,8 @@ $("#visualize-button").on("click", function () {
     $('#visualize-button').addClass('disabled');
     document.getElementById("progressBar").style.width = "100%";
     var id = setInterval(poll, 1000);
-    getData(id, $("#type-select").val());
+    type = $("#type-select").val();
+    getData(id, type);
 });
 
 /**

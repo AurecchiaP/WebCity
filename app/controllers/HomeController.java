@@ -104,13 +104,38 @@ public class HomeController extends Controller {
         commits = rm.getCommits();
         tags = rm.getTags();
 
+
+
+        if(rm.getMaxDrw(type) != null) {
+            System.out.println("Loading cached repository");
+            details.put("repository", repoName);
+            details.put("repositoryUrl", currentRepo);
+
+            // create json object
+            Gson gson = new Gson();
+            final JsonObject jsonObject = new JsonObject();
+            // add visualization data
+            jsonObject.add("visualization", gson.fromJson(toJSON(rm.getMaxDrw(type)), JsonElement.class));
+            if (type.equals("Commits")) {
+                jsonObject.add("commits", gson.fromJson(new Gson().toJson(commits), JsonElement.class));
+                jsonObject.add("visibles", gson.fromJson(new Gson().toJson(rm.getPackings(type).get(commits.get(0).getName()).getDrws()), JsonElement.class));
+            } else {
+                List<Commit> commitTags = rm.getCommitTags();
+                jsonObject.add("commits", gson.fromJson(new Gson().toJson(commitTags), JsonElement.class));
+                jsonObject.add("visibles", gson.fromJson(new Gson().toJson(rm.getPackings(type).get(commitTags.get(0).getName()).getDrws()), JsonElement.class));
+            }
+            jsonObject.add("details", gson.fromJson(new Gson().toJson(details), JsonElement.class));
+
+            // send data to client
+            return ok(gson.toJson(jsonObject));
+        }
+
+
         for (Ref ref : tags) {
             Ref peeledRef = git.getRepository().peel(ref);
             if (peeledRef.getPeeledObjectId() != null) {
-                System.out.println(peeledRef.getObjectId().getName());
                 peeledTags.add(peeledRef);
             } else {
-                System.out.println(ref.getObjectId().getName());
                 peeledTags.add(ref);
             }
         }
@@ -295,14 +320,6 @@ public class HomeController extends Controller {
 
         new RectanglePacking(maxDrw, maxDrw, 20, 20, "max");
 
-//        if(type.equals("Commits")) {
-//            compareWithMax(maxDrw, packings.get(commits.get(0).getName()));
-//        }
-//        else {
-//            compareWithMax(maxDrw, packings.get(commitTags.get(0).getName()));
-//        }
-
-
         git.close();
 
         details.put("repository", repoName);
@@ -322,8 +339,9 @@ public class HomeController extends Controller {
         }
         jsonObject.add("details", gson.fromJson(new Gson().toJson(details), JsonElement.class));
 
-        rm.setMaxDrw(maxDrw);
-        rm.setPackings(packings);
+        rm.setMaxDrw(type, maxDrw);
+        rm.setPackings(type, packings);
+        rm.setCommitTags(commitTags);
 
         rms.put(currentRepo, rm);
 
@@ -460,8 +478,15 @@ public class HomeController extends Controller {
 
             List<Ref> tags = git.tagList().call();
 
-            RepositoryModel rm = new RepositoryModel(null, new HashMap<>(), commits, tags);
-            rms.put(currentRepo, rm);
+            if(!rms.containsKey(currentRepo)) {
+                RepositoryModel rm = new RepositoryModel(null, null, new HashMap<>(), new HashMap<>(), commits, new ArrayList<>(), tags);
+                rms.put(currentRepo, rm);
+            }
+            else {
+                RepositoryModel rm = rms.get(currentRepo);
+                rm.setCommits(commits);
+                rm.setTags(tags);
+            }
 
             return 0;
 
@@ -494,25 +519,18 @@ public class HomeController extends Controller {
      */
     public Result getCommit() {
         String currentRepo = formFactory.form().bindFromRequest().get("repository");
+        String type = formFactory.form().bindFromRequest().get("type");
         RepositoryModel rm = rms.get(currentRepo);
-//        DrawablePackage maxDrw = rm.getMaxDrw();
-        Map<String, RectanglePacking> packings = rm.getPackings();
-//        List<Commit> commits = rm.getCommits();
+        Map<String, RectanglePacking> packings = rm.getPackings(type);
 
         String commit = formFactory.form().bindFromRequest().get("commit");
         System.out.println("version required: " + commit);
 
-        // look for the packing that commit corresponds to
-//        compareWithMax(maxDrw, packings.get(commit));
-
         // create json object
         Gson gson = new Gson();
         final JsonObject jsonObject = new JsonObject();
-        // add visualization data
-//        jsonObject.add("visualization", gson.fromJson(toJSON(maxDrw), JsonElement.class));
+        // add list of objects that are visible in this version
         jsonObject.add("visibles", gson.fromJson(new Gson().toJson(packings.get(commit).getDrws()), JsonElement.class));
-        // add list of commits
-//        jsonObject.add("maxDrw", gson.fromJson(new Gson().toJson(maxDrw), JsonElement.class));
 
         // send data to client
         return ok(gson.toJson(jsonObject));
@@ -520,12 +538,13 @@ public class HomeController extends Controller {
 
     public Result reloadVisualization() {
         String currentRepo = formFactory.form().bindFromRequest().get("repository");
+        String type = formFactory.form().bindFromRequest().get("type");
         String commit = formFactory.form().bindFromRequest().get("commit");
         int padding = Integer.parseInt(formFactory.form().bindFromRequest().get("padding"));
         int minClassSize = Integer.parseInt(formFactory.form().bindFromRequest().get("minClassSize"));
 
         RepositoryModel rm = rms.get(currentRepo);
-        Map<String, RectanglePacking> packings = rm.getPackings();
+        Map<String, RectanglePacking> packings = rm.getPackings(type);
 
         DrawablePackage maxDrw = getMaxDrawable(new ArrayList<>(packings.values()));
 

@@ -4,7 +4,7 @@
 function addCommits(commits) {
     var items = $('.dropdown-items');
     commitsNumber = commits.length;
-    for(var i = 0; i < commits.length; ++i) {
+    for (var i = 0; i < commits.length; ++i) {
         items.append("<a href='#' class='list-group-item list-group-item-action'>" +
             commits[i].name + "<br>" + commits[i].description + "<br>" + commits[i].author + ", " + commits[i].date + "</a>");
     }
@@ -13,7 +13,7 @@ function addCommits(commits) {
 
 function getCommit(e) {
     var commit;
-    if(e.target.parentElement.tagName !== "DIV"){
+    if (e.target.parentElement.tagName !== "DIV") {
         commit = e.target.parentElement.innerHTML.split("<")[0];
     }
     else {
@@ -30,7 +30,8 @@ function getCommit(e) {
         contentType: "application/json; charset=utf-8",
         data: {
             repository: currentRepo,
-            commit: commit || currentCommit
+            commit: commit || currentCommit,
+            type: type
         },
         success: function (data) {
             var json = JSON.parse(data);
@@ -54,13 +55,14 @@ function reloadVisualization() {
         data: {
             repository: currentRepo,
             commit: currentCommit,
+            type: type,
             padding: $('#padding-input').val() || padding,
             minClassSize: $('#minClassesSize-input').val() || minClassSize
-},
+        },
         success: function (data) {
             minClassSize = parseInt($('#minClassesSize-input').val() || minClassSize);
             padding = parseInt($('#padding-input').val() || padding);
-            packageHeight =  parseInt($('#packageHeight-input').val() || packageHeight);
+            packageHeight = parseInt($('#packageHeight-input').val() || packageHeight);
             console.log("valid reload");
             var json = JSON.parse(data);
             visualization = json.visualization;
@@ -75,7 +77,7 @@ function reloadVisualization() {
 }
 
 function containsUndefined(arr) {
-    for(var i = 0; i < arr.length; ++i) {
+    for (var i = 0; i < arr.length; ++i) {
         if (arr[i] === undefined) return true;
     }
     return false;

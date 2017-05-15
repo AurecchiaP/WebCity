@@ -2,6 +2,7 @@
  * called from main; sets up the data and functions to be able to record the canvas
  */
 function setupRecorder() {
+
     document.getElementById('record-button').onclick = function () {
         if (recording) {
             recording = false;
@@ -9,6 +10,10 @@ function setupRecorder() {
         }
         else {
 
+            if (!recordWorkers) {
+                console.log("setting up record workers");
+                setupRecordWorkers();
+            }
 
             var list = commitsList.children();
             if (commitsListFirstSelected >= 0 && commitsListLastSelected > commitsListFirstSelected) {
@@ -78,3 +83,65 @@ var saveData = (function () {
         window.URL.revokeObjectURL(url);
     };
 }());
+
+function setupRecordWorkers() {
+    recordWorkers = [];
+    for (var i = 0; i < 8; ++i) {
+        recordWorkers[i] = new Worker("assets/javascripts/record_workers.js");
+        recordWorkers[i].onmessage = function (event) {
+            var message = event.data;
+            if (message.type === "ready") {
+                this.postMessage({
+                    type: "command",
+                    arguments: ["-help"]
+                });
+            } else if (message.type === "stdout") {
+                // console.log(message.data);
+            } else if (message.type === "start") {
+                console.log(message.data);
+            } else if (message.type === "done") {
+                console.log(message);
+                var buffers = message.data;
+
+                if (buffers.length) {
+                    var buffer = buffers[0];
+                    var arr = buffer.data;
+                    var byteArray = new Uint8Array(arr);
+                    var blob = new Blob([byteArray], {type: 'application/octet-stream'});
+
+                    if (Number.isInteger(message.name)) {
+                        videoData[message.name] = {
+                            "name": "vid" + message.name + ".mp4",
+                            "data": byteArray
+                        };
+                    }
+
+                    if (!containsUndefined(videoData) && videoData.length === 8) {
+                        this.postMessage({
+                            type: "command",
+                            arguments: ['-i', 'vid0.mp4', '-i', 'vid1.mp4', '-i', 'vid2.mp4', '-i', 'vid3.mp4',
+                                '-i', 'vid4.mp4', '-i', 'vid5.mp4', '-i', 'vid6.mp4', '-i', 'vid7.mp4', '-filter_complex',
+                                '[0:v:0] [1:v:0] [2:v:0] [3:v:0] [4:v:0] [5:v:0] [6:v:0] [7:v:0] concat=n=8:v=1 [v]',
+                                '-map', '[v]', repositoryName + '.mp4'],
+                            files: videoData,
+                            name: "concat"
+                        });
+                        videoData = [];
+                        files = [];
+                        count = 0;
+                    }
+
+                    if (message.name === "concat") {
+                        var a = window.document.createElement('a');
+
+                        a.href = window.URL.createObjectURL(blob);
+                        a.download = buffer.name;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                    }
+                }
+            }
+        };
+    }
+}
