@@ -21,6 +21,7 @@ function setupRecorder() {
 
             var list = commitsList.children();
             if (commitsListFirstSelected >= 0 && commitsListLastSelected > commitsListFirstSelected) {
+                console.log(new Date().toLocaleTimeString());
                 recording = true;
                 var resolution = $("#resolution-input").val();
 
@@ -138,6 +139,7 @@ function setupRecordWorkers() {
                     }
 
                     if (message.name === "concat") {
+                        console.log(new Date().toLocaleTimeString());
                         $("#record-button").removeClass("disabled");
                         var a = window.document.createElement('a');
                         a.href = window.URL.createObjectURL(blob);

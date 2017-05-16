@@ -416,7 +416,7 @@ function callNext() {
                 for (var i = 0; i < 8; ++i) {
                     recordWorkers[i].postMessage({
                         type: "command",
-                        arguments: ['-r', '24', '-start_number', i * split, '-i', 'img%05d.jpg', '-v', 'verbose', '-vframes', split, 'vid' + i + '.mp4'],
+                        arguments: ['-r', '24', '-start_number', i * split, '-i', 'img%05d.jpg', '-v', 'verbose', '-pix_fmt', 'yuv420p', '-vframes', split, 'vid' + i + '.mp4'],
                         files: files,
                         name: i
                     });
