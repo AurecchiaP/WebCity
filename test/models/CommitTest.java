@@ -11,7 +11,7 @@ public class CommitTest {
 
     @Before
     public void setUp() throws Exception {
-        commit = new Commit("name", "author", "01-01-2017");
+        commit = new Commit("name", "author", "01-01-2017", "description");
     }
 
     @Test
@@ -45,6 +45,18 @@ public class CommitTest {
     public void setDate() throws Exception {
         commit.setDate("05-02-2018");
         assertEquals("05-02-2018", commit.getDate());
+    }
+
+
+    @Test
+    public void getDescription() throws Exception {
+        assertEquals("description", commit.getDescription());
+    }
+
+    @Test
+    public void setDescription() throws Exception {
+        commit.setDescription("new description");
+        assertEquals("new description", commit.getDescription());
     }
 
 }

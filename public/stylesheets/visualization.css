@@ -8,10 +8,12 @@
 #canvas {
     padding: 0;
     position: absolute;
+    overflow:auto;
     top: 0;
+    bottom: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
+    right: 0;
+    margin: auto;
 }
 
 #name {
@@ -60,10 +62,12 @@
 
 #commits-list {
     right: 0;
+    max-width: 30vw;
 }
 
 #commits-list-first #commits-list-last {
     left: 0;
+    max-width: 30vw;
 }
 
 .dropdown-items {
@@ -109,7 +113,7 @@
     color: rgba(102, 104, 116, 1);
 }
 
-#info-content, #record-card {
+#info-content, #record-card, #options-card {
     z-index: 100;
     display: none;
     position: absolute;
@@ -124,12 +128,17 @@
 }
 
 
-#record-card-button {
+#record-card-button, #options-card-button {
     color: rgba(220, 220, 220, 1);
     transition: all 0.1s;
     line-height: 3.5vh;
+    margin-right: 1em;
 }
 
-#record-button {
+#record-card-button:hover, #info-button:hover, #options-card-button:hover {
+    cursor: hand;
+}
+
+#record-button, #reload-button {
     margin-bottom: 1em;
 }

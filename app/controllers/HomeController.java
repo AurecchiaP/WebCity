@@ -13,6 +13,7 @@ import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.errors.*;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.ProgressMonitor;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import play.api.Play;
 import play.data.FormFactory;
@@ -40,7 +41,9 @@ public class HomeController extends Controller {
 
     private double percentage = 0;
     private String taskName;
+    private double parsingPercentage;
     private Map<String, RepositoryModel> rms = new HashMap<>();
+
 
     @Inject
     private FormFactory formFactory;
@@ -56,7 +59,8 @@ public class HomeController extends Controller {
                         routes.javascript.HomeController.getVisualizationData(),
                         routes.javascript.HomeController.visualization(),
                         routes.javascript.HomeController.poll(),
-                        routes.javascript.HomeController.getCommit()
+                        routes.javascript.HomeController.getCommit(),
+                        routes.javascript.HomeController.reloadVisualization()
                 )
         ).as("text/javascript");
     }
@@ -73,6 +77,314 @@ public class HomeController extends Controller {
      */
     public Result getVisualizationData() {
         String currentRepo = formFactory.form().bindFromRequest().get("repository");
+        String type = formFactory.form().bindFromRequest().get("type");
+        DrawablePackage maxDrw;
+        Map<String, RectanglePacking> packings;
+        List<Commit> commits;
+        List<Ref> tags = new ArrayList<>();
+        List<Ref> peeledTags = new ArrayList<>();
+        Map<String, String> details = new HashMap<>();
+
+        String repoName = currentRepo.replace("https://github.com/", "");
+
+
+        // try to download the given repository
+        File directory = new File(Play.current().path() + "/repository/" + repoName + "/.git/");
+        Git git = null;
+
+        try {
+            git = Git.open(directory);
+            git.checkout().setName("master").call();
+        } catch (GitAPIException | IOException e) {
+            e.printStackTrace();
+        }
+
+
+        RepositoryModel rm = rms.get(currentRepo);
+        commits = rm.getCommits();
+        tags = rm.getTags();
+
+
+
+        if(rm.getMaxDrw(type) != null) {
+            System.out.println("Loading cached repository");
+            details.put("repository", repoName);
+            details.put("repositoryUrl", currentRepo);
+
+            // create json object
+            Gson gson = new Gson();
+            final JsonObject jsonObject = new JsonObject();
+            // add visualization data
+            jsonObject.add("visualization", gson.fromJson(toJSON(rm.getMaxDrw(type)), JsonElement.class));
+            if (type.equals("Commits")) {
+                jsonObject.add("commits", gson.fromJson(new Gson().toJson(commits), JsonElement.class));
+                jsonObject.add("visibles", gson.fromJson(new Gson().toJson(rm.getPackings(type).get(commits.get(0).getName()).getDrws()), JsonElement.class));
+            } else {
+                List<Commit> commitTags = rm.getCommitTags();
+                jsonObject.add("commits", gson.fromJson(new Gson().toJson(commitTags), JsonElement.class));
+                jsonObject.add("visibles", gson.fromJson(new Gson().toJson(rm.getPackings(type).get(commitTags.get(0).getName()).getDrws()), JsonElement.class));
+            }
+            jsonObject.add("details", gson.fromJson(new Gson().toJson(details), JsonElement.class));
+
+            // send data to client
+            return ok(gson.toJson(jsonObject));
+        }
+
+
+        for (Ref ref : tags) {
+            Ref peeledRef = git.getRepository().peel(ref);
+            if (peeledRef.getPeeledObjectId() != null) {
+                peeledTags.add(peeledRef);
+            } else {
+                peeledTags.add(ref);
+            }
+        }
+
+
+        JavaPackageHistory jph = null;
+
+        HistoryUtils historyUtils = new HistoryUtils();
+
+        System.out.println("Repository name: " + repoName);
+
+        File serialized = new File(Play.current().path() + "/repository/" + repoName + "/history_" + type + ".ser");
+        if (serialized.exists() && !serialized.isDirectory()) {
+            taskName = "Loading visualization";
+            System.out.println("Found serialized object.");
+
+            FileInputStream fin = null;
+            ObjectInputStream ois = null;
+
+            try {
+                fin = new FileInputStream(Play.current().path() + "/repository/" + repoName + "/history_" + type + ".ser");
+                ois = new ObjectInputStream(fin);
+                jph = (JavaPackageHistory) ois.readObject();
+
+                System.out.println("Done reading serialized object.");
+
+            } catch (Exception ex) {
+                System.out.println("Couldn't read serialized object.");
+                ex.printStackTrace();
+            } finally {
+
+                if (fin != null) {
+                    try {
+                        fin.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (ois != null) {
+                    try {
+                        ois.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } else {
+            System.out.println("Start parsing...");
+
+            try {
+                tags = git.tagList().call();
+            } catch (GitAPIException e) {
+                e.printStackTrace();
+            }
+
+            if (type.equals("Commits")) {
+                // iterate all the commits of the repo
+                for (int i = 0; i < commits.size(); i++) {
+                    Commit commit = commits.get(i);
+
+                    // set repository to the next version
+                    try {
+                        git.checkout().setName(commit.getName()).call();
+
+                        // parse the current version
+                        JavaPackage temp = BasicParser.parseRepo(Play.current().path() + "/repository/" + repoName);
+                        jph = historyUtils.toHistory(commit.getName(), temp);
+
+                    } catch (GitAPIException e) {
+                        e.printStackTrace();
+                    }
+
+                    parsingPercentage = (double) i / commits.size() * 100;
+                }
+            } else {
+                List<Ref> orderedTags = new ArrayList<>();
+                    for (int i = 0; i < commits.size(); i++) {
+                        Commit commit = commits.get(i);
+                        for (Ref tag : peeledTags) {
+                            String tagId = tag.getObjectId().getName();
+
+                        if (tagId.equals(commit.getName())) {
+                            try {
+                                orderedTags.add(tag);
+                                git.checkout().setName(commit.getName()).call();
+
+                                // parse the current version
+                                JavaPackage temp = BasicParser.parseRepo(Play.current().path() + "/repository/" + repoName);
+                                jph = historyUtils.toHistory(commit.getName(), temp);
+
+                            } catch (GitAPIException e) {
+                                e.printStackTrace();
+                            }
+
+                            parsingPercentage = (double) i / tags.size() * 100;
+                            break;
+                        }
+                    }
+                }
+                peeledTags = orderedTags;
+            }
+
+            System.out.println("Done parsing.");
+
+            System.out.println("Start serializing object.");
+
+
+            FileOutputStream fout = null;
+            ObjectOutputStream oos = null;
+            try {
+
+                fout = new FileOutputStream(Play.current().path() + "/repository/" + repoName + "/history_" + type + ".ser");
+                oos = new ObjectOutputStream(fout);
+                oos.writeObject(jph);
+
+                System.out.println("Done serializing object.");
+
+            } catch (Exception ex) {
+                System.out.println("Couldn't serialize object.");
+                ex.printStackTrace();
+            } finally {
+
+                if (oos != null) {
+                    try {
+                        oos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (fout != null) {
+                    try {
+                        fout.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        // a list of rectangle packings for all the commits
+        packings = new HashMap<>();
+
+        System.out.println("Start packing...");
+
+        List<Commit> commitTags = new ArrayList<>();
+
+        if (type.equals("Commits")) {
+
+            for (Commit commit : commits) {
+
+                // make the packages into drawables to be used for rectangle packing
+                DrawablePackage drw = historyToDrawable(commit.getName(), jph);
+
+                // do the rectangle packing
+                packings.put(commit.getName(), new RectanglePacking(drw, null, 20,20, commit.getName()));
+            }
+        } else {
+            for (Ref tag : peeledTags) {
+                String tagId = tag.getObjectId().getName();
+                for (Commit commit : commits) {
+
+                    if (tagId.equals(commit.getName())) {
+                        commitTags.add(0, commit);
+                        // make the packages into drawables to be used for rectangle packing
+                        DrawablePackage drw = historyToDrawable(commit.getName(), jph);
+
+                        // do the rectangle packing
+                        packings.put(commit.getName(), new RectanglePacking(drw, null, 20, 20, commit.getName()));
+                        break;
+                    }
+                }
+            }
+        }
+
+        System.out.println("Done packing.");
+
+
+        // find the biggest drawable, considering all commits
+        maxDrw = getMaxDrawable(new ArrayList<>(packings.values()));
+
+        new RectanglePacking(maxDrw, maxDrw, 20, 20, "max");
+
+        git.close();
+
+        details.put("repository", repoName);
+        details.put("repositoryUrl", currentRepo);
+
+        // create json object
+        Gson gson = new Gson();
+        final JsonObject jsonObject = new JsonObject();
+        // add visualization data
+        jsonObject.add("visualization", gson.fromJson(toJSON(maxDrw), JsonElement.class));
+        if (type.equals("Commits")) {
+            jsonObject.add("commits", gson.fromJson(new Gson().toJson(commits), JsonElement.class));
+            jsonObject.add("visibles", gson.fromJson(new Gson().toJson(packings.get(commits.get(0).getName()).getDrws()), JsonElement.class));
+        } else {
+            jsonObject.add("commits", gson.fromJson(new Gson().toJson(commitTags), JsonElement.class));
+            jsonObject.add("visibles", gson.fromJson(new Gson().toJson(packings.get(commitTags.get(0).getName()).getDrws()), JsonElement.class));
+        }
+        jsonObject.add("details", gson.fromJson(new Gson().toJson(details), JsonElement.class));
+
+        rm.setMaxDrw(type, maxDrw);
+        rm.setPackings(type, packings);
+        rm.setCommitTags(commitTags);
+
+        rms.put(currentRepo, rm);
+
+        // send data to client
+        return ok(gson.toJson(jsonObject));
+    }
+
+
+    /**
+     * route for the visualisation page
+     */
+    public Result visualization() {
+        String currentRepo = formFactory.form().bindFromRequest().get("repository");
+        System.out.println("input repository: " + currentRepo);
+
+        final LsRemoteCommand lsCmd = new LsRemoteCommand(null)
+                .setRemote(currentRepo);
+        try {
+            lsCmd.call();
+            System.out.println("Valid repository.");
+
+            downloadRepo(currentRepo);
+
+            RepositoryModel rm = rms.get(currentRepo);
+
+            // create json object
+            Gson gson = new Gson();
+            final JsonObject jsonObject = new JsonObject();
+            // add visualization data
+            jsonObject.add("commits", gson.fromJson(new Gson().toJson(rm.getCommits()), JsonElement.class));
+            jsonObject.add("tags", gson.fromJson(new Gson().toJson(rm.getTags()), JsonElement.class));
+
+            // send data to client
+            return ok(gson.toJson(jsonObject));
+
+        } catch (GitAPIException e) {
+            System.out.println("Invalid repository.");
+            e.printStackTrace();
+            return badRequest();
+        }
+    }
+
+    private int downloadRepo(String currentRepo) {
         DrawablePackage maxDrw;
         List<RectanglePacking> packings;
         List<Commit> commits = new ArrayList<>();
@@ -87,35 +399,16 @@ public class HomeController extends Controller {
 
         File directory = new File(Play.current().path() + "/repository/" + repoName + "/.git/");
 
-        if (rms.containsKey(currentRepo)) {
-            System.out.println("Loading local visualization data.");
-            RepositoryModel rm = rms.get(currentRepo);
-
-            packings = rm.getPackings();
-            commits = rm.getCommits();
-            maxDrw = rm.getMaxDrw();
-
-
-            details.put("repository", repoName);
-            details.put("repositoryUrl", currentRepo);
-
-            // create json object
-            Gson gson = new Gson();
-            final JsonObject jsonObject = new JsonObject();
-            // add visualization data
-            jsonObject.add("visualization", gson.fromJson(toJSON(maxDrw), JsonElement.class));
-            jsonObject.add("commits", gson.fromJson(new Gson().toJson(commits), JsonElement.class));
-            jsonObject.add("details", gson.fromJson(new Gson().toJson(details), JsonElement.class));
-
-            // send data to client
-            return ok(gson.toJson(jsonObject));
-        }
+//        if (rms.containsKey(currentRepo)) {
+//            return 0;
+//        }
 
         // if we have cached this repository before
         try {
             if (directory.exists()) {
                 git = Git.open(directory);
                 git.checkout().setName("master").call();
+                git.pull();
             } else {
                 System.out.println("Downloading depo...");
                 git = Git.cloneRepository()
@@ -175,184 +468,36 @@ public class HomeController extends Controller {
             for (RevCommit revCommit : revCommits) {
                 PersonIdent authorIdent = revCommit.getAuthorIdent();
                 Date authorDate = authorIdent.getWhen();
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                commits.add(new Commit(revCommit.getName(), authorIdent.getName(), dateFormat.format(authorDate)));
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                commits.add(new Commit(
+                        revCommit.getName(),
+                        authorIdent.getName(),
+                        dateFormat.format(authorDate),
+                        revCommit.getShortMessage()));
             }
+
+            List<Ref> tags = git.tagList().call();
+
+            if(!rms.containsKey(currentRepo)) {
+                RepositoryModel rm = new RepositoryModel(null, null, new HashMap<>(), new HashMap<>(), commits, new ArrayList<>(), tags);
+                rms.put(currentRepo, rm);
+            }
+            else {
+                RepositoryModel rm = rms.get(currentRepo);
+                rm.setCommits(commits);
+                rm.setTags(tags);
+            }
+
+            return 0;
+
         } catch (IOException e) {
             System.out.println("IO error");
             e.printStackTrace();
-            return badRequest();
+            return 1;
         } catch (GitAPIException e) {
             System.out.println("GitAPI error");
             e.printStackTrace();
-            return badRequest();
-        }
-
-
-        JavaPackageHistory jph = null;
-
-        HistoryUtils historyUtils = new HistoryUtils();
-
-        System.out.println("Repository name: " + repoName);
-
-        File serialized = new File(Play.current().path() + "/repository/" + repoName + "/history.ser");
-        if (serialized.exists() && !serialized.isDirectory()) {
-            System.out.println("Found serialized object.");
-
-            FileInputStream fin = null;
-            ObjectInputStream ois = null;
-
-            try {
-                fin = new FileInputStream(Play.current().path() + "/repository/" + repoName + "/history.ser");
-                ois = new ObjectInputStream(fin);
-                jph = (JavaPackageHistory) ois.readObject();
-
-                System.out.println("Done reading serialized object.");
-
-            } catch (Exception ex) {
-                System.out.println("Couldn't read serialized object.");
-                ex.printStackTrace();
-            } finally {
-
-                if (fin != null) {
-                    try {
-                        fin.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                if (ois != null) {
-                    try {
-                        ois.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        } else {
-            System.out.println("Start parsing...");
-
-            // iterate all the commits of the repo
-            for (Commit commit : commits) {
-
-                // set repository to the next version
-                try {
-//                git.checkout().setCreateBranch(true).setName("test_" + version).setStartPoint(version).call();
-                    git.checkout().setName(commit.getName()).call();
-
-                    // parse the current version
-                    JavaPackage temp = BasicParser.parseRepo(Play.current().path() + "/repository/" + repoName);
-                    jph = historyUtils.toHistory(commit.getName(), temp);
-
-                } catch (GitAPIException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            System.out.println("Done parsing.");
-
-            System.out.println("Start serializing object.");
-
-
-            FileOutputStream fout = null;
-            ObjectOutputStream oos = null;
-            try {
-
-                fout = new FileOutputStream(Play.current().path() + "/repository/" + repoName + "/history.ser");
-                oos = new ObjectOutputStream(fout);
-                oos.writeObject(jph);
-
-                System.out.println("Done serializing object.");
-
-            } catch (Exception ex) {
-                System.out.println("Couldn't serialize object.");
-                ex.printStackTrace();
-            } finally {
-
-                if (oos != null) {
-                    try {
-                        oos.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                if (fout != null) {
-                    try {
-                        fout.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-
-        // a list of rectangle packings for all the commits
-        packings = new ArrayList<>();
-
-        System.out.println("Start packing...");
-
-
-        for (Commit commit : commits) {
-
-            // make the packages into drawables to be used for rectangle packing
-            DrawablePackage drw = historyToDrawable(commit.getName(), jph);
-
-            // do the rectangle packing
-            packings.add(new RectanglePacking(drw, null, commit.getName()));
-        }
-
-        System.out.println("Done packing.");
-
-        // find the biggest drawable, considering all commits
-        maxDrw = getMaxDrawable(packings);
-
-        new RectanglePacking(maxDrw, maxDrw, "max");
-
-        compareWithMax(maxDrw, packings.get(0));
-
-        git.close();
-
-        details.put("repository", repoName);
-        details.put("repositoryUrl", currentRepo);
-
-        // create json object
-        Gson gson = new Gson();
-        final JsonObject jsonObject = new JsonObject();
-        // add visualization data
-        jsonObject.add("visualization", gson.fromJson(toJSON(maxDrw), JsonElement.class));
-        jsonObject.add("commits", gson.fromJson(new Gson().toJson(commits), JsonElement.class));
-        jsonObject.add("details", gson.fromJson(new Gson().toJson(details), JsonElement.class));
-
-        RepositoryModel rm = new RepositoryModel(maxDrw, packings, commits);
-        rms.put(currentRepo, rm);
-
-        // send data to client
-        return ok(gson.toJson(jsonObject));
-    }
-
-
-    /**
-     * route for the visualisation page
-     */
-    public Result visualization() {
-        String currentRepo = formFactory.form().bindFromRequest().get("repository");
-        System.out.println("input repository: " + currentRepo);
-
-        final LsRemoteCommand lsCmd = new LsRemoteCommand(null)
-                .setRemote(currentRepo);
-        try {
-            // print for debugging
-//                System.out.println(lsCmd.call().toString());
-            lsCmd.call();
-            System.out.println("Valid repository.");
-            return ok();
-
-        } catch (GitAPIException e) {
-            System.out.println("Invalid repository.");
-            e.printStackTrace();
-            return badRequest();
+            return 1;
         }
     }
 
@@ -365,6 +510,7 @@ public class HomeController extends Controller {
         JsonObject obj = new JsonObject();
         obj.addProperty("percentage", percentage);
         obj.addProperty("taskName", taskName);
+        obj.addProperty("parsingPercentage", parsingPercentage);
         return ok(obj.toString());
     }
 
@@ -373,21 +519,38 @@ public class HomeController extends Controller {
      */
     public Result getCommit() {
         String currentRepo = formFactory.form().bindFromRequest().get("repository");
+        String type = formFactory.form().bindFromRequest().get("type");
         RepositoryModel rm = rms.get(currentRepo);
-        DrawablePackage maxDrw = rm.getMaxDrw();
-        List<RectanglePacking> packings = rm.getPackings();
-        List<Commit> commits = rm.getCommits();
+        Map<String, RectanglePacking> packings = rm.getPackings(type);
 
         String commit = formFactory.form().bindFromRequest().get("commit");
         System.out.println("version required: " + commit);
 
-        // look for the packing that commit corresponds to
-        for (int i = 0; i < commits.size(); ++i) {
-            if (commits.get(i).getName().equals(commit)) {
-                compareWithMax(maxDrw, packings.get(i));
-                break;
-            }
-        }
+        // create json object
+        Gson gson = new Gson();
+        final JsonObject jsonObject = new JsonObject();
+        // add list of objects that are visible in this version
+        jsonObject.add("visibles", gson.fromJson(new Gson().toJson(packings.get(commit).getDrws()), JsonElement.class));
+
+        // send data to client
+        return ok(gson.toJson(jsonObject));
+    }
+
+    public Result reloadVisualization() {
+        String currentRepo = formFactory.form().bindFromRequest().get("repository");
+        String type = formFactory.form().bindFromRequest().get("type");
+        String commit = formFactory.form().bindFromRequest().get("commit");
+        int padding = Integer.parseInt(formFactory.form().bindFromRequest().get("padding"));
+        int minClassSize = Integer.parseInt(formFactory.form().bindFromRequest().get("minClassSize"));
+
+        RepositoryModel rm = rms.get(currentRepo);
+        Map<String, RectanglePacking> packings = rm.getPackings(type);
+
+        DrawablePackage maxDrw = getMaxDrawable(new ArrayList<>(packings.values()));
+
+        new RectanglePacking(maxDrw, maxDrw, padding, minClassSize, "max");
+
+        compareWithMax(maxDrw, packings.get(commit));
 
         // create json object
         Gson gson = new Gson();

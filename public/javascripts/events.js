@@ -1,4 +1,3 @@
-
 /**
  * canvas doesn't propagate events, so when we click it the old active element doesn't lose focus;
  * therefore we manually blur the old focused element when we click the canvas
@@ -20,14 +19,20 @@ function onWheel(e) {
 function altClick(e) {
     if (event.altKey === true) {
         intersects = raycaster.intersectObjects(meshes);
-        if (intersects.length > 0 && intersects[0].object.type === "class") {
-            var cls = intersects[0].object;
-            var url = repositoryUrl + "/tree/" + currentCommit + cls.filename;
+        if (intersects.length > 0) {
+            var obj = intersects[0].object;
+            var url;
+            if (intersects[0].object.type === "class") {
+                url = repositoryUrl + "/tree/" + currentCommit + obj.filename;
+            }
+            else {
+                url = repositoryUrl + "/tree/" + currentCommit + obj.name;
+            }
             var win = window.open(url, '_blank');
             win.focus();
-            // TODO find a way to get the code, then maybe use bootstrap popovers
         }
     }
+
 }
 
 /**
@@ -39,7 +44,9 @@ function onKeyPress(e) {
 
         // directional keys, pan
         case keys.UP:
-            render();
+            controls.rotateLeft(5);
+            renderer.render(scene, camera);
+            renderer.render(scene, camera);
             break;
         case keys.BOTTOM:
             render();

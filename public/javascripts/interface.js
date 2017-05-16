@@ -1,8 +1,9 @@
 var submitButton = document.getElementById("submitButton");
 var btn = document.getElementById("testBtn");
 var inputField = document.getElementById("inputField");
-var currentCommit, repositoryOwner, repositoryName, repositoryUrl;
-var currentRepo;
+var currentCommit, commitsNumber, repositoryOwner, repositoryName, repositoryUrl;
+var currentRepo, type;
+var visualization, currentVisibles;
 
 
 /**
@@ -11,6 +12,9 @@ var currentRepo;
 
 submitButton.onclick = function () {
     currentRepo = inputField.value.replace(".git", "");
+    $('#submitButton').addClass('disabled');
+    document.getElementById("progressBar").style.width = "100%";
+    var id = setInterval(poll, 1000);
 
     // send repo link to server
     var r = jsRoutes.controllers.HomeController.visualization();
@@ -21,26 +25,33 @@ submitButton.onclick = function () {
         data: {
             repository: currentRepo
         },
-        success: function () {
-
+        success: function (data) {
             // the linked repo is valid
 
-            // show success message and progress bar
-            $("#successMessage").css('opacity', '1');
-            setTimeout(function () {
-                $("#successMessage").css('opacity', '0');
-            }, 2000);
+            clearInterval(id);
 
-            document.getElementById("progressBar").style.width = "100%";
+
+            var json = JSON.parse(data);
+            console.log(json);
+
+
+            $("#commits-number").text("Number of commits: " + json.commits.length);
+            $("#tags-number").text("Number of tags: " + json.tags.length);
+
+            document.getElementById("progressBar").style.width = "0%";
+
+            $('#submit-card').css('display', 'block');
 
             // start downloading
-            var id = setInterval(poll, 1000);
-            getData(id);
+            // var id = setInterval(poll, 1000);
+            // getData(id, type);
 
 
             console.log("valid repository");
 
         }, error: function () {
+            $('#submitButton').removeClass('disabled');
+            document.getElementById("progressBar").style.width = "0%";
 
             // show error message
             $("#errorMessage").css('opacity', '1');
@@ -51,6 +62,14 @@ submitButton.onclick = function () {
         }
     });
 };
+
+$("#visualize-button").on("click", function () {
+    $('#visualize-button').addClass('disabled');
+    document.getElementById("progressBar").style.width = "100%";
+    var id = setInterval(poll, 1000);
+    type = $("#type-select").val();
+    getData(id, type);
+});
 
 /**
  * polls the server to get percentage on the download
@@ -68,22 +87,28 @@ function poll() {
 
             //update the progress bar with the data received from server
             var json = JSON.parse(data);
-            if (json.taskName == "Receiving objects") {
-                $('.progress-bar').css('width', json.percentage / 3.33 + '%').attr('aria-valuenow', json.percentage).html(json.taskName);
+
+            if (json.taskName == "Loading visualization") {
+                $('.progress-bar').css('width', '100%')
+                    .attr('aria-valuenow', json.parsingPercentage).html(json.taskName);
+            }
+            else if (json.parsingPercentage != "0") {
+                $('.progress-bar').css('width', json.parsingPercentage + '%')
+                    .attr('aria-valuenow', json.parsingPercentage).html("Parsing");
+            }
+            else if (json.taskName == "Receiving objects") {
+                $('.progress-bar').css('width', json.percentage / 3 + '%')
+                    .attr('aria-valuenow', json.percentage).html(json.taskName);
 
             }
             else if (json.taskName == "Resolving deltas") {
-                $('.progress-bar').css('width', 33.3 + (json.percentage / 3.33) + '%').attr('aria-valuenow', json.percentage).html(json.taskName);
-            }
-
-            else if(json.percentage == "100.0" && json.taskName == "Updating references") {
-                console.log("in");
-                $('.progress-bar').css('width', 100.0 + '%').attr('aria-valuenow', json.percentage).html("Parsing (this might take a while)");
+                $('.progress-bar').css('width', 33.3 + (json.percentage / 3) + '%')
+                    .attr('aria-valuenow', json.percentage).html(json.taskName);
             }
 
             else if (json.taskName == "Updating references") {
-
-                $('.progress-bar').css('width', 66.6 + (json.percentage / 3.33) + '%').attr('aria-valuenow', json.percentage).html(json.taskName);
+                $('.progress-bar').css('width', 0 + (json.percentage) + '%')
+                    .attr('aria-valuenow', json.percentage).html(json.taskName);
             }
 
         }, error: function () {
@@ -95,14 +120,16 @@ function poll() {
 /**
  * call server to get the data for the visualization
  */
-function getData(id) {
+function getData(id, type) {
+
     var r = jsRoutes.controllers.HomeController.getVisualizationData();
     $.ajax({
         url: r.url,
         type: r.type,
         contentType: "application/json; charset=utf-8",
         data: {
-            repository: currentRepo
+            repository: currentRepo,
+            type: type
         },
         success: function (data) {
 
@@ -120,9 +147,11 @@ function getData(id) {
             addCommits(json.commits);
             currentCommit = json.commits[0].name;
             $('#current-commit').text(currentCommit);
-            init(json.visualization);
+            visualization = json.visualization;
+            currentVisibles = json.visibles;
+            init(visualization);
         }, error: function () {
-
+            $('#submitButton').removeClass('disabled');
             // stop polling
             clearInterval(id);
             console.log("data fetch error");
@@ -138,6 +167,7 @@ var searchList = $('#search-list');
 var searchListItems;
 
 var searchWorker;
+var recordWorker;
 
 searchInput.on('keyup', function () {
     var input = searchInput.val();
