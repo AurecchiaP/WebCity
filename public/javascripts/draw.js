@@ -1,6 +1,8 @@
 var meshes = [];
 var scale;
-var packageHeight;
+var packageHeight = 20;
+var minClassSize = 20;
+var padding = 20;
 var box;
 var classes = [];
 var recorder, recording = false;
@@ -8,14 +10,17 @@ var commitsList, commitsListFirst, commitsListLast;
 var commitsListFirstSelected = -1;
 var commitsListLastSelected = -1;
 
+var counter = 0;
+var firstDraw = true;
+
 
 /**
  * function that takes care of drawing the packages and classes
  * @param {object} drwPkg - the root package of the visualization to be drawn
  */
 function draw(drwPkg) {
-    packageHeight = 20;
 
+    scale = 1250 / Math.max(drwPkg.width, drwPkg.depth);
     // create the meshes for all the packages and classes
     var totalClasses = recDraw(drwPkg);
 
@@ -39,13 +44,13 @@ function draw(drwPkg) {
     });
     mesh = new THREE.Mesh(geometry, material);
 
-    // bounding box to know size of total mesh; then move camera to its center, and update OrbitControls accordingly
-    if (!box) {
-        box = new THREE.Box3().setFromObject(mesh);
-        camera.position.x -= -box.getSize().x / 2;
-        camera.position.y -= -box.getSize().y / 2;
-        controls.target.set(box.getSize().x / 2, box.getSize().y / 2, 0);
+
+    if (firstDraw) {
+        var center = getCenterPoint(mesh);
+        camera.position.setX(center.x);
+        controls.target.set(center.x, center.y, center.z);
         controls.update();
+        firstDraw = false;
     }
 
     // add the mesh to the scene and notify that the visualization is ready
@@ -53,6 +58,20 @@ function draw(drwPkg) {
     mesh.receiveShadow = true;
     scene.add(mesh);
     loaded(totalClasses);
+}
+
+function getCenterPoint(mesh) {
+    var middle = new THREE.Vector3();
+    var geometry = mesh.geometry;
+
+    geometry.computeBoundingBox();
+
+    middle.x = (geometry.boundingBox.max.x + geometry.boundingBox.min.x) / 2;
+    middle.y = (geometry.boundingBox.max.y + geometry.boundingBox.min.y) / 2;
+    middle.z = (geometry.boundingBox.max.z + geometry.boundingBox.min.z) / 2;
+
+    mesh.localToWorld( middle );
+    return middle;
 }
 
 /**
@@ -82,7 +101,9 @@ function clearVisualization() {
  */
 function recDraw(drwPkg) {
     var totalClasses = 0;
-    if (!drwPkg.visible || (drwPkg.width === 0 && drwPkg.depth === 0)) return 0;
+    // if (!drwPkg.visible || (drwPkg.width === 0 && drwPkg.depth === 0)) return 0;
+    if (!currentVisibles[drwPkg.pkg.name]) return totalClasses;
+    // if ((drwPkg.width === 0 && drwPkg.depth === 0)) return 0;
     // recursion on the child packages, to be drawn first
     for (var i = 0; i < drwPkg.drawablePackages.length; ++i) {
         totalClasses += recDraw(drwPkg.drawablePackages[i]);
@@ -104,12 +125,14 @@ function recDraw(drwPkg) {
  */
 function drawClass(drwCls) {
 
-    if (!drwCls.visible) return;
+    if (currentVisibles) {
+        if (!currentVisibles[drwCls.cls.filename]) return;
+    }
     classes.push(drwCls);
 
     // adding 10 to attributes and methods, to have a lower bound (else we won't see the class)
-    var clsHeight = ((drwCls.cls.methods * 3) + 5) * scale;
-    var clsWidth = ((drwCls.cls.attributes * 3) + 5) * scale;
+    var clsHeight = (drwCls.cls.methods + minClassSize) * scale;
+    var clsWidth = (drwCls.cls.attributes + minClassSize) * scale;
 
     var posX = drwCls.cx * scale;
     var posY = drwCls.cy * scale;
@@ -137,6 +160,9 @@ function drawClass(drwCls) {
     mesh.attributes = drwCls.cls.attributes;
     mesh.linesOfCode = drwCls.cls.linesOfCode;
     mesh.type = "class";
+
+    mesh.rotation.x = -Math.PI / 2;
+
 
     // position the mesh
     mesh.translateX(posX);
@@ -184,8 +210,8 @@ function drawPackage(drwPkg, totalClasses) {
     mesh.name = drwPkg.pkg.name;
     var classes = 0;
     for (var j = 0; j < drwPkg.drawableClasses.length; ++j) {
-        var cls = drwPkg.drawableClasses[j];
-        if (cls.visible) classes += 1;
+        var drwCls = drwPkg.drawableClasses[j];
+        if (currentVisibles[drwCls.cls.filename]) classes += 1;
     }
     mesh.classes = classes;
 
@@ -195,22 +221,39 @@ function drawPackage(drwPkg, totalClasses) {
     mesh.type = "package";
     mesh.realColor = color;
 
+    mesh.rotation.x = -Math.PI / 2;
+
+
     // position the mesh
     mesh.translateX(posX);
     mesh.translateY(posY);
     mesh.translateZ(posZ);
+
 
     // add mesh to the array of meshes and the scene
     meshes.push(mesh);
     scene.add(mesh);
     return classes;
 }
-
+var recordWorkers;
+var videoData = [];
 
 /**
  * readies the page when the visualization is loaded
  */
 function loaded(totalClasses) {
+    if (recording) {
+
+        // fixme test if with these 3 lines it's slower
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+        camera.aspect = canvas.clientWidth / canvas.clientHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.shadowMap.needsUpdate = true;
+        render();
+        callNext();
+        return;
+    }
     $("#main-content").css('display', 'none');
     $("#container").css('display', 'block');
     $("#navbar-visualization-items").css('display', 'contents');
@@ -276,6 +319,7 @@ function loaded(totalClasses) {
     if (typeof(Worker) !== "undefined") {
         if (typeof(searchWorker) === "undefined") {
             searchWorker = new Worker("assets/javascripts/search_workers.js");
+
             searchWorker.addEventListener('message', function (e) {
                 for (var i = 0; i < searchListItems.length; ++i) {
                     searchListItems[i].style.display = e.data[i];
@@ -294,28 +338,93 @@ function loaded(totalClasses) {
     render();
 }
 
-function callNext(list, idx, last) {
-    list[idx].click();
-    idx++;
-    if (recording && (idx <= last && idx < list.length)) {
-        setTimeout(function () {
-            callNext(list, idx, last);
-        }, 500);
+var count = 0;
+
+var files = [];
+
+var BASE64_MARKER = ';base64,';
+
+function convertDataURIToBinary(dataURI) {
+    var base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
+    var base64 = dataURI.substring(base64Index);
+    var raw = window.atob(base64);
+    var rawLength = raw.length;
+    var array = new Uint8Array(new ArrayBuffer(rawLength));
+
+    for (i = 0; i < rawLength; i++) {
+        array[i] = raw.charCodeAt(i);
+    }
+    return array;
+}
+
+var CNidx, CNlist, CNlast;
+
+function callNext() {
+    var image = renderer.domElement.toDataURL('image/jpeg');
+
+    if (count < 10) {
+        files.push({
+            "name": "img0000" + count++ + ".jpg",
+            "data": convertDataURIToBinary(image)
+        });
+    }
+    else if (count < 100) {
+        files.push({
+            "name": "img000" + count++ + ".jpg",
+            "data": convertDataURIToBinary(image)
+        });
+    } else if(count < 1000) {
+        files.push({
+            "name": "img00" + count++ + ".jpg",
+            "data": convertDataURIToBinary(image)
+        });
+    }
+    else if(count < 10000) {
+        files.push({
+            "name": "img0" + count++ + ".jpg",
+            "data": convertDataURIToBinary(image)
+        });
+    }
+    else {
+        files.push({
+            "name": "img" + count++ + ".jpg",
+            "data": convertDataURIToBinary(image)
+        });
+    }
+
+    if (recording && (CNidx <= CNlast && CNidx < CNlist.length)) {
+        CNlist[CNidx].click();
+        CNidx++;
     }
     else {
         setTimeout(function () {
             if (recording) {
                 recording = false;
-                recorder.stopRecording(function () {
-                    var blob = recorder.getBlob();
-                    saveData(blob, repositoryName + ".webm");
-                    // this.clearRecordedData();
-                    // var url = URL.createObjectURL(blob);
-                    // window.open(url);
-                });
+                $("#record-button").text("Record");
+                $("#record-button").addClass("disabled");
+                canvas.style.width = "100%";
+                canvas.style.height = "100%";
+                canvas.style.left = "0";
+                renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+                camera.aspect = canvas.clientWidth / canvas.clientHeight;
+                camera.updateProjectionMatrix();
+
+                renderer.shadowMap.needsUpdate = true;
+                render();
+
+                var split = Math.ceil(commitsNumber / 8);
+                for (var i = 0; i < 8; ++i) {
+                    recordWorkers[i].postMessage({
+                        type: "command",
+                        arguments: ['-r', '24', '-start_number', i * split, '-i', 'img%05d.jpg', '-v', 'verbose', '-pix_fmt', 'yuv420p', '-vframes', split, 'vid' + i + '.mp4'],
+                        files: files,
+                        name: i
+                    });
+                }
+
                 $("#record-card-button").css("color", "rgba(220, 220, 220, 1)");
             }
-        }, 500);
+        }, 100);
     }
 }
 

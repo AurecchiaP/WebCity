@@ -37,9 +37,7 @@ function init(json) {
 
     light = new THREE.DirectionalLight(0xffffff, 0.5);
 
-
-    // light.position.set(-100,-100,200);
-    light.position.set(0, 0, 0);
+    light.position.set(-100, 500, 200);
 
     // shadow settings
     light.castShadow = true;
@@ -50,18 +48,26 @@ function init(json) {
 
     // change values depending on angle of light
     light.shadow.camera.near = 0;
-    light.shadow.camera.far = 5000;
+    light.shadow.camera.far = 2000;
     light.shadow.camera.fov = 90;
 
+
+    var width = json.width * scale;
+    var depth = json.depth * scale;
+    var max = Math.max(width, depth);
+
     // hardcoded for this light position and light target
-    light.shadow.camera.left = -500;
-    light.shadow.camera.right = 500;
-    light.shadow.camera.top = 500;
-    light.shadow.camera.bottom = -500;
+    light.shadow.camera.left = -(0.5 * max);
+    light.shadow.camera.right = max;
+    light.shadow.camera.top = 1.5 * max;
+    light.shadow.camera.bottom = 0;
 
     light.shadow.bias = 0.00001;
 
     scene.add(light, light.target);
+
+    // light.target.position.set(-100, -100, -100);
+    // light.position.set(0, 0, 0);
 
 
     var ambientLight = new THREE.AmbientLight(0xffffff, 0.3); // soft white light
@@ -70,7 +76,11 @@ function init(json) {
     // var helper = new THREE.CameraHelper(light.shadow.camera);
     // scene.add(helper);
 
-    renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+    renderer = new THREE.WebGLRenderer({
+        preserveDrawingBuffer: true,
+        antialias: true,
+        alpha: true
+    });
     renderer.shadowMap.enabled = true;
 
     renderer.shadowMap.autoUpdate = false;
@@ -89,6 +99,7 @@ function init(json) {
 
     // OrbitControls to move around the visualization
     controls = new THREE.OrbitControls(camera, renderer.domElement);
+
 
     // max and min distance on z axis
     controls.maxDistance = 6500;
@@ -113,6 +124,15 @@ function init(json) {
         $("#record-card").css("display", "none");
     });
 
+    $("#options-card-button").on("click", function () {
+        $("#options-card").css("display", "block");
+    });
+
+    $("#options-card-dismiss").on("click", function () {
+        $("#options-card").css("display", "none");
+    });
+
+    $("#reload-button").on("click", reloadVisualization);
 
     draw(json);
     setupRecorder();
@@ -126,8 +146,8 @@ var c = 0;
 function render() {
     camera.getWorldDirection(vector);
 
-    light.position.copy(camera.position);
-    light.target.position.set(light.position.x + vector.x, light.position.y + vector.y, light.position.z + vector.z);
+    // light.target.position.set(light.position.x + vector.x, light.position.y + vector.y, light.position.z + vector.z);
+    light.target.position.copy(mesh.position);
 
     // ray-casting still slows down a bit, not as much as before
     raycaster.setFromCamera(mouse, camera);

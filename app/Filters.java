@@ -1,6 +1,7 @@
 import play.filters.csrf.CSRFFilter;
 import play.filters.headers.SecurityHeadersFilter;
 import play.filters.hosts.AllowedHostsFilter;
+import play.filters.gzip.GzipFilter;
 import play.http.DefaultHttpFilters;
 
 import javax.inject.Inject;
@@ -20,7 +21,7 @@ public class Filters extends DefaultHttpFilters {
     @Inject
     public Filters(CSRFFilter csrfFilter,
                    AllowedHostsFilter allowedHostsFilter,
-                   SecurityHeadersFilter securityHeadersFilter) {
-        super(csrfFilter, allowedHostsFilter, securityHeadersFilter);
+                   SecurityHeadersFilter securityHeadersFilter, GzipFilter gzipFilter) {
+        super(csrfFilter, allowedHostsFilter, securityHeadersFilter, gzipFilter);
     }
 }

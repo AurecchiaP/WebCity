@@ -1,6 +1,7 @@
 package utils;
 
 
+import models.drawables.Drawable;
 import models.drawables.DrawableClass;
 import models.drawables.DrawablePackage;
 
@@ -15,8 +16,10 @@ public class RectanglePacking {
     private int maxDepth = 0;
     private int maxLines = 0;
     private String version;
-    private static final int padding = 25;
+    private static int padding = 20;
+    private static int minClassSize = 20;
     private Map<String, DrawablePackage> drwPackages;
+    private Map<String, Boolean> drws;
 
 
     /**
@@ -24,11 +27,15 @@ public class RectanglePacking {
      *
      * @param drwPkg the root JavaPackage of the repository we want to visualize
      */
-    public RectanglePacking(DrawablePackage drwPkg, DrawablePackage maxDrw, String version) {
+    public RectanglePacking(DrawablePackage drwPkg, DrawablePackage maxDrw, int padding, int minClassSize, String version) {
         this.version = version;
+        // FIXME these wont have to be static when min classes size is not used anymore
+        RectanglePacking.padding = padding;
+        RectanglePacking.minClassSize = minClassSize;
 
         // will contain a reference to all the drwPackages contained
         drwPackages = new HashMap<>();
+        drws = new HashMap<>();
 
         // traverse recursively the drwPackages to find out the maximum size needed for the visualization and the
         // maximum depth of recursion
@@ -313,6 +320,13 @@ public class RectanglePacking {
             parentOpenBins.addAll(temp);
         }
 
+        if(drwPkg.getPkg().getClassTotal() > 0) {
+            drws.put(drwPkg.getPkg().getName(), true);
+            for (DrawableClass drwCls : drwPkg.getDrawableClasses()) {
+                drws.put(drwCls.getCls().getFilename(), true);
+            }
+        }
+
         return localBin;
     }
 
@@ -382,12 +396,9 @@ public class RectanglePacking {
 
         int size = 0;
         for (int i = 0; i < (int) Math.ceil(Math.sqrt(classes.size())); ++i) {
-            size += (classes.get(i).getCls().getAttributes().getValue() * 3) + 5 + padding * 2;
+            size += classes.get(i).getCls().getAttributes().getValue() + minClassSize + (padding * 2);
         }
         return size;
-//                ((classes.get(0).getCls().getAttributes().getValue() * 3) + 5 + padding * 2) // the biggest class
-//                *
-//                ((int) Math.ceil(Math.sqrt(classes.size()))); // an upper bound on the number of classes
     }
 
 
@@ -422,7 +433,7 @@ public class RectanglePacking {
         if (totalClasses == 0) return;
 
         // height between each line of classes
-        int lineHeight = (classes.get(0).getCls().getAttributes().getValue() * 3) + 5;
+        int lineHeight = classes.get(0).getCls().getAttributes().getValue() + minClassSize;
 
         // positions of each class
         int xPos = bin.getX1();
@@ -432,13 +443,13 @@ public class RectanglePacking {
         // find the positions of the classes
         for (int i = 0; i < classes.size(); i++) {
             DrawableClass cls = classes.get(i);
-            classSize = (cls.getCls().getAttributes().getValue() * 3) + 5;
+            classSize = cls.getCls().getAttributes().getValue() + minClassSize;
 
             // if this X line is full, set X back to beginning and increase Y
             if (xPos + classSize + (padding * 2) > bin.getX2()) {
                 xPos = bin.getX1();
                 yPos += lineHeight + padding;
-                lineHeight = (cls.getCls().getAttributes().getValue() * 3) + 5;
+                lineHeight = cls.getCls().getAttributes().getValue() + minClassSize;
 
             }
             xPos += (classSize / 2) + padding;
@@ -469,4 +480,10 @@ public class RectanglePacking {
     public Map<String, DrawablePackage> getDrwPackages() {
         return Collections.unmodifiableMap(drwPackages);
     }
+
+    public Map<String, Boolean> getDrws() {
+        return Collections.unmodifiableMap(drws);
+    }
+
+
 }
