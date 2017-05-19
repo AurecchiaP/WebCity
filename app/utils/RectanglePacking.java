@@ -23,7 +23,7 @@ public class RectanglePacking {
 
 
     /**
-     * starts the calculations to find out the sizes and positions for each package and class contained in pkg
+     * Starts the calculations to find out the sizes and positions for each package and class contained in pkg
      *
      * @param drwPkg the root JavaPackage of the repository we want to visualize
      */
@@ -50,7 +50,7 @@ public class RectanglePacking {
     }
 
     /**
-     * recursively iterate from pkg, to find out the sizes of its children drwPackages to find out the space needed to
+     * Recursively iterate from pkg, to find out the sizes of its children drwPackages to find out the space needed to
      * draw the package pkg (it's a heuristic, we stack them in a line, which gives a value that is bigger than
      * the ideal size; we don't know the size of a package before we do the rectangle packing)
      *
@@ -83,7 +83,7 @@ public class RectanglePacking {
     }
 
     /**
-     * takes care of positioning the JavaPackage pkg and its children and classes
+     * Takes care of positioning the JavaPackage pkg and its children and classes
      *
      * @param drwPkg         the current package we're trying to position/fit
      * @param maxDrw         the package containing the maximum sizes of all versions of the packages
@@ -332,10 +332,10 @@ public class RectanglePacking {
 
 
     /**
-     * adds bottom-left padding to the bin before we find the position for the pkg/classes.
-     * first we shift to clear space for the padding, then we fit in the bin, then we shift back so that the other
+     * Adds bottom-left padding to the bin before we find the position for the pkg/classes.
+     * First we shift to clear space for the padding, then we fit in the bin, then we shift back so that the other
      * drwPackages don't get put on top of the padding of this package.
-     * then we add padding to the top right of the bin.
+     * Finally we add padding to the top right of the bin.
      *
      * @param bin         the bin inside which we want to put the object
      * @param drwPkg      the package that we want to position (or its classes)
@@ -373,8 +373,8 @@ public class RectanglePacking {
 
 
     /**
-     * finds out a minimum edge size for the classes inside pkg to be drawn in.
-     * it uses the heuristic that the needed space will be at most the number of classes contained in the package times
+     * Finds out a minimum edge size for the classes inside pkg to be drawn in.
+     * It uses the heuristic that the needed space will be at most the number of classes contained in the package times
      * the size of the biggest class.
      *
      * @param drwPkg the package we want to know the minimum size of
@@ -403,7 +403,7 @@ public class RectanglePacking {
 
 
     /**
-     * sets the position of JavaPackage pkg to be contained inside the bin
+     * Sets the position of JavaPackage pkg to be contained inside the bin
      *
      * @param bin    the Bin in which the JavaPackage pkg will be put
      * @param drwPkg the JavaPackage that will be put in bin
@@ -419,7 +419,7 @@ public class RectanglePacking {
 
 
     /**
-     * sets the position of the list of classes contained in pkg to be contained inside the bin
+     * Sets the position of the list of classes contained in pkg to be contained inside the bin
      *
      * @param bin    the Bin in which the classes will be put
      * @param drwPkg the JavaPackage that contains the classes that will be put in bin
@@ -475,12 +475,15 @@ public class RectanglePacking {
     }
 
     /**
-     * @return the map of packages contained in this rectangle packing
+     * @return the map of DrawablePackage contained in this rectangle packing
      */
     public Map<String, DrawablePackage> getDrwPackages() {
         return Collections.unmodifiableMap(drwPackages);
     }
 
+    /**
+     * @return the map that tells us if a Drawable (class or package) is contained in this rectangle packing
+     */
     public Map<String, Boolean> getDrws() {
         return Collections.unmodifiableMap(drws);
     }

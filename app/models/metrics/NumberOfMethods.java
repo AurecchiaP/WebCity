@@ -3,7 +3,7 @@ package models.metrics;
 import java.io.Serializable;
 
 /**
- * metric class that represents the number of methods in a class
+ * Metric class that represents the number of methods in a class
  */
 public class NumberOfMethods extends Metric<Integer> implements Serializable {
 
@@ -13,11 +13,17 @@ public class NumberOfMethods extends Metric<Integer> implements Serializable {
         this.nom = nom;
     }
 
+    /**
+     * @return the Integer value representing the Number of Methods
+     */
     @Override
     public Integer getValue() {
         return nom;
     }
 
+    /**
+     * @param nom the Integer value representing the Number of Methods
+     */
     @Override
     public void setValue(Integer nom) {
         this.nom = nom;

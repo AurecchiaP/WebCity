@@ -1,7 +1,7 @@
 package models.metrics;
 
 /**
- * abstract class that will be extended by specific metric types
+ * Abstract class that will be extended by specific metric types
  */
 public abstract class Metric<T> {
 

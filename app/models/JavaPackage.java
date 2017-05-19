@@ -29,7 +29,7 @@ public class JavaPackage implements Serializable {
     }
 
     /**
-     * replaces the list of classes contained in this package with the given classes parameter
+     * Replaces the list of classes contained in this package with the given classes parameter
      *
      * @param classes the new list of classes to be set
      */
@@ -87,6 +87,9 @@ public class JavaPackage implements Serializable {
         return totalClasses;
     }
 
+    /**
+     * @param totalClasses the number of total classes contained in this package, at any depth
+     */
     public void setClassTotal(int totalClasses) {
         this.totalClasses = totalClasses;
     }
