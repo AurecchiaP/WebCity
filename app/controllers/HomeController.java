@@ -9,6 +9,7 @@ import models.drawables.DrawablePackage;
 import models.history.JavaPackageHistory;
 import models.Commit;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.errors.*;
 import org.eclipse.jgit.lib.PersonIdent;
@@ -94,7 +95,7 @@ public class HomeController extends Controller {
 
         try {
             git = Git.open(directory);
-            git.checkout().setName("master").call();
+            git.checkout().setName("refs/remotes/origin/master").call();
         } catch (GitAPIException | IOException e) {
             e.printStackTrace();
         }
@@ -407,7 +408,7 @@ public class HomeController extends Controller {
         try {
             if (directory.exists()) {
                 git = Git.open(directory);
-                git.checkout().setName("master").call();
+                git.checkout().setName("refs/remotes/origin/master").call();
                 git.pull();
             } else {
                 System.out.println("Downloading depo...");

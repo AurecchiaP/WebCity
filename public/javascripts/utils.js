@@ -36,6 +36,7 @@ function getCommit(e) {
         success: function (data) {
             var json = JSON.parse(data);
             currentVisibles = json.visibles;
+            currentCommit = commit || currentCommit;
             clearVisualization();
             draw(visualization);
 

@@ -1,7 +1,6 @@
 package utils;
 
 
-import models.drawables.Drawable;
 import models.drawables.DrawableClass;
 import models.drawables.DrawablePackage;
 
@@ -16,8 +15,8 @@ public class RectanglePacking {
     private int maxDepth = 0;
     private int maxLines = 0;
     private String version;
-    private static int padding = 20;
-    private static int minClassSize = 20;
+    private static int padding = 10;
+    private static int minClassSize = 10;
     private Map<String, DrawablePackage> drwPackages;
     private Map<String, Boolean> drws;
 
@@ -29,7 +28,6 @@ public class RectanglePacking {
      */
     public RectanglePacking(DrawablePackage drwPkg, DrawablePackage maxDrw, int padding, int minClassSize, String version) {
         this.version = version;
-        // FIXME these wont have to be static when min classes size is not used anymore
         RectanglePacking.padding = padding;
         RectanglePacking.minClassSize = minClassSize;
 
@@ -192,6 +190,7 @@ public class RectanglePacking {
         // bin that will contain the classes of the current package
         Bin classesBin = new Bin(0, 0, 0, 0, 0);
         Pair<Integer, Integer> minClassesSize = getMinClassesSize(drwPkg);
+        boolean verticalClasses = false;
 
         minimumWaste = Integer.MAX_VALUE;
         bestBin = null;
@@ -201,6 +200,7 @@ public class RectanglePacking {
             // if can fit in openBin
             if (bin.width() > minClassesSize.getFirst() && bin.depth() > minClassesSize.getSecond()) {
 
+                // fixme try both directions
                 Bin dummyLocalBin = localBin.copy();
                 Bin dummyBinBin = new Bin(
                         bin.getX1(),
@@ -233,12 +233,12 @@ public class RectanglePacking {
 
         // if no valid open Bin (e.g. first child of package), put local Bin either to the right or above of parentBin
         else {
-
-            if (localBin.depth() > localBin.width()) {
+            if (parentBin.depth() < parentBin.width()) {
+                verticalClasses = true;
                 classesBin.setX1(localBin.getX2());
-                classesBin.setX2(localBin.getX2() + minClassesSize.getFirst());
+                classesBin.setX2(localBin.getX2() + minClassesSize.getSecond());
                 classesBin.setY1(localBin.getY1());
-                classesBin.setY2(localBin.getY1() + minClassesSize.getSecond());
+                classesBin.setY2(localBin.getY1() + minClassesSize.getFirst());
             } else {
                 classesBin.setY1(localBin.getY2());
                 classesBin.setY2(localBin.getY2() + minClassesSize.getSecond());
@@ -252,7 +252,7 @@ public class RectanglePacking {
         localBin.mergeBin(classesBin);
 
         // shift localBin by padding, draw it, and shift it back (we don't want to draw on the padding)
-        addPaddingAndFit(localBin, drwPkg, padding, recDepth, true);
+        addPaddingAndFit(localBin, drwPkg, padding, recDepth, true, verticalClasses);
 
         // set the height of the package, depending on the depth of the recursion of the current package
         drwPkg.setZ(recDepth);
@@ -264,7 +264,7 @@ public class RectanglePacking {
                 100 + (120 * recDepth / maxDepth)));
 
         // shift classesBin by padding, draw it, and shift it back (we don't want to draw on the padding)
-        addPaddingAndFit(classesBin, drwPkg, padding, recDepth, false);
+        addPaddingAndFit(classesBin, drwPkg, padding, recDepth, false, verticalClasses);
 
         // free spots on left and right of local bin
         Bin openBinTop = new Bin(
@@ -322,7 +322,7 @@ public class RectanglePacking {
             parentOpenBins.addAll(temp);
         }
 
-        if(drwPkg.getPkg().getClassTotal() > 0) {
+        if (drwPkg.getPkg().getClassTotal() > 0) {
             drws.put(drwPkg.getPkg().getName(), true);
             for (DrawableClass drwCls : drwPkg.getDrawableClasses()) {
                 drws.put(drwCls.getCls().getFilename(), true);
@@ -345,7 +345,7 @@ public class RectanglePacking {
      * @param recDepth    the depth of the recursion of current package
      * @param drawPackage true if we want to draw the package, false for its classes
      */
-    private void addPaddingAndFit(Bin bin, DrawablePackage drwPkg, int padding, int recDepth, boolean drawPackage) {
+    private void addPaddingAndFit(Bin bin, DrawablePackage drwPkg, int padding, int recDepth, boolean drawPackage, boolean vertical) {
         // add padding on bottom left of package;
         // multiplied by depth of recursion to account space for the surrounding drwPackages
         int pad = padding * recDepth;
@@ -359,7 +359,11 @@ public class RectanglePacking {
         if (drawPackage) {
             fitPackage(bin, drwPkg);
         } else {
-            fitClasses(bin, drwPkg);
+            if (vertical) {
+                fitClassesVertically(bin, drwPkg);
+            } else {
+                fitClasses(bin, drwPkg);
+            }
             drwPkg.setClassesBin(bin.copy());
         }
 
@@ -382,7 +386,7 @@ public class RectanglePacking {
      * @param drwPkg the package we want to know the minimum size of
      * @return the minimum edge size for this package
      */
-    public static Pair getMinClassesSize(DrawablePackage drwPkg) {
+    private static Pair<Integer, Integer> getMinClassesSize(DrawablePackage drwPkg) {
         List<DrawableClass> classes = drwPkg.getDrawableClasses();
 
         int totalClasses = classes.size();
@@ -414,8 +418,7 @@ public class RectanglePacking {
         int classSize;
 
         // find the positions of the classes
-        for (int i = 0; i < classes.size(); i++) {
-            DrawableClass cls = classes.get(i);
+        for (DrawableClass cls : classes) {
             classSize = cls.getCls().getAttributes().getValue() + minClassSize;
 
             // if this X line is full, set X back to beginning and increase Y
@@ -439,7 +442,7 @@ public class RectanglePacking {
      * @param bin    the Bin in which the JavaPackage pkg will be put
      * @param drwPkg the JavaPackage that will be put in bin
      */
-    public void fitPackage(Bin bin, DrawablePackage drwPkg) {
+    private void fitPackage(Bin bin, DrawablePackage drwPkg) {
         // set position of package to center of bin
         drwPkg.setCx(bin.getX1() + bin.width() / 2);
         drwPkg.setCy(bin.getY1() + bin.depth() / 2);
@@ -455,13 +458,13 @@ public class RectanglePacking {
      * @param bin    the Bin in which the classes will be put
      * @param drwPkg the JavaPackage that contains the classes that will be put in bin
      */
-    public Pair fitClasses(Bin bin, DrawablePackage drwPkg) {
+    private void fitClasses(Bin bin, DrawablePackage drwPkg) {
 
         List<DrawableClass> classes = drwPkg.getDrawableClasses();
         int totalClasses = classes.size();
 
         // if there are no classes, return
-        if (totalClasses == 0) return null;
+        if (totalClasses == 0) return;
 
         // height between each line of classes
         int lineHeight = classes.get(0).getCls().getAttributes().getValue() + minClassSize;
@@ -472,8 +475,7 @@ public class RectanglePacking {
         int classSize;
 
         // find the positions of the classes
-        for (int i = 0; i < classes.size(); i++) {
-            DrawableClass cls = classes.get(i);
+        for (DrawableClass cls : classes) {
             classSize = cls.getCls().getAttributes().getValue() + minClassSize;
 
             // if this X line is full, set X back to beginning and increase Y
@@ -494,10 +496,53 @@ public class RectanglePacking {
                     255 - (200 * cls.getCls().getLinesOfCode().getValue() / maxLines),
                     255));
         }
-
-        return new Pair<>(xPos + padding - bin.getX1(), yPos + lineHeight - bin.getY1());
     }
 
+    /**
+     * Sets the position of the list of classes contained in pkg to be contained inside the bin
+     *
+     * @param bin    the Bin in which the classes will be put
+     * @param drwPkg the JavaPackage that contains the classes that will be put in bin
+     */
+    private void fitClassesVertically(Bin bin, DrawablePackage drwPkg) {
+
+        List<DrawableClass> classes = drwPkg.getDrawableClasses();
+        int totalClasses = classes.size();
+
+        // if there are no classes, return
+        if (totalClasses == 0) return;
+
+        // height between each line of classes
+        int lineHeight = classes.get(0).getCls().getAttributes().getValue() + minClassSize;
+
+        // positions of each class
+        int xPos = bin.getX1() + padding;
+        int yPos = bin.getY1();
+        int classSize;
+
+        // find the positions of the classes
+        for (DrawableClass cls : classes) {
+            classSize = cls.getCls().getAttributes().getValue() + minClassSize;
+
+            // if this X line is full, set X back to beginning and increase Y
+            if (yPos + classSize + (padding * 2) > bin.getY2()) {
+                yPos = bin.getY1();
+                xPos += lineHeight + padding;
+                lineHeight = cls.getCls().getAttributes().getValue() + minClassSize;
+
+            }
+            yPos += (classSize / 2) + padding;
+            cls.setCy(yPos);
+            yPos += (classSize / 2) + padding;
+            cls.setCx(xPos + (classSize / 2));
+            cls.setZ(drwPkg.getZ());
+
+            cls.setColor(RGBtoInt(
+                    255 - (200 * cls.getCls().getLinesOfCode().getValue() / maxLines),
+                    255 - (200 * cls.getCls().getLinesOfCode().getValue() / maxLines),
+                    255));
+        }
+    }
 
     public String getVersion() {
         return version;
