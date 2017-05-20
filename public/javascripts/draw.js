@@ -70,7 +70,7 @@ function getCenterPoint(mesh) {
     middle.y = (geometry.boundingBox.max.y + geometry.boundingBox.min.y) / 2;
     middle.z = (geometry.boundingBox.max.z + geometry.boundingBox.min.z) / 2;
 
-    mesh.localToWorld( middle );
+    mesh.localToWorld(middle);
     return middle;
 }
 
@@ -299,19 +299,46 @@ function loaded(totalClasses) {
     });
 
     commitsList.on('mousedown', function (e) {
-        commitsDropdown.text(e.target.innerText.split(/\r?\n/)[0]);
+        var element;
+        if (e.target.parentElement.tagName !== "DIV") {
+            element = e.target.parentElement;
+        }
+        else {
+            element = e.target;
+        }
+
+        commitsDropdown.text(element.firstChild.innerText);
+
         event.preventDefault();
     });
 
     commitsListFirst.on('mousedown', function (e) {
-        commitsDropdownFirst.text(e.target.innerText.split(/\r?\n/)[0]);
-        commitsListFirstSelected = commitsListFirst.children().index(e.target);
+        var element;
+        if (e.target.parentElement.tagName !== "DIV") {
+            element = e.target.parentElement;
+        }
+        else {
+            element = e.target;
+        }
+
+        commitsDropdownFirst.text(element.firstChild.innerText);
+        commitsListFirstSelected = commitsListFirst.children().index(element);
+
         event.preventDefault();
     });
 
     commitsListLast.on('mousedown', function (e) {
-        commitsDropdownLast.text(e.target.innerText.split(/\r?\n/)[0]);
-        commitsListLastSelected = commitsListLast.children().index(e.target);
+        var element;
+        if (e.target.parentElement.tagName !== "DIV") {
+            element = e.target.parentElement;
+        }
+        else {
+            element = e.target;
+        }
+
+        commitsDropdownLast.text(element.firstChild.innerText);
+        commitsListLastSelected = commitsListLast.children().index(element);
+
         event.preventDefault();
     });
 
@@ -373,13 +400,13 @@ function callNext() {
             "name": "img000" + count++ + ".jpg",
             "data": convertDataURIToBinary(image)
         });
-    } else if(count < 1000) {
+    } else if (count < 1000) {
         files.push({
             "name": "img00" + count++ + ".jpg",
             "data": convertDataURIToBinary(image)
         });
     }
-    else if(count < 10000) {
+    else if (count < 10000) {
         files.push({
             "name": "img0" + count++ + ".jpg",
             "data": convertDataURIToBinary(image)
@@ -400,8 +427,9 @@ function callNext() {
         setTimeout(function () {
             if (recording) {
                 recording = false;
-                $("#record-button").text("Record");
-                $("#record-button").addClass("disabled");
+                var button = $("#record-button");
+                button.text("Record");
+                button.addClass("disabled");
                 canvas.style.width = "100%";
                 canvas.style.height = "100%";
                 canvas.style.left = "0";

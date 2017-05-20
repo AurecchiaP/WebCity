@@ -62,12 +62,10 @@
 
 #commits-list {
     right: 0;
-    max-width: 30vw;
 }
 
 #commits-list-first #commits-list-last {
     left: 0;
-    max-width: 30vw;
 }
 
 .dropdown-items {
@@ -79,6 +77,17 @@
     max-height: 25vh;
     top: 2.5em;
     display: none;
+    max-width: inherit;
+}
+
+.dropdown-items * {
+    max-width: 30vw;
+}
+
+.list-group-item * {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .statistic {
@@ -141,4 +150,8 @@
 
 #record-button, #reload-button {
     margin-bottom: 1em;
+}
+
+#record-before {
+    display: none;
 }
