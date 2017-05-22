@@ -10,7 +10,6 @@ function setupRecorder() {
             files = [];
             count = 0;
             $("#record-button").text("Record");
-            $('#record-before').css("display", "none");
             $("#record-card-button").css("color", "rgba(220, 220, 220, 1)");
         }
         else {
@@ -27,7 +26,6 @@ function setupRecorder() {
                 var resolution = $("#resolution-input").val();
 
                 $("#record-button").text("Cancel");
-                $('#record-before').css("display", "inline");
 
                 if (resolution === "1280x720") {
                     console.log("res set 720p");
@@ -138,6 +136,7 @@ function setupRecordWorkers() {
                         videoData = [];
                         files = [];
                         count = 0;
+                        $('#record-before').css("display", "inline");
                     }
 
                     if (message.name === "concat") {
