@@ -39,27 +39,11 @@ function altClick(e) {
  * handles key-press events
  */
 function onKeyPress(e) {
-    var keys = {LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40};
+    var keys = {LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40, P: 80};
     switch (event.keyCode) {
 
-        // directional keys, pan
-        case keys.UP:
-            controls.rotateLeft(5);
-            renderer.render(scene, camera);
-            renderer.render(scene, camera);
-            break;
-        case keys.BOTTOM:
-            render();
-            break;
-        case keys.LEFT:
-            render();
-            break;
-        case keys.RIGHT:
-            render();
-            break;
-
         // key 'p', pin object
-        case 80:
+        case keys.P:
             var intersects = raycaster.intersectObjects(meshes);
 
             // if we clicked "p" when hovering an object

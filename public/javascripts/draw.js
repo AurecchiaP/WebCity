@@ -101,9 +101,9 @@ function clearVisualization() {
  */
 function recDraw(drwPkg) {
     var totalClasses = 0;
-    // if (!drwPkg.visible || (drwPkg.width === 0 && drwPkg.depth === 0)) return 0;
+
     if (!currentVisibles[drwPkg.pkg.name]) return totalClasses;
-    // if ((drwPkg.width === 0 && drwPkg.depth === 0)) return 0;
+
     // recursion on the child packages, to be drawn first
     for (var i = 0; i < drwPkg.drawablePackages.length; ++i) {
         totalClasses += recDraw(drwPkg.drawablePackages[i]);
@@ -244,7 +244,6 @@ var videoData = [];
 function loaded(totalClasses) {
     if (recording) {
 
-        // fixme test if with these 3 lines it's slower
         renderer.setSize(canvas.clientWidth, canvas.clientHeight);
         camera.aspect = canvas.clientWidth / canvas.clientHeight;
         camera.updateProjectionMatrix();

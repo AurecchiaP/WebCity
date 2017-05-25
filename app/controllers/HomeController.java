@@ -9,13 +9,13 @@ import models.drawables.DrawablePackage;
 import models.history.JavaPackageHistory;
 import models.Commit;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.errors.*;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
 import play.api.Play;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -104,8 +104,6 @@ public class HomeController extends Controller {
         RepositoryModel rm = rms.get(currentRepo);
         commits = rm.getCommits();
         tags = rm.getTags();
-
-
 
         if(rm.getMaxDrw(type) != null) {
             System.out.println("Loading cached repository");
@@ -214,10 +212,19 @@ public class HomeController extends Controller {
                 }
             } else {
                 List<Ref> orderedTags = new ArrayList<>();
+
+                for (Ref tag : peeledTags) {
+//                    String tagId = tag.getObjectId().getName();
+                    RevWalk walk = new RevWalk(git.getRepository());
+                    String tagId = null;
+                    try {
+                        tagId = walk.parseCommit(tag.getObjectId()).getName();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                     for (int i = 0; i < commits.size(); i++) {
                         Commit commit = commits.get(i);
-                        for (Ref tag : peeledTags) {
-                            String tagId = tag.getObjectId().getName();
 
                         if (tagId.equals(commit.getName())) {
                             try {
@@ -297,9 +304,15 @@ public class HomeController extends Controller {
             }
         } else {
             for (Ref tag : peeledTags) {
-                String tagId = tag.getObjectId().getName();
-                for (Commit commit : commits) {
+                RevWalk walk = new RevWalk(git.getRepository());
+                String tagId = null;
+                try {
+                    tagId = walk.parseCommit(tag.getObjectId()).getName();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
+                for (Commit commit : commits) {
                     if (tagId.equals(commit.getName())) {
                         commitTags.add(0, commit);
                         // make the packages into drawables to be used for rectangle packing
@@ -464,7 +477,7 @@ public class HomeController extends Controller {
             }
 
             Iterable<RevCommit> revCommits = null;
-            revCommits = git.log().call();
+            revCommits = git.log().all().call();
 
             for (RevCommit revCommit : revCommits) {
                 PersonIdent authorIdent = revCommit.getAuthorIdent();

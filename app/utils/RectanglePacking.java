@@ -107,6 +107,7 @@ public class RectanglePacking {
         // the Bin occupied by pkg
         Bin localBin;
 
+
         // see if there is an open Bin in which pkg can fit into
         int minimumWaste = Integer.MAX_VALUE;
         Bin bestBin = null;
@@ -161,7 +162,12 @@ public class RectanglePacking {
         }
 
         // add pkg's classes to the total of all classes contained in pkg (recursive as well)
-        if (maxDrw == null) drwPkg.getPkg().addClassTotal(drwPkg.getDrawableClasses().size());
+
+
+        if (maxDrw == null) {
+            drwPkg.getPkg().addClassTotal(drwPkg.getDrawableClasses().size());
+        }
+
 
         // recursively pack the children of pkg before fitting pkg itself
         for (DrawablePackage child : drwPkg.getDrawablePackages()) {
@@ -171,7 +177,9 @@ public class RectanglePacking {
             siblingBins.add(childBin);
 
             // add the classes of the children to the total number of classes of pkg
-            if (maxDrw == null) drwPkg.getPkg().addClassTotal(child.getPkg().getClassTotal());
+            if (maxDrw == null) {
+                drwPkg.getPkg().addClassTotal(child.getPkg().getClassTotal());
+            }
 
             // add the size of the child package to the size of pkg
             localBin.mergeBin(childBin);
@@ -179,12 +187,12 @@ public class RectanglePacking {
 
         if (drwPkg.getPkg().getClassTotal() == 0) {
             drwPkg.setWidth(0);
-            return new Bin(
-                    parentBin.getX1(),
-                    parentBin.getX1(),
-                    parentBin.getY1(),
-                    parentBin.getY1(),
-                    parentBin.getZ());
+//            return new Bin(
+//                    parentBin.getX1(),
+//                    parentBin.getX1(),
+//                    parentBin.getY1(),
+//                    parentBin.getY1(),
+//                    parentBin.getZ());
         }
 
         // bin that will contain the classes of the current package
