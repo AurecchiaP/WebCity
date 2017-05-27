@@ -97,12 +97,10 @@ public class HomeController extends Controller {
         RepositoryModel rm = rms.get(currentRepo);
         commits = rm.getCommits();
         tags = rm.getTags();
-
+        
         try {
             git = Git.open(directory);
-            git.checkout().setName(rm.getMainBranch()).call();
-            System.out.println(git.getRepository().getBranch());
-        } catch (GitAPIException | IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -484,6 +482,7 @@ public class HomeController extends Controller {
 
             Iterable<RevCommit> revCommits = null;
             revCommits = git.log().all().call();
+
 
             for (RevCommit revCommit : revCommits) {
                 PersonIdent authorIdent = revCommit.getAuthorIdent();

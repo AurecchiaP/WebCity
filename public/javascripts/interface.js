@@ -30,13 +30,14 @@ submitButton.onclick = function () {
 
             clearInterval(id);
 
-
             var json = JSON.parse(data);
             console.log(json);
 
-
             $("#commits-number").text("Number of commits: " + json.commits.length);
             $("#tags-number").text("Number of tags: " + json.tags.length);
+            if (json.tags.length === 0) {
+                $("#type-select").children()[1].setAttribute("disabled", "disabled");
+            }
 
             document.getElementById("progressBar").style.width = "0%";
 

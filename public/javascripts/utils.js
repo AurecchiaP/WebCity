@@ -48,6 +48,8 @@ function getCommit(e) {
 }
 
 function reloadVisualization() {
+    $("#reload-button").attr("disabled", "disabled");
+
     var r = jsRoutes.controllers.HomeController.reloadVisualization();
     $.ajax({
         url: r.url,
@@ -70,6 +72,7 @@ function reloadVisualization() {
             clearVisualization();
             draw(visualization);
 
+            $("#reload-button").removeAttr("disabled");
 
         }, error: function () {
             console.log("invalid reload");
