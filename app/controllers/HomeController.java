@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat;
 
 import java.util.*;
 
+import static org.eclipse.jgit.api.ListBranchCommand.ListMode.REMOTE;
 import static utils.DrawableUtils.compareWithMax;
 import static utils.DrawableUtils.getMaxDrawable;
 import static utils.DrawableUtils.historyToDrawable;
@@ -93,17 +94,17 @@ public class HomeController extends Controller {
         File directory = new File(Play.current().path() + "/repository/" + repoName + "/.git/");
         Git git = null;
 
-        try {
-            git = Git.open(directory);
-            git.checkout().setName("refs/remotes/origin/master").call();
-        } catch (GitAPIException | IOException e) {
-            e.printStackTrace();
-        }
-
-
         RepositoryModel rm = rms.get(currentRepo);
         commits = rm.getCommits();
         tags = rm.getTags();
+
+        try {
+            git = Git.open(directory);
+            git.checkout().setName(rm.getMainBranch()).call();
+            System.out.println(git.getRepository().getBranch());
+        } catch (GitAPIException | IOException e) {
+            e.printStackTrace();
+        }
 
         if(rm.getMaxDrw(type) != null) {
             System.out.println("Loading cached repository");
@@ -184,6 +185,7 @@ public class HomeController extends Controller {
             }
         } else {
             System.out.println("Start parsing...");
+            System.out.println(new java.util.Date());
 
             try {
                 tags = git.tagList().call();
@@ -208,6 +210,7 @@ public class HomeController extends Controller {
                         e.printStackTrace();
                     }
 
+                    System.out.println(i);
                     parsingPercentage = (double) i / commits.size() * 100;
                 }
             } else {
@@ -248,6 +251,7 @@ public class HomeController extends Controller {
             }
 
             System.out.println("Done parsing.");
+            System.out.println(new java.util.Date());
 
             System.out.println("Start serializing object.");
 
@@ -289,6 +293,7 @@ public class HomeController extends Controller {
         packings = new HashMap<>();
 
         System.out.println("Start packing...");
+        System.out.println(new java.util.Date());
 
         List<Commit> commitTags = new ArrayList<>();
 
@@ -327,6 +332,7 @@ public class HomeController extends Controller {
         }
 
         System.out.println("Done packing.");
+        System.out.println(new java.util.Date());
 
 
         // find the biggest drawable, considering all commits
@@ -421,7 +427,7 @@ public class HomeController extends Controller {
         try {
             if (directory.exists()) {
                 git = Git.open(directory);
-                git.checkout().setName("refs/remotes/origin/master").call();
+//                git.checkout().setName("refs/remotes/origin/master").call();
                 git.pull();
             } else {
                 System.out.println("Downloading depo...");
@@ -493,7 +499,15 @@ public class HomeController extends Controller {
             List<Ref> tags = git.tagList().call();
 
             if(!rms.containsKey(currentRepo)) {
-                RepositoryModel rm = new RepositoryModel(null, null, new HashMap<>(), new HashMap<>(), commits, new ArrayList<>(), tags);
+                RepositoryModel rm = new RepositoryModel(
+                        "refs/remotes/origin/" + git.getRepository().getBranch(),
+                        null,
+                        null,
+                        new HashMap<>(),
+                        new HashMap<>(),
+                        commits,
+                        new ArrayList<>(),
+                        tags);
                 rms.put(currentRepo, rm);
             }
             else {
@@ -513,6 +527,10 @@ public class HomeController extends Controller {
             e.printStackTrace();
             return 1;
         }
+    }
+
+    private String getLatestBranch(Git git) throws GitAPIException, IOException {
+        return "refs/remotes/origin/" + git.getRepository().getBranch();
     }
 
 

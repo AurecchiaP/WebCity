@@ -14,6 +14,7 @@ import java.util.Map;
  */
 public class RepositoryModel {
 
+    private String mainBranch;
     private DrawablePackage maxDrwCommits;
     private DrawablePackage maxDrwTags;
     private Map<String, RectanglePacking> packingsCommits;
@@ -22,13 +23,15 @@ public class RepositoryModel {
     private List<Commit> commitTags;
     private List<Ref> tags;
 
-    public RepositoryModel(DrawablePackage maxDrwCommits,
-                           DrawablePackage maxDrwTags,
-                           Map<String, RectanglePacking> packingsCommits,
-                           Map<String, RectanglePacking> packingsTags,
-                           List<Commit> commits,
-                           List<Commit> commitTags,
-                           List<Ref> tags) {
+    public RepositoryModel( String mainBranch,
+                            DrawablePackage maxDrwCommits,
+                            DrawablePackage maxDrwTags,
+                            Map<String, RectanglePacking> packingsCommits,
+                            Map<String, RectanglePacking> packingsTags,
+                            List<Commit> commits,
+                            List<Commit> commitTags,
+                            List<Ref> tags) {
+        this.mainBranch = mainBranch;
         this.maxDrwCommits = maxDrwCommits;
         this.maxDrwTags = maxDrwTags;
         this.packingsCommits = packingsCommits;
@@ -38,6 +41,19 @@ public class RepositoryModel {
         this.tags = tags;
     }
 
+    /**
+     * @return the main branch that the repository is set to
+     */
+    public String getMainBranch() {
+        return mainBranch;
+    }
+
+    /**
+     * @param mainBranch the branch that we want the repository to be set to
+     */
+    public void setMainBranch(String mainBranch) {
+        this.mainBranch = mainBranch;
+    }
 
     /**
      * @param type either "Commits" or "Tags", to choose which maxDrw we want to get
