@@ -41,11 +41,6 @@ import static utils.JSON.toJSON;
 
 public class HomeController extends Controller {
 
-    private int id = 0;
-
-//    private double percentage = 0;
-//    private String taskName;
-//    private double parsingPercentage;
     private Map<String, RepositoryModel> rms = new HashMap<>();
     private Map<String, DownloadProgress> downloadProgresses = new HashMap<>();
 
@@ -258,6 +253,21 @@ public class HomeController extends Controller {
                 }
                 peeledTags = orderedTags;
             }
+
+            final RevWalk walk = new RevWalk(git.getRepository());
+
+            peeledTags.sort((o1, o2) -> {
+                Date d1 = null;
+                Date d2 = null;
+                try {
+                    d1 = walk.parseCommit(o1.getObjectId()).getCommitterIdent().getWhen();
+                    d2 = walk.parseCommit(o2.getObjectId()).getCommitterIdent().getWhen();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return d1.compareTo(d2);
+            });
 
             System.out.println("Done parsing.");
             System.out.println(new java.util.Date());
@@ -542,11 +552,6 @@ public class HomeController extends Controller {
         }
     }
 
-    private String getLatestBranch(Git git) throws GitAPIException, IOException {
-        return "refs/remotes/origin/" + git.getRepository().getBranch();
-    }
-
-
     /**
      * while the data is being sent from server to client, the client will poll the server to know the percentage
      */
@@ -554,16 +559,9 @@ public class HomeController extends Controller {
         String currentId = formFactory.form().bindFromRequest().get("id");
         JsonObject obj = new JsonObject();
         DownloadProgress downloadProgress = downloadProgresses.get(currentId);
-        if(downloadProgress != null) {
-            obj.addProperty("percentage", downloadProgress.getPercentage());
-            obj.addProperty("taskName", downloadProgress.getTaskName());
-            obj.addProperty("parsingPercentage", downloadProgress.getParsingPercentage());
-        }
-        else {
-            obj.addProperty("percentage", 0);
-            obj.addProperty("taskName", "");
-            obj.addProperty("parsingPercentage", 0);
-        }
+        obj.addProperty("percentage", downloadProgress.getPercentage());
+        obj.addProperty("taskName", downloadProgress.getTaskName());
+        obj.addProperty("parsingPercentage", downloadProgress.getParsingPercentage());
         return ok(obj.toString());
     }
 

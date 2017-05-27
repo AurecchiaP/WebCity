@@ -52,11 +52,6 @@ submitButton.onclick = function () {
 
             $('#submit-card').css('display', 'block');
 
-            // start downloading
-            // var id = setInterval(poll, 1000);
-            // getData(id, type);
-
-
             console.log("valid repository");
 
         }, error: function () {

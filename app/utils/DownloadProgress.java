@@ -11,9 +11,9 @@ public class DownloadProgress {
     private double parsingPercentage;
 
     public DownloadProgress() {
-        double percentage = 0;
-        String taskName = "none";
-        double parsingPercentage = 0;
+        this.percentage = 0;
+        this.taskName = "none";
+        this.parsingPercentage = 0;
     }
 
     public double getPercentage() {

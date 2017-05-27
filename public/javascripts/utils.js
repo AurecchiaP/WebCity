@@ -5,21 +5,15 @@ function addCommits(commits) {
     var items = $('.dropdown-items');
     commitsNumber = commits.length;
     for (var i = 0; i < commits.length; ++i) {
-        items.append("<a href='#' class='list-group-item list-group-item-action'><span>" +
-            commits[i].name + "</span><br><span>" + commits[i].description + "</span><br><span>" + commits[i].author + ", " + commits[i].date + "</span></a>");
+        items.append("<a href='#' class='list-group-item list-group-item-action'><p>" +
+            commits[i].name + "<br>" + commits[i].description + "<br>" + commits[i].author + ", " + commits[i].date + "</p></a>");
     }
     items.on('click', $('.dropdown-item'), getCommit);
 }
 
 function getCommit(e) {
-    var commit;
-    if (e.target.parentElement.tagName !== "DIV") {
-        commit = e.target.parentElement.firstChild.innerText;
-    }
-    else {
-        commit = e.target.firstChild.innerText;
-    }
 
+    var commit = e.target.innerText.split("\n")[0];
 
     $("#commits-dropdown")[0].innerText = commit || currentCommit;
 

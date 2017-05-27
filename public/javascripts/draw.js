@@ -306,7 +306,7 @@ function loaded(totalClasses) {
             element = e.target;
         }
 
-        commitsDropdown.text(element.firstChild.innerText);
+        commitsDropdown.text(element.firstChild.innerText.split("\n")[0]);
 
         event.preventDefault();
     });
@@ -320,8 +320,9 @@ function loaded(totalClasses) {
             element = e.target;
         }
 
-        commitsDropdownFirst.text(element.firstChild.innerText);
+        commitsDropdownFirst.text(element.firstChild.innerText.split("\n")[0]);
         commitsListFirstSelected = commitsListFirst.children().index(element);
+
 
         event.preventDefault();
     });
@@ -335,7 +336,7 @@ function loaded(totalClasses) {
             element = e.target;
         }
 
-        commitsDropdownLast.text(element.firstChild.innerText);
+        commitsDropdownLast.text(element.firstChild.innerText.split("\n")[0]);
         commitsListLastSelected = commitsListLast.children().index(element);
 
         event.preventDefault();

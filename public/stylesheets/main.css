@@ -69,4 +69,6 @@ body {
 
 #submit-card {
     display: none;
+    margin-top: 1em;
+    padding: 1em;
 }
