@@ -15,6 +15,7 @@ import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
 import play.api.Play;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -22,6 +23,7 @@ import play.mvc.Result;
 import play.routing.JavaScriptReverseRouter;
 import utils.BasicParser;
 import models.JavaPackage;
+import utils.DownloadProgress;
 import utils.HistoryUtils;
 import utils.RectanglePacking;
 
@@ -39,10 +41,8 @@ import static utils.JSON.toJSON;
 
 public class HomeController extends Controller {
 
-    private double percentage = 0;
-    private String taskName;
-    private double parsingPercentage;
     private Map<String, RepositoryModel> rms = new HashMap<>();
+    private Map<String, DownloadProgress> downloadProgresses = new HashMap<>();
 
 
     @Inject
@@ -77,7 +77,9 @@ public class HomeController extends Controller {
      */
     public Result getVisualizationData() {
         String currentRepo = formFactory.form().bindFromRequest().get("repository");
+        String currentId = formFactory.form().bindFromRequest().get("id");
         String type = formFactory.form().bindFromRequest().get("type");
+
         DrawablePackage maxDrw;
         Map<String, RectanglePacking> packings;
         List<Commit> commits;
@@ -87,24 +89,22 @@ public class HomeController extends Controller {
 
         String repoName = currentRepo.replace("https://github.com/", "");
 
+        DownloadProgress downloadProgress = downloadProgresses.get(currentId);
+
 
         // try to download the given repository
         File directory = new File(Play.current().path() + "/repository/" + repoName + "/.git/");
         Git git = null;
 
-        try {
-            git = Git.open(directory);
-            git.checkout().setName("master").call();
-        } catch (GitAPIException | IOException e) {
-            e.printStackTrace();
-        }
-
-
         RepositoryModel rm = rms.get(currentRepo);
         commits = rm.getCommits();
         tags = rm.getTags();
 
-
+        try {
+            git = Git.open(directory);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         if(rm.getMaxDrw(type) != null) {
             System.out.println("Loading cached repository");
@@ -149,7 +149,8 @@ public class HomeController extends Controller {
 
         File serialized = new File(Play.current().path() + "/repository/" + repoName + "/history_" + type + ".ser");
         if (serialized.exists() && !serialized.isDirectory()) {
-            taskName = "Loading visualization";
+//            taskName = "Loading visualization";
+            downloadProgress.setTaskName("Loading visualization");
             System.out.println("Found serialized object.");
 
             FileInputStream fin = null;
@@ -185,6 +186,7 @@ public class HomeController extends Controller {
             }
         } else {
             System.out.println("Start parsing...");
+            System.out.println(new java.util.Date());
 
             try {
                 tags = git.tagList().call();
@@ -209,14 +211,26 @@ public class HomeController extends Controller {
                         e.printStackTrace();
                     }
 
-                    parsingPercentage = (double) i / commits.size() * 100;
+//                    parsingPercentage = (double) i / commits.size() * 100;
+                    downloadProgress.setParsingPercentage((double) i / commits.size() * 100);
+
                 }
             } else {
                 List<Ref> orderedTags = new ArrayList<>();
-                    for (int i = 0; i < commits.size(); i++) {
-                        Commit commit = commits.get(i);
-                        for (Ref tag : peeledTags) {
-                            String tagId = tag.getObjectId().getName();
+
+                for (int i = 0; i < peeledTags.size(); i++) {
+                    Ref tag = peeledTags.get(i);
+//                    String tagId = tag.getObjectId().getName();
+                    RevWalk walk = new RevWalk(git.getRepository());
+                    String tagId = null;
+                    try {
+                        tagId = walk.parseCommit(tag.getObjectId()).getName();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    for (int j = 0; j < commits.size(); j++) {
+                        Commit commit = commits.get(j);
 
                         if (tagId.equals(commit.getName())) {
                             try {
@@ -231,7 +245,8 @@ public class HomeController extends Controller {
                                 e.printStackTrace();
                             }
 
-                            parsingPercentage = (double) i / tags.size() * 100;
+//                            parsingPercentage = (double) i / tags.size() * 100;
+                            downloadProgress.setParsingPercentage((double) i / tags.size() * 100);
                             break;
                         }
                     }
@@ -239,7 +254,23 @@ public class HomeController extends Controller {
                 peeledTags = orderedTags;
             }
 
+            final RevWalk walk = new RevWalk(git.getRepository());
+
+            peeledTags.sort((o1, o2) -> {
+                Date d1 = null;
+                Date d2 = null;
+                try {
+                    d1 = walk.parseCommit(o1.getObjectId()).getCommitterIdent().getWhen();
+                    d2 = walk.parseCommit(o2.getObjectId()).getCommitterIdent().getWhen();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return d1.compareTo(d2);
+            });
+
             System.out.println("Done parsing.");
+            System.out.println(new java.util.Date());
 
             System.out.println("Start serializing object.");
 
@@ -281,6 +312,7 @@ public class HomeController extends Controller {
         packings = new HashMap<>();
 
         System.out.println("Start packing...");
+        System.out.println(new java.util.Date());
 
         List<Commit> commitTags = new ArrayList<>();
 
@@ -296,9 +328,15 @@ public class HomeController extends Controller {
             }
         } else {
             for (Ref tag : peeledTags) {
-                String tagId = tag.getObjectId().getName();
-                for (Commit commit : commits) {
+                RevWalk walk = new RevWalk(git.getRepository());
+                String tagId = null;
+                try {
+                    tagId = walk.parseCommit(tag.getObjectId()).getName();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
+                for (Commit commit : commits) {
                     if (tagId.equals(commit.getName())) {
                         commitTags.add(0, commit);
                         // make the packages into drawables to be used for rectangle packing
@@ -313,6 +351,7 @@ public class HomeController extends Controller {
         }
 
         System.out.println("Done packing.");
+        System.out.println(new java.util.Date());
 
 
         // find the biggest drawable, considering all commits
@@ -355,6 +394,7 @@ public class HomeController extends Controller {
      */
     public Result visualization() {
         String currentRepo = formFactory.form().bindFromRequest().get("repository");
+        String currentId = formFactory.form().bindFromRequest().get("id");
         System.out.println("input repository: " + currentRepo);
 
         final LsRemoteCommand lsCmd = new LsRemoteCommand(null)
@@ -363,7 +403,7 @@ public class HomeController extends Controller {
             lsCmd.call();
             System.out.println("Valid repository.");
 
-            downloadRepo(currentRepo);
+            downloadRepo(currentRepo, currentId);
 
             RepositoryModel rm = rms.get(currentRepo);
 
@@ -384,7 +424,7 @@ public class HomeController extends Controller {
         }
     }
 
-    private int downloadRepo(String currentRepo) {
+    private int downloadRepo(String currentRepo, String currentId) {
         DrawablePackage maxDrw;
         List<RectanglePacking> packings;
         List<Commit> commits = new ArrayList<>();
@@ -399,15 +439,14 @@ public class HomeController extends Controller {
 
         File directory = new File(Play.current().path() + "/repository/" + repoName + "/.git/");
 
-//        if (rms.containsKey(currentRepo)) {
-//            return 0;
-//        }
+        DownloadProgress downloadProgress = new DownloadProgress();
+        downloadProgresses.put(currentId, downloadProgress);
 
         // if we have cached this repository before
         try {
             if (directory.exists()) {
                 git = Git.open(directory);
-                git.checkout().setName("master").call();
+//                git.checkout().setName("refs/remotes/origin/master").call();
                 git.pull();
             } else {
                 System.out.println("Downloading depo...");
@@ -429,7 +468,8 @@ public class HomeController extends Controller {
                                 // new task has started; reset downloaded data for this task to 0
                                 downloadedData = 0;
 
-                                taskName = title;
+//                                taskName = title;
+                                downloadProgress.setTaskName(title);
                                 totalData = totalWork;
                             }
 
@@ -440,13 +480,15 @@ public class HomeController extends Controller {
 
                                 //update downloaded percentage
                                 if (totalData != 0) {
-                                    percentage = ((double) downloadedData / (double) totalData) * 100;
+//                                    percentage = ((double) downloadedData / (double) totalData) * 100;
+                                    downloadProgress.setPercentage(((double) downloadedData / (double) totalData) * 100);
                                 }
                             }
 
                             @Override
                             public void endTask() {
-                                percentage = 100.0;
+                                downloadProgress.setPercentage(100.0);
+//                                percentage = 100.0;
                             }
 
                             @Override
@@ -463,7 +505,8 @@ public class HomeController extends Controller {
             }
 
             Iterable<RevCommit> revCommits = null;
-            revCommits = git.log().call();
+            revCommits = git.log().all().call();
+
 
             for (RevCommit revCommit : revCommits) {
                 PersonIdent authorIdent = revCommit.getAuthorIdent();
@@ -479,7 +522,15 @@ public class HomeController extends Controller {
             List<Ref> tags = git.tagList().call();
 
             if(!rms.containsKey(currentRepo)) {
-                RepositoryModel rm = new RepositoryModel(null, null, new HashMap<>(), new HashMap<>(), commits, new ArrayList<>(), tags);
+                RepositoryModel rm = new RepositoryModel(
+                        "refs/remotes/origin/" + git.getRepository().getBranch(),
+                        null,
+                        null,
+                        new HashMap<>(),
+                        new HashMap<>(),
+                        commits,
+                        new ArrayList<>(),
+                        tags);
                 rms.put(currentRepo, rm);
             }
             else {
@@ -501,16 +552,16 @@ public class HomeController extends Controller {
         }
     }
 
-
     /**
      * while the data is being sent from server to client, the client will poll the server to know the percentage
      */
     public Result poll() {
-        String currentRepo = formFactory.form().bindFromRequest().get("repository");
+        String currentId = formFactory.form().bindFromRequest().get("id");
         JsonObject obj = new JsonObject();
-        obj.addProperty("percentage", percentage);
-        obj.addProperty("taskName", taskName);
-        obj.addProperty("parsingPercentage", parsingPercentage);
+        DownloadProgress downloadProgress = downloadProgresses.get(currentId);
+        obj.addProperty("percentage", downloadProgress.getPercentage());
+        obj.addProperty("taskName", downloadProgress.getTaskName());
+        obj.addProperty("parsingPercentage", downloadProgress.getParsingPercentage());
         return ok(obj.toString());
     }
 

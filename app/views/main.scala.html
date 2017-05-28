@@ -67,7 +67,7 @@
                                 <div>
 
                                 </div>
-                                <span>first:</span>
+                                <p>first:</p>
                                 <div class="btn-group">
                                     <button id="commits-dropdown-first" class="btn btn-secondary btn-sm dropdown-toggle" type="button"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -76,8 +76,9 @@
                                     <div id="commits-list-first" class="dropdown-items">
                                     </div>
                                 </div>
-
-                                <span>last:</span>
+                                <br>
+                                <br>
+                                <p>last:</p>
                                 <div class="btn-group">
                                     <button id="commits-dropdown-last" class="btn btn-secondary btn-sm dropdown-toggle" type="button"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -86,8 +87,8 @@
 
                                     <div id="commits-list-last" class="dropdown-items">
                                     </div>
-                                </div
-                                >
+                                </div>
+                                <br>
                                 <br>
                                 <div class="form-group">
                                     <label for="resolution-input">Choose the resolution:</label>
@@ -99,10 +100,12 @@
                                     </select>
                                 </div>
 
-                                <div>
-                                    <button id="record-button" class="btn btn-secondary float-right" type="button">
-                                        Record</button>
+                                <div id="record-before">
+                                    <span><i class="fa fa-gear fa-spin"></i> Generating video...</span>
                                 </div>
+                                <button id="record-button" class="btn btn-secondary float-right" type="button">
+                                    Record
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -174,7 +177,7 @@
         </nav>
 
         <div id="main-content">
-            
+
             @* Input and submit button *@
             <div class="col-lg-6">
                 <div class="input-group">
@@ -192,8 +195,8 @@
                     <div class="form-group">
                         <label for="type-select">Choose visualization type</label>
                         <select class="form-control" id="type-select">
-                            <option>Tags</option>
                             <option>Commits</option>
+                            <option>Tags</option>
                         </select>
                     </div>
                     <button id="visualize-button" class="btn btn-secondary" type="button">visualize</button>

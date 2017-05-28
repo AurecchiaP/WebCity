@@ -14,7 +14,7 @@ body {
     padding: 20vw;
     height: 95vh;
     margin: auto;
-    background-color: rgba(240,240,240,1);
+    /*background-color: rgba(240,240,240,1);*/
 }
 
 #progressBar {
@@ -69,4 +69,6 @@ body {
 
 #submit-card {
     display: none;
+    margin-top: 1em;
+    padding: 1em;
 }

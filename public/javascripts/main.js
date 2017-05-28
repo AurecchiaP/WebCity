@@ -31,7 +31,7 @@ function init(json) {
     raycaster = new THREE.Raycaster();
 
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf0f0f0);
+    scene.background = new THREE.Color(0xffffff);
 
     scale = 1250 / Math.max(json.width, json.depth);
 

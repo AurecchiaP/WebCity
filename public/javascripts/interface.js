@@ -4,6 +4,9 @@ var inputField = document.getElementById("inputField");
 var currentCommit, commitsNumber, repositoryOwner, repositoryName, repositoryUrl;
 var currentRepo, type;
 var visualization, currentVisibles;
+var pollType;
+
+const id = (Math.random().toString(36) + '00000000000000000').slice(2, 7);
 
 
 /**
@@ -14,7 +17,8 @@ submitButton.onclick = function () {
     currentRepo = inputField.value.replace(".git", "");
     $('#submitButton').addClass('disabled');
     document.getElementById("progressBar").style.width = "100%";
-    var id = setInterval(poll, 1000);
+    pollType = "download";
+    var pollId = setInterval(poll, 1000);
 
     // send repo link to server
     var r = jsRoutes.controllers.HomeController.visualization();
@@ -23,29 +27,30 @@ submitButton.onclick = function () {
         type: r.type,
         contentType: "application/json; charset=utf-8",
         data: {
-            repository: currentRepo
+            repository: currentRepo,
+            id: id
         },
         success: function (data) {
             // the linked repo is valid
 
-            clearInterval(id);
-
+            clearInterval(pollId);
 
             var json = JSON.parse(data);
             console.log(json);
 
-
             $("#commits-number").text("Number of commits: " + json.commits.length);
             $("#tags-number").text("Number of tags: " + json.tags.length);
+            if (json.tags.length === 0) {
+                $("#type-select").children()[1].setAttribute("disabled", "disabled");
+            }
+
+            $('.progress-bar').css('width', '0.0%')
+                .attr('aria-valuenow', "0.0%").html("");
 
             document.getElementById("progressBar").style.width = "0%";
 
+
             $('#submit-card').css('display', 'block');
-
-            // start downloading
-            // var id = setInterval(poll, 1000);
-            // getData(id, type);
-
 
             console.log("valid repository");
 
@@ -81,34 +86,38 @@ function poll() {
         type: r.type,
         contentType: "application/json; charset=utf-8",
         data: {
-            repository: currentRepo
+            id: id
         },
         success: function (data) {
 
             //update the progress bar with the data received from server
             var json = JSON.parse(data);
 
-            if (json.taskName == "Loading visualization") {
-                $('.progress-bar').css('width', '100%')
-                    .attr('aria-valuenow', json.parsingPercentage).html(json.taskName);
+
+            if (pollType === "download") {
+                if (json.taskName === "Loading visualization") {
+                    $('.progress-bar').css('width', '100%')
+                        .attr('aria-valuenow', json.parsingPercentage).html(json.taskName);
+                }
+                else if (json.taskName === "Receiving objects") {
+                    $('.progress-bar').css('width', json.percentage / 3 + '%')
+                        .attr('aria-valuenow', json.percentage).html(json.taskName);
+
+                }
+                else if (json.taskName === "Resolving deltas") {
+                    $('.progress-bar').css('width', 33.3 + (json.percentage / 3) + '%')
+                        .attr('aria-valuenow', json.percentage).html(json.taskName);
+                }
+                else
+                if (json.taskName === "Updating references") {
+                    $('.progress-bar').css('width', 0 + (json.percentage) + '%')
+                        .attr('aria-valuenow', json.percentage).html(json.taskName);
+                }
             }
-            else if (json.parsingPercentage != "0") {
+
+            else if (pollType === "parse") {
                 $('.progress-bar').css('width', json.parsingPercentage + '%')
                     .attr('aria-valuenow', json.parsingPercentage).html("Parsing");
-            }
-            else if (json.taskName == "Receiving objects") {
-                $('.progress-bar').css('width', json.percentage / 3 + '%')
-                    .attr('aria-valuenow', json.percentage).html(json.taskName);
-
-            }
-            else if (json.taskName == "Resolving deltas") {
-                $('.progress-bar').css('width', 33.3 + (json.percentage / 3) + '%')
-                    .attr('aria-valuenow', json.percentage).html(json.taskName);
-            }
-
-            else if (json.taskName == "Updating references") {
-                $('.progress-bar').css('width', 0 + (json.percentage) + '%')
-                    .attr('aria-valuenow', json.percentage).html(json.taskName);
             }
 
         }, error: function () {
@@ -120,7 +129,9 @@ function poll() {
 /**
  * call server to get the data for the visualization
  */
-function getData(id, type) {
+function getData(pollId, type) {
+
+    pollType = "parse";
 
     var r = jsRoutes.controllers.HomeController.getVisualizationData();
     $.ajax({
@@ -129,12 +140,14 @@ function getData(id, type) {
         contentType: "application/json; charset=utf-8",
         data: {
             repository: currentRepo,
-            type: type
+            type: type,
+            id: id
+
         },
         success: function (data) {
 
             // stop polling
-            clearInterval(id);
+            clearInterval(pollId);
             console.log("data fetch succesful");
 
             // initialize th visualization
@@ -153,7 +166,7 @@ function getData(id, type) {
         }, error: function () {
             $('#submitButton').removeClass('disabled');
             // stop polling
-            clearInterval(id);
+            clearInterval(pollId);
             console.log("data fetch error");
         }
     });

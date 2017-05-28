@@ -32,7 +32,7 @@ public class JavaClass implements Serializable {
     }
 
     /**
-     * copy constructor
+     * Copy constructor
      */
     public JavaClass(JavaClass cls) {
         this.filename = cls.getFilename();
@@ -63,7 +63,6 @@ public class JavaClass implements Serializable {
         this.linesOfCode = linesOfCode;
     }
 
-
     /**
      * @return a Metric object representing the number of lines of code
      */
@@ -91,8 +90,6 @@ public class JavaClass implements Serializable {
     public void setAttributes(Metric<Integer> attributes) {
         this.attributes = attributes;
     }
-
-
 
     /**
      * @return a Metric object representing the number of attributes

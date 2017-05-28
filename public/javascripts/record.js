@@ -136,6 +136,7 @@ function setupRecordWorkers() {
                         videoData = [];
                         files = [];
                         count = 0;
+                        $('#record-before').css("display", "inline");
                     }
 
                     if (message.name === "concat") {
@@ -147,6 +148,7 @@ function setupRecordWorkers() {
                         document.body.appendChild(a);
                         a.click();
                         document.body.removeChild(a);
+                        $('#record-before').css("display", "none");
                     }
                 }
             }

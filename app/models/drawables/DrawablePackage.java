@@ -10,12 +10,12 @@ import java.util.List;
 
 
 /**
- * class that wraps a JavaPackage to add information like position and color for the visualization
+ * Class that wraps a JavaPackage to add information like position and color for the visualization
  */
 public class DrawablePackage extends Drawable {
 
     /**
-     * the center of the position of the drawable in the visualization, and its z "height"
+     * The center of the position of the drawable in the visualization, and its z "height"
      */
     private int cx;
     private int cy;
@@ -26,7 +26,7 @@ public class DrawablePackage extends Drawable {
     private boolean visible;
     private int color;
     /**
-     * the JavaPackage that this drawable refers to
+     * The JavaPackage that this drawable refers to
      */
     private JavaPackage pkg;
     private List<DrawablePackage> drawablePackages;
@@ -45,7 +45,7 @@ public class DrawablePackage extends Drawable {
 
 
     /**
-     * copy constructor
+     * Copy constructor
      */
     public DrawablePackage(DrawablePackage drwPkg) {
         this.cx = drwPkg.getCx();
@@ -63,101 +63,173 @@ public class DrawablePackage extends Drawable {
         });
     }
 
+    /**
+     * @return get the x position of the center of this DrawablePackage
+     */
     public int getCx() {
         return cx;
     }
 
+    /**
+     * @param cx set the x position of the center of this DrawablePackage
+     */
     public void setCx(int cx) {
         this.cx = cx;
     }
 
+    /**
+     * @return get the y position of the center of this DrawablePackage
+     */
     public int getCy() {
         return cy;
     }
 
+    /**
+     * @param cy set the y position of the center of this DrawablePackage
+     */
     public void setCy(int cy) {
         this.cy = cy;
     }
 
+    /**
+     * @return the width of this DrawablePackage
+     */
     public int getWidth() {
         return width;
     }
 
+    /**
+     * @param width the width tobe set to this DrawablePackage
+     */
     public void setWidth(int width) {
         this.width = width;
     }
 
+    /**
+     * @return the depth of this DrawablePackage
+     */
     public int getDepth() {
         return depth;
     }
 
+    /**
+     * @param depth the depth tobe set to this DrawablePackage
+     */
     public void setDepth(int depth) {
         this.depth = depth;
     }
 
+    /**
+     * @return boolean value telling us if this DrawablePackage has to be visible or not
+     */
     public boolean isVisible() {
         return visible;
     }
 
+    /**
+     * @param visible the boolean value telling us if this DrawablePackage has to be visible or not
+     */
     public void setVisible(boolean visible) {
         this.visible = visible;
     }
 
+    /**
+     * @return get the x position of this DrawablePackage
+     */
     public int getZ() {
         return z;
     }
 
+    /**
+     * @param z set the z position of this DrawablePackage
+     */
     public void setZ(int z) {
         this.z = z;
     }
 
+    /**
+     * @return int representing the color of this DrawablePackage
+     */
     public int getColor() {
         return color;
     }
 
+    /**
+     * @param color int representing the color of this DrawablePackage
+     */
     public void setColor(int color) {
         this.color = color;
     }
 
+    /**
+     * @return the JavaPackage that this DrawablePackage represents
+     */
     public JavaPackage getPkg() {
         return pkg;
     }
 
+    /**
+     * @param pkg the JavaPackage that this DrawablePackage represents
+     */
     public void setPkg(JavaPackage pkg) {
         this.pkg = pkg;
     }
 
+    /**
+     * @return the list of DrawablePackage contained in this DrawablePackage
+     */
     public List<DrawablePackage> getDrawablePackages() {
         return Collections.unmodifiableList(drawablePackages);
     }
 
+    /**
+     * @param drawablePackages the list of DrawablePackage to be contained in this DrawablePackage
+     */
     public void setDrawablePackages(List<DrawablePackage> drawablePackages) {
         this.drawablePackages.clear();
         this.drawablePackages.addAll(drawablePackages);
     }
 
+    /**
+     * @return the list of DrawableClass contained in this DrawablePackage
+     */
     public List<DrawableClass> getDrawableClasses() {
         return Collections.unmodifiableList(drawableClasses);
     }
 
+    /**
+     * @param drawableClasses the list of DrawableClass to be contained in this DrawablePackage
+     */
     public void setDrawableClasses(List<DrawableClass> drawableClasses) {
         this.drawableClasses.clear();
         this.drawableClasses.addAll(drawableClasses);
     }
 
+    /**
+     * @param drw the DrawablePackage to be added to the list of DrawablePackage contained in this DrawablePackage
+     */
     public void addDrawablePackage(DrawablePackage drw) {
         this.drawablePackages.add(drw);
     }
 
 
+    /**
+     * @param cls the DrawableClass to be added to the list of DrawableClass contained in this DrawablePackage
+     */
     public void addDrawableClass(DrawableClass cls) {
         this.drawableClasses.add(cls);
     }
 
+    /**
+     * @return the Bin in which the list of DrawableClass of this DrawablePackage will be put
+     */
     public Bin getClassesBin() {
         return classesBin;
     }
 
+    /**
+     * @param classesBin the Bin in which the list of DrawableClass of this DrawablePackage will be put
+     */
     public void setClassesBin(Bin classesBin) {
         this.classesBin = classesBin;
     }
@@ -172,7 +244,6 @@ public class DrawablePackage extends Drawable {
             return c1.width > c2.width ? -1 : 1;
         });
     }
-
 
     /**
      * sorts the classes by their number of attributes, in descending order

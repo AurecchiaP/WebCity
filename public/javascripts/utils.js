@@ -5,21 +5,15 @@ function addCommits(commits) {
     var items = $('.dropdown-items');
     commitsNumber = commits.length;
     for (var i = 0; i < commits.length; ++i) {
-        items.append("<a href='#' class='list-group-item list-group-item-action'>" +
-            commits[i].name + "<br>" + commits[i].description + "<br>" + commits[i].author + ", " + commits[i].date + "</a>");
+        items.append("<a href='#' class='list-group-item list-group-item-action'><p>" +
+            commits[i].name + "<br>" + commits[i].description + "<br>" + commits[i].author + ", " + commits[i].date + "</p></a>");
     }
     items.on('click', $('.dropdown-item'), getCommit);
 }
 
 function getCommit(e) {
-    var commit;
-    if (e.target.parentElement.tagName !== "DIV") {
-        commit = e.target.parentElement.innerHTML.split("<")[0];
-    }
-    else {
-        commit = e.target.innerHTML.split("<")[0];
-    }
 
+    var commit = e.target.innerText.split("\n")[0];
 
     $("#commits-dropdown")[0].innerText = commit || currentCommit;
 
@@ -36,6 +30,7 @@ function getCommit(e) {
         success: function (data) {
             var json = JSON.parse(data);
             currentVisibles = json.visibles;
+            currentCommit = commit || currentCommit;
             clearVisualization();
             draw(visualization);
 
@@ -47,6 +42,8 @@ function getCommit(e) {
 }
 
 function reloadVisualization() {
+    $("#reload-button").attr("disabled", "disabled");
+
     var r = jsRoutes.controllers.HomeController.reloadVisualization();
     $.ajax({
         url: r.url,
@@ -69,6 +66,7 @@ function reloadVisualization() {
             clearVisualization();
             draw(visualization);
 
+            $("#reload-button").removeAttr("disabled");
 
         }, error: function () {
             console.log("invalid reload");
