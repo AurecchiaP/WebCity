@@ -38,7 +38,7 @@ function altClick(e) {
 /**
  * handles key-press events
  */
-function onKeyPress(e) {
+function onKeyPress(event) {
     var keys = {LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40, P: 80};
     switch (event.keyCode) {
 

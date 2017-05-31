@@ -1,4 +1,5 @@
 var reversedRecording;
+var orbit;
 
 /**
  * called from main; sets up the data and functions to be able to record the canvas
@@ -11,8 +12,18 @@ function setupRecorder() {
             videoData = [];
             files = [];
             count = 0;
+            canvas.style.width = "100%";
+            canvas.style.height = "100%";
+            canvas.style.left = "0";
+            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+            camera.aspect = canvas.clientWidth / canvas.clientHeight;
+            camera.updateProjectionMatrix();
+
+            renderer.shadowMap.needsUpdate = true;
+            render();
             $("#record-button").text("Record");
             $("#record-card-button").css("color", "rgba(220, 220, 220, 1)");
+            $('#record-progress-bar').css('width','0');
         }
         else {
 
@@ -28,6 +39,7 @@ function setupRecorder() {
                     reversedRecording = true;
                 }
                 recording = true;
+                orbit = $("#orbit-checkbox").is(':checked');
                 var resolution = $("#resolution-input").val();
 
                 $('#record-progress-bar').css('width','100%');

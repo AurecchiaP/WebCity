@@ -39,7 +39,7 @@
                         </div>
                     </div>
 
-                    <div>
+                    <div class="icon-container">
                         <i id="record-card-button" class="fa fa-video-camera" aria-hidden="true"></i>
                     </div>
 
@@ -90,6 +90,9 @@
                                 </div>
                                 <br>
                                 <br>
+                                <input id="orbit-checkbox" type="checkbox" aria-label="Checkbox for following text input"><span> Orbit during recording</span>
+                                <br>
+                                <br>
                                 <div class="form-group">
                                     <label for="resolution-input">Choose the resolution:</label>
                                     <select class="form-control" id="resolution-input">
@@ -109,7 +112,7 @@
                         </div>
                     </div>
 
-                    <div>
+                    <div class="icon-container">
                         <i id="options-card-button" class="fa fa-cog" aria-hidden="true"></i>
                     </div>
 
@@ -268,7 +271,9 @@
             </div>
 
             @* Information button *@
-            <i id="info-button" class="fa fa-question-circle fa-lg" aria-hidden="true"></i>
+            <div class="icon-container">
+                <i id="info-button" class="fa fa-question-circle fa-lg" aria-hidden="true"></i>
+            </div>
 
             @* Information content *@
             <div id="info-content" class="card">

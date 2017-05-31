@@ -438,6 +438,7 @@ function callNext() {
                 .attr('aria-valuenow', percentage);
         }
 
+        if (orbit) rotateLeft(Math.PI/360);
     }
     else {
         setTimeout(function () {
@@ -461,7 +462,7 @@ function callNext() {
                 var count = 0;
 
                 // fixme change for resolution; 0.25 for commit if @720, 0.75 if @1440
-                updateGenerationProgress(count, Math.ceil(Math.abs((CNlast - CNfirst)/4)));
+                updateGenerationProgress(count, Math.ceil(Math.abs((CNlast - CNfirst))));
 
                 var split = Math.abs(Math.ceil((CNlast - CNfirst)/ 8));
                 var start = Math.min(CNlast, CNfirst);
