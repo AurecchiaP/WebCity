@@ -64,13 +64,13 @@ function init(json) {
 
     light.shadow.bias = 0.00001;
 
-    scene.add(light, light.target);
+    // scene.add(light, light.target);
 
     // light.target.position.set(-100, -100, -100);
     // light.position.set(0, 0, 0);
 
 
-    var ambientLight = new THREE.AmbientLight(0xffffff, 0.3); // soft white light
+    var ambientLight = new THREE.AmbientLight(0xffffff, .6); // soft white light
     scene.add(ambientLight);
 
     // var helper = new THREE.CameraHelper(light.shadow.camera);

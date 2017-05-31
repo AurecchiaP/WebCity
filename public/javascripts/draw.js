@@ -1,8 +1,8 @@
 var meshes = [];
 var scale;
-var packageHeight = 20;
-var minClassSize = 20;
-var padding = 20;
+var packageHeight = 1;
+var minClassSize = 1;
+var padding = 1;
 var box;
 var classes = [];
 var recorder, recording = false;
@@ -102,7 +102,7 @@ function clearVisualization() {
 function recDraw(drwPkg) {
     var totalClasses = 0;
 
-    if (!currentVisibles[drwPkg.pkg.name]) return totalClasses;
+    // if (!currentVisibles[drwPkg.pkg.name]) return totalClasses;
 
     // recursion on the child packages, to be drawn first
     for (var i = 0; i < drwPkg.drawablePackages.length; ++i) {
@@ -125,13 +125,13 @@ function recDraw(drwPkg) {
  */
 function drawClass(drwCls) {
 
-    if (currentVisibles) {
-        if (!currentVisibles[drwCls.cls.filename]) return;
-    }
+    // if (currentVisibles) {
+    //     if (!currentVisibles[drwCls.cls.filename]) return;
+    // }
     classes.push(drwCls);
 
     // adding 10 to attributes and methods, to have a lower bound (else we won't see the class)
-    var clsHeight = (drwCls.cls.methods + minClassSize) * scale;
+    var clsHeight = 1 * scale;
     var clsWidth = (drwCls.cls.attributes + minClassSize) * scale;
 
     var posX = drwCls.cx * scale;
