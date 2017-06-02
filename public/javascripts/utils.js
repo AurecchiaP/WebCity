@@ -80,3 +80,10 @@ function containsUndefined(arr) {
     }
     return false;
 }
+
+function rotateLeft(radians) {
+    controls.rotateLeft(Math.PI/180);
+    controls.update();
+    renderer.render(scene, camera);
+    renderer.render(scene, camera);
+}

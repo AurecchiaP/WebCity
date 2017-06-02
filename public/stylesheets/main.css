@@ -24,6 +24,14 @@ body {
     transition: 0.2s all;
 }
 
+#record-progress-bar {
+    margin-top: 1vh;
+    margin-bottom: 1vh;
+    width: 0;
+    max-width: 10vw;
+    transition: 0.2s all;
+}
+
 .progress-bar {
     transition: .8s all ease-in-out;
 }

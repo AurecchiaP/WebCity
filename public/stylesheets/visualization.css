@@ -138,15 +138,15 @@
 
 
 #record-card-button, #options-card-button {
-    color: rgba(220, 220, 220, 1);
-    transition: all 0.1s;
+    color: rgba(210, 210, 210, 1);
+    transition: all 0.2s;
     line-height: 3.5vh;
-    margin-right: 1em;
 }
 
-#record-card-button:hover, #info-button:hover, #options-card-button:hover {
-    cursor: hand;
+#record-card-button:hover, #options-card-button:hover {
+    color: white;
 }
+
 
 #record-button, #reload-button {
     margin-bottom: 1em;
@@ -154,4 +154,13 @@
 
 #record-before {
     display: none;
+}
+
+.icon-container {
+    cursor:pointer;
+    margin: 0 .5em 0 .5em;
+}
+
+.icon-container:hover *:hover {
+    color: white;
 }

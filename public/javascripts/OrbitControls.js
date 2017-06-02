@@ -80,6 +80,13 @@ THREE.OrbitControls = function ( object, domElement ) {
     this.position0 = this.object.position.clone();
     this.zoom0 = this.object.zoom;
 
+
+    this.pan = pan;
+    this.rotateLeft = rotateLeft;
+    this.rotateUp = rotateUp;
+    this.dollyIn = dollyIn;
+    this.dollyOut = dollyOut;
+
     //
     // public methods
     //
@@ -599,7 +606,6 @@ THREE.OrbitControls = function ( object, domElement ) {
         rotateStart.copy( rotateEnd );
 
         scope.update();
-
     }
 
     function handleTouchMoveDolly( event ) {

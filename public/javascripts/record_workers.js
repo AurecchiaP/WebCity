@@ -22,6 +22,8 @@ onmessage = function(event) {
             files: message.files || [],
             arguments: message.arguments || [],
             TOTAL_MEMORY: 1073741824
+            // TOTAL_MEMORY: 2147483648
+            // ALLOW_MEMORY_GROWTH: 1,
             // Can play around with this option - must be a power of 2
             // TOTAL_MEMORY: 268435456
         };

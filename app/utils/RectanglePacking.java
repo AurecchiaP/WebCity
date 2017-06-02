@@ -162,8 +162,6 @@ public class RectanglePacking {
         }
 
         // add pkg's classes to the total of all classes contained in pkg (recursive as well)
-
-
         if (maxDrw == null) {
             drwPkg.getPkg().addClassTotal(drwPkg.getDrawableClasses().size());
         }
@@ -185,14 +183,11 @@ public class RectanglePacking {
             localBin.mergeBin(childBin);
         }
 
-        if (drwPkg.getPkg().getClassTotal() == 0) {
+
+        if (drwPkg.getPkg().getClassTotal() == 0 && drwPkg.getDrawableClasses().size() == 0) {
             drwPkg.setWidth(0);
-//            return new Bin(
-//                    parentBin.getX1(),
-//                    parentBin.getX1(),
-//                    parentBin.getY1(),
-//                    parentBin.getY1(),
-//                    parentBin.getZ());
+            drwPkg.setDepth(0);
+            return parentBin;
         }
 
         // bin that will contain the classes of the current package
@@ -208,7 +203,6 @@ public class RectanglePacking {
             // if can fit in openBin
             if (bin.width() > minClassesSize.getFirst() && bin.depth() > minClassesSize.getSecond()) {
 
-                // fixme try both directions
                 Bin dummyLocalBin = localBin.copy();
                 Bin dummyBinBin = new Bin(
                         bin.getX1(),
@@ -255,12 +249,12 @@ public class RectanglePacking {
             }
         }
 
-
         // update localBin with extra size of classesBin
         localBin.mergeBin(classesBin);
 
         // shift localBin by padding, draw it, and shift it back (we don't want to draw on the padding)
         addPaddingAndFit(localBin, drwPkg, padding, recDepth, true, verticalClasses);
+
 
         // set the height of the package, depending on the depth of the recursion of the current package
         drwPkg.setZ(recDepth);
@@ -356,6 +350,7 @@ public class RectanglePacking {
     private void addPaddingAndFit(Bin bin, DrawablePackage drwPkg, int padding, int recDepth, boolean drawPackage, boolean vertical) {
         // add padding on bottom left of package;
         // multiplied by depth of recursion to account space for the surrounding drwPackages
+
         int pad = padding * recDepth;
 
         bin.setX1(bin.getX1() + pad);
@@ -373,6 +368,7 @@ public class RectanglePacking {
                 fitClasses(bin, drwPkg);
             }
             drwPkg.setClassesBin(bin.copy());
+
         }
 
         bin.setX1(bin.getX1() - pad);

@@ -384,7 +384,7 @@ function convertDataURIToBinary(dataURI) {
     return array;
 }
 
-var CNidx, CNlist, CNlast;
+var CNidx, CNfirst, CNlist, CNlast;
 
 function callNext() {
     var image = renderer.domElement.toDataURL('image/jpeg');
@@ -419,9 +419,26 @@ function callNext() {
         });
     }
 
-    if (recording && (CNidx <= CNlast && CNidx < CNlist.length)) {
+
+    if (recording && ((CNidx <= CNlast && CNidx < CNlast - CNfirst) || (reversedRecording && CNidx >= CNlast && CNidx <= CNfirst - CNlast))) {
         CNlist[CNidx].click();
-        CNidx++;
+        var percentage;
+        if (reversedRecording) {
+            CNidx--;
+            percentage = (CNfirst - CNidx) / (CNfirst - CNlast) * 66.6;
+
+
+            $('.record-progress-bar').css('width', percentage + '%')
+                .attr('aria-valuenow', percentage);
+        }
+        else {
+            CNidx++;
+            percentage = (CNidx) / (CNlast - CNfirst) * 66.6;
+            $('.record-progress-bar').css('width', percentage + '%')
+                .attr('aria-valuenow', percentage);
+        }
+
+        if (orbit) rotateLeft(Math.PI/360);
     }
     else {
         setTimeout(function () {
@@ -440,11 +457,19 @@ function callNext() {
                 renderer.shadowMap.needsUpdate = true;
                 render();
 
-                var split = Math.ceil(commitsNumber / 8);
+                console.log(new Date().toLocaleTimeString());
+
+                var count = 0;
+
+                // fixme change for resolution; 0.25 for commit if @720, 0.75 if @1440
+                updateGenerationProgress(count, Math.ceil(Math.abs((CNlast - CNfirst))));
+
+                var split = Math.abs(Math.ceil((CNlast - CNfirst)/ 8));
+                var start = Math.min(CNlast, CNfirst);
                 for (var i = 0; i < 8; ++i) {
                     recordWorkers[i].postMessage({
                         type: "command",
-                        arguments: ['-r', '24', '-start_number', i * split, '-i', 'img%05d.jpg', '-v', 'verbose', '-pix_fmt', 'yuv420p', '-vframes', split, 'vid' + i + '.mp4'],
+                        arguments: ['-r', '24', '-start_number', start + i * split, '-i', 'img%05d.jpg', '-v', 'verbose', '-pix_fmt', 'yuv420p', '-vframes', split, 'vid' + i + '.mp4'],
                         files: files,
                         name: i
                     });
@@ -453,6 +478,18 @@ function callNext() {
                 $("#record-card-button").css("color", "rgba(220, 220, 220, 1)");
             }
         }, 100);
+    }
+}
+
+function updateGenerationProgress(time, expected) {
+    if (time < expected) {
+        var percentage = time/expected * 33.3;
+        $('.record-progress-bar').css('width', 66.6 + percentage + '%')
+            .attr('aria-valuenow', 66.6 + percentage);
+
+        setTimeout(function () {
+            updateGenerationProgress(time + 1, expected);
+        },1000);
     }
 }
 

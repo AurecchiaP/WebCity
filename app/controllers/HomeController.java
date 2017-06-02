@@ -559,9 +559,11 @@ public class HomeController extends Controller {
         String currentId = formFactory.form().bindFromRequest().get("id");
         JsonObject obj = new JsonObject();
         DownloadProgress downloadProgress = downloadProgresses.get(currentId);
-        obj.addProperty("percentage", downloadProgress.getPercentage());
-        obj.addProperty("taskName", downloadProgress.getTaskName());
-        obj.addProperty("parsingPercentage", downloadProgress.getParsingPercentage());
+        if(downloadProgress != null) {
+            obj.addProperty("percentage", downloadProgress.getPercentage());
+            obj.addProperty("taskName", downloadProgress.getTaskName());
+            obj.addProperty("parsingPercentage", downloadProgress.getParsingPercentage());
+        }
         return ok(obj.toString());
     }
 

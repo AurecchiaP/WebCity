@@ -5,3 +5,12 @@ target/*
 *.class
 *.log
 repository/
+report/bachelorproject.aux
+report/bachelorproject.bbl
+report/bachelorproject.blg
+report/bachelorproject.fls
+report/bachelorproject.log
+report/bachelorproject.out
+report/bachelorproject.fdb_latexmk
+report/bachelorproject.synctex.gz
+report/texput.log

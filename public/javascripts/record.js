@@ -1,3 +1,6 @@
+var reversedRecording;
+var orbit;
+
 /**
  * called from main; sets up the data and functions to be able to record the canvas
  */
@@ -9,8 +12,18 @@ function setupRecorder() {
             videoData = [];
             files = [];
             count = 0;
+            canvas.style.width = "100%";
+            canvas.style.height = "100%";
+            canvas.style.left = "0";
+            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+            camera.aspect = canvas.clientWidth / canvas.clientHeight;
+            camera.updateProjectionMatrix();
+
+            renderer.shadowMap.needsUpdate = true;
+            render();
             $("#record-button").text("Record");
             $("#record-card-button").css("color", "rgba(220, 220, 220, 1)");
+            $('#record-progress-bar').css('width','0');
         }
         else {
 
@@ -20,10 +33,16 @@ function setupRecorder() {
             }
 
             var list = commitsList.children();
-            if (commitsListFirstSelected >= 0 && commitsListLastSelected > commitsListFirstSelected) {
-                console.log(new Date().toLocaleTimeString());
+
+            if (commitsListFirstSelected >= 0 && commitsListLastSelected >= 0 && Math.abs(commitsListFirstSelected - commitsListLastSelected) >= 8) {
+                if (commitsListLastSelected < commitsListFirstSelected) {
+                    reversedRecording = true;
+                }
                 recording = true;
+                orbit = $("#orbit-checkbox").is(':checked');
                 var resolution = $("#resolution-input").val();
+
+                $('#record-progress-bar').css('width','100%');
 
                 $("#record-button").text("Cancel");
 
@@ -47,14 +66,7 @@ function setupRecorder() {
                     console.log(document.body.clientWidth);
                     canvas.style.left = -1280 + document.body.clientWidth / 2 + "px";
                 }
-                else if (resolution === "3840x2160") {
-                    console.log("res set 2160p");
-                    canvas.style.width = "3840px";
-                    canvas.style.height = "2160px";
-                    canvas.style.left = -1920 + document.body.clientWidth / 2 + "px";
-                }
-                else {
-                }
+
                 renderer.setSize(canvas.clientWidth, canvas.clientHeight);
                 camera.aspect = canvas.clientWidth / canvas.clientHeight;
                 camera.updateProjectionMatrix();
@@ -63,13 +75,14 @@ function setupRecorder() {
                 render();
 
                 $("#record-card-button").css("color", "rgba(220, 0, 0, 1)");
-                CNidx = commitsListFirstSelected;
+                CNfirst = commitsListFirstSelected;
+                CNidx = CNfirst;
                 CNlist = list;
                 CNlast = commitsListLastSelected;
-                callNext(CNlist, CNidx, CNlast);
+                CNlist[CNfirst].click();
             }
             else {
-                console.log("invalid first or last commit selected");
+                console.log("invalid first or last commit selected (minimum 8 commits of difference)");
             }
         }
     }
@@ -149,6 +162,7 @@ function setupRecordWorkers() {
                         a.click();
                         document.body.removeChild(a);
                         $('#record-before').css("display", "none");
+                        $('#record-progress-bar').css('width','0');
                     }
                 }
             }
