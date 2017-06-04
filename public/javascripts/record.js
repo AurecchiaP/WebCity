@@ -1,5 +1,6 @@
 var reversedRecording;
 var orbit;
+var generatingVideo;
 
 /**
  * called from main; sets up the data and functions to be able to record the canvas
@@ -149,7 +150,6 @@ function setupRecordWorkers() {
                         videoData = [];
                         files = [];
                         count = 0;
-                        $('#record-before').css("display", "inline");
                     }
 
                     if (message.name === "concat") {
@@ -161,6 +161,7 @@ function setupRecordWorkers() {
                         document.body.appendChild(a);
                         a.click();
                         document.body.removeChild(a);
+                        generatingVideo = false;
                         $('#record-before').css("display", "none");
                         $('#record-progress-bar').css('width','0');
                     }

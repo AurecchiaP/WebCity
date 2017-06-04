@@ -54,9 +54,7 @@ The application will not only parse the latest version of the repository, but it
 
 The visualization that will be displayed on the browser at the end of this process will be freely navigable in real time across its three dimensions, and here will be the possibility to change the version of the system that we want to visualize, choosing through a list of commits or tags of the system.
 
-Alongside the navigation, there will also be features to interact with the representation, like displaying information of the elements we are hovering, tagging functionalities, a querying function to look for specific classes or packages, and a video generation feature that allows to generate a video whose frames are represented by the different versions of the system.
-
-%
+Alongside the navigation, there will also be features to interact with the representation, like displaying information of the elements we are hovering, tagging functionalities, a querying function to look for specific classes or packages, and a video generation feature that allows to generate a video whose frames are represented by the different versions of the system.\\\\\\\\
 
 \textbf{An example.} The following is a version of a repository of ArgoUML that can be found on GitHub, visualized through WebCity. We can see how the classes have different appearances, depending on their metrics.
 
@@ -212,6 +210,15 @@ Then we can use this final packing as a maximum possible dimension of the system
 \label{fig:flow}
 \end{figure}
 
+\subsubsection{Visualizing the city} \label{Visualizing the city}
+Once the rectangle packing is done, the necessary data is then sent from the server back to the client that made the request. The client receives the data, parses it, so that it's ready to be read.
+First, though, we have to set up the canvas for the visualization: this means creating a new canvas element, setting up the lights, the controls to navigate the 3D space, the types and dimensions of shadows, the camera, and so on.
+When this initializing part is done, we go through the list of classes and packages we parsed earlier. If a package is marked as visible it means that it existed in the current version, and we therefore have to draw the package itself and recursively its content; if instead it's marked as not visible, we don't draw the package and its content.
+For both classes and packages, we used are simple box geometries to represent them on the canvas, with extra fields added, like its name, some information on the metrics, its type, and so on: these extra fields will be used for the interactive part, so that when we hover an object on the visualization, we already have all the information we need directly on the object itself.
+
+Once we have created all the single meshes for the classes and the packages, we merge them into a single big mesh.
+This is because if we were to keep them as different meshes, the performance would struggle when trying to move around thousands of different meshes at the same time: but since we know that the transformation that the objects go through are all the same, we can merge the meshes into one big mesh, that will be the whole city.
+
 \subsection{Interface} \label{Interface}
 
 When we open the main page of the application, the only thing on screen is an input field where the user can write the address of a public GitHub repository. This minimalistic design is aimed at simplifying the experience for the users and improving the usability. Once the user inputs a valid repository and clicks the submit button, the application downloads the required data from GitHub to the server. Then the client gives the choice to the user between a visualization that is based on commits or tags; most of the time the number of tags is many times smaller than the number of commits, which makes the parsing of the versions of the repository faster and reduces the waiting time for the user. Once the user has chosen and accepted the visualization type, the application starts parsing the code of the repository and loads the 3D visualization on screen.
@@ -313,7 +320,16 @@ Clicking on the cog icon on the header bar, the user can open a tab with 3 input
 \item \textit{Package height}\\ the minimum height of a single package.
 \end{itemize}
 
-These values can be set by the user (or left blank if he don't want to change some of them) so that they can decide how the visualization should be scaled. Note that the final object is scaled before being drawn, so very big values may give similar visualization if the ratios between the sizes are similar.\\
+These values can be set by the user (or left blank if he don't want to change some of them) so that they can decide how the visualization should be scaled. Note that the final object is scaled before being drawn, so very big values may give similar visualization if the ratios between the sizes are similar.
+
+Take into account that the positions of classes or packages may change depending on the sizes that are given by the user. This is because when for example we increase the padding, a class that is in a very deep recursive position will have to be translated more than a class that that is not as deep in the recursion tree, because for each extra level of recursion, its elements are shifted by an extra padding. If we were only increasing the sizes of the paddings, this could be fine: but if we decreasing them, and maybe also tinkering with all the settings at the same time, it could happen that suddenly a package doesn't have enough space anymore in its old position: this is why we may have to reposition some elements during these resizing transformation, and that's also why with big repositories these transformation are not instantaneous.
+
+\begin{figure} [H]
+\centering
+\includegraphics[width=1\textwidth]{pictures/sizing_card.png}
+\caption{The options to set the sizing of the visualization}
+\label{fig:sizing}
+\end{figure}
 
 \begin{figure}[H]
   \centering
@@ -363,6 +379,13 @@ Since in WebCity we have added the functionality to visualize and navigate the h
 We have therefore implemented a video generation feature; by clicking on the camera icon on the header bar we can select a starting and ending commit for the video, alongside the desired resolution of the video. When we click record, the application will go through the commits between the starting and ending commits that we chose, taking a screenshot of every version, and at the end we will return a generated .mp4 video, having a screenshot of a version for each frame.
 There is also an ``orbit'' checkbox; when this is not checked, the screenshots will be taken with a static position. When instead we check the orbit option, the camera will move on a circumference around the center of focus of the visualization while taking the screenshot, which will give a final video where the camera is orbiting around the visualization while it evolves.
 
+\begin{figure} [H]
+\centering
+\includegraphics[width=1\textwidth]{pictures/record_card.png}
+\caption{The options to generate the video}
+\label{fig:record}
+\end{figure}
+
 \subsubsection{Implementation issues} \label{Implementation issues}
 
 The video generation feature is implemented almost completely on the client-side. This is because to be able to do this on the server side we would have had to also be able to create the visualizations on the server side, which is both hard and counterintuitive. Being able to do the visualizations on the server side would feel redundant, since we would have them both on client and server side.
@@ -375,22 +398,100 @@ What we ended up doing was to split the process in two parts.
 The first part takes care of taking the screenshots of all the versions that the user wants to have in the video. To do this, we use a Javascript function that takes care of selecting automatically the versions, taking a screenshot of the canvas, and then changing to the next version until we have all the pictures we need. The screenshot part is quite straightforward, since HTML5 canvases have methods that allow us to do it in a couple of lines.
 Once we have collected our list of screenshots, we use a version of FFmpeg compiled to Javascript to take care of merging the images. Because of the linear nature of Javascript the compiled version of FFmpeg.js is not very fast, but with some tricks, like using web workers to make multiple smaller videos and merging them together at the end, we were able to improve its performance a bit.
 
-// fixme fill up performance table
+Repository: javaParser, res 720p, orbit
 \begin{table}[H]
     \begin{center}
         \begin{tabular}{ | l | l | l | l | l | l |}
         \hline
-        Repository & Min. class number & Max. class number & LoC \\ \hline
-        WebCity & min & max & loc \\ \hline
-        Orbit & min & max & loc \\ \hline
-        JavaParser & min & max & loc \\ \hline
-        Junit4 & min & max & loc \\ \hline
-        ExoPlayer & min & max & loc \\ \hline
+        Versions & Time \\ \hline
+        100 & 63s\\ \hline
+        250 & 146s\\ \hline
+        1000 & 507s\\ \hline
         \end{tabular}
     \end{center}
     \caption{performance test}
     \label{tab:performance}
 \end{table}
+
+Repository: javaParser, res 720p, no orbit
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{ | l | l | l | l | l | l |}
+        \hline
+        Versions & Time \\ \hline
+        100 & 65s\\ \hline
+        250 & 102s\\ \hline
+        1000 & 343s\\ \hline
+        \end{tabular}
+    \end{center}
+    \caption{performance test}
+    \label{tab:performance}
+\end{table}
+
+Repository: javaParser, res 1080p, orbit
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{ | l | l | l | l | l | l |}
+        \hline
+        Versions & Time \\ \hline
+        100 & 117s\\ \hline
+        250 & 246s\\ \hline
+        1000 & 1078s\\ \hline
+        \end{tabular}
+    \end{center}
+    \caption{performance test}
+    \label{tab:performance}
+\end{table}
+
+Repository: javaParser, res 1080p, no orbit
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{ | l | l | l | l | l | l |}
+        \hline
+        Versions & Time \\ \hline
+        100 & 70s\\ \hline
+        250 & 100s\\ \hline
+        1000 & 531s\\ \hline
+        \end{tabular}
+    \end{center}
+    \caption{performance test}
+    \label{tab:performance}
+\end{table}
+
+Repository: javaParser, res 1440p, orbit
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{ | l | l | l | l | l | l |}
+        \hline
+        Versions & Time \\ \hline
+        100 & 151s\\ \hline
+        250 & 356s\\ \hline
+        1000 & 1407\\ \hline
+        \end{tabular}
+    \end{center}
+    \caption{performance test}
+    \label{tab:performance}
+\end{table}
+
+Repository: javaParser, res 1440p, no orbit
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{ | l | l | l | l | l | l |}
+        \hline
+        Versions & Time \\ \hline
+        100 & 92s\\ \hline
+        250 & 197s\\ \hline
+        1000 & 733s\\ \hline
+        \end{tabular}
+    \end{center}
+    \caption{performance test}
+    \label{tab:performance}
+\end{table}
+
+// fixme split screenshot time and generation time, maybe add 500 or 2000
+As we can see from the results, we can notice how the videos generated with the orbit option take almost twice as much time
+as the ones without orbit. This is because when we are not orbiting, there's a higher chance for pixels not to change between multiple screenshots, which means that there's less data to handle and the generation takes less time.
+Also, as expected, increasing the resolution also increases the generation time: from what we can see, changing to a higher resolution increases the total time by around 50\%.
 
 
 
@@ -443,17 +544,16 @@ We picked the following Java repositories to test the performance of the applica
 
 
 
-// fixme fill up table
 \begin{table}[H]
     \begin{center}
         \begin{tabular}{ | l | l | l | l | l | l |}
         \hline
-        Repository & Min. class number & Max. class number & LoC \\ \hline
-        WebCity & min & max & loc \\ \hline
-        Orbit & min & max & loc \\ \hline
-        JavaParser & min & max & loc \\ \hline
-        Junit4 & min & max & loc \\ \hline
-        ExoPlayer & min & max & loc \\ \hline
+        Repository & Min. class number & Max. class number & Min. LoC & Max. LoC \\ \hline
+        WebCity & 6 & 45 & 52 & 3532 \\ \hline
+        Orbit & 176 & 444 & 10344 & 25654 \\ \hline
+        JavaParser & 130 & 558 & 21840 & 50158 \\ \hline
+        Junit4 & 67 & 1159 & 4611 & 45073 \\ \hline
+        ExoPlayer & 202 & 801 & 20192 & 109937 \\ \hline
         \end{tabular}
     \end{center}
     \caption{Sizes of the different repositories analyzed}
