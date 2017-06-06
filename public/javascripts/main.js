@@ -1,14 +1,25 @@
+// data for the 3D visualization
 var scene, camera, renderer, controls;
 var geometry, material, mesh;
 var canvas, mouse;
-var pinnedObject;
 var raycaster;
 var light;
-var recorder;
 var vector = new THREE.Vector3();
 
-var intersects = [];
-var hoveredCube;
+// ratio to keep the visualization sized appropriately
+var scale;
+
+// the currently pinned object
+var pinnedObject;
+
+// information about the search status
+var searchObject;
+var searchSelectedItem;
+var searchListItems;
+
+// web worker for the search feature
+var searchWorker;
+
 
 // the texts that contain statistics on the objects (lines of code, NOA, NOM...)
 var classesText = document.getElementById("classes");
@@ -18,9 +29,10 @@ var statistic2 = document.getElementById("statistic2");
 var statistic3 = document.getElementById("statistic3");
 
 
-
 /**
  * takes care of initialising the visualisation (sets up canvas, scene, lights, renderer, controls...)
+ *
+ * @param {Object} json - the data for the visualization received from the server
  */
 function init(json) {
 
@@ -51,7 +63,7 @@ function init(json) {
     light.shadow.camera.far = 2000;
     light.shadow.camera.fov = 90;
 
-
+    // calculate the size of the visualization so that it fits the screen
     var width = json.width * scale;
     var depth = json.depth * scale;
     var max = Math.max(width, depth);
@@ -66,11 +78,7 @@ function init(json) {
 
     scene.add(light, light.target);
 
-    // light.target.position.set(-100, -100, -100);
-    // light.position.set(0, 0, 0);
-
-
-    var ambientLight = new THREE.AmbientLight(0xffffff, 0.3); // soft white light
+    var ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
     scene.add(ambientLight);
 
     // var helper = new THREE.CameraHelper(light.shadow.camera);
@@ -86,7 +94,7 @@ function init(json) {
     renderer.shadowMap.autoUpdate = false;
 
     // quality vs performance
-    renderer.shadowMap.type = THREE.PCFShadowMap; // default
+    renderer.shadowMap.type = THREE.PCFShadowMap;
     // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     // renderer.shadowMap.type = THREE.BasicShadowMap;
 
@@ -100,7 +108,6 @@ function init(json) {
     // OrbitControls to move around the visualization
     controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-
     // max and min distance on z axis
     controls.maxDistance = 6500;
     controls.minDistance = 0;
@@ -108,51 +115,23 @@ function init(json) {
     controls.enableDamping = true;
     controls.dampingFactor = 0.25;
 
-    $("#info-button").on("click", function () {
-        $("#info-content").css("display", "block");
-    });
-
-    $("#info-content-dismiss").on("click", function () {
-        $("#info-content").css("display", "none");
-    });
-
-    $("#record-card-button").on("click", function () {
-        $("#record-card").css("display", "block");
-    });
-
-    $("#record-card-dismiss").on("click", function () {
-        $("#record-card").css("display", "none");
-    });
-
-    $("#options-card-button").on("click", function () {
-        $("#options-card").css("display", "block");
-    });
-
-    $("#options-card-dismiss").on("click", function () {
-        $("#options-card").css("display", "none");
-    });
-
-    $("#reload-button").on("click", reloadVisualization);
+    setupListeners();
 
     draw(json);
+
     setupRecorder();
 }
-
 
 /**
  * updates the texts based on the hovered object, and updates the render
  */
-var c = 0;
 function render() {
-    camera.getWorldDirection(vector);
 
-    // light.target.position.set(light.position.x + vector.x, light.position.y + vector.y, light.position.z + vector.z);
-    light.target.position.copy(mesh.position);
-
-    // ray-casting still slows down a bit, not as much as before
+    // cast ray from our position to mouse position
     raycaster.setFromCamera(mouse, camera);
-    intersects = raycaster.intersectObjects(meshes);
-    // if we intersected some objects
+    var intersects = raycaster.intersectObjects(meshes);
+
+    // if we intersected some objects with our rays, find the closest object and put on screen its information
     if (intersects.length > 0) {
 
         // get the closest intersection
@@ -189,11 +168,6 @@ function render() {
             statistic1.firstElementChild.nextElementSibling.innerText = "0";
             statistic2.firstElementChild.nextElementSibling.innerText = "0";
         }
-    }
-
-    c++;
-    if (c % 5 === 0) {
-        renderer.shadowMap.needsUpdate = true;
     }
     renderer.render(scene, camera);
 }

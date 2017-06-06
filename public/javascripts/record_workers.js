@@ -1,5 +1,6 @@
+// see https://bgrins.github.io/videoconverter.js/
+
 importScripts('ffmpeg-all-codecs.js');
-// importScripts('ffmpeg_asm.js');
 
 var now = Date.now;
 
@@ -10,6 +11,9 @@ function print(text) {
     });
 }
 
+/**
+ * takes care of building up the data in the right format to then send it to ffmpeg.js
+ */
 onmessage = function(event) {
 
     var message = event.data;
@@ -21,11 +25,8 @@ onmessage = function(event) {
             printErr: print,
             files: message.files || [],
             arguments: message.arguments || [],
-            TOTAL_MEMORY: 1073741824
-            // TOTAL_MEMORY: 2147483648
-            // ALLOW_MEMORY_GROWTH: 1,
             // Can play around with this option - must be a power of 2
-            // TOTAL_MEMORY: 268435456
+            TOTAL_MEMORY: 1073741824
         };
 
         postMessage({

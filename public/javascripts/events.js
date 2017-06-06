@@ -9,16 +9,17 @@ function canvasClick() {
 /**
  * handles wheel scrolls/zoom
  */
-function onWheel(e) {
+function onWheel() {
     controls.update();
     render();
 }
 /**
- * handles alt + leftClick
+ * handles alt + left click
  */
-function altClick(e) {
+function altClick() {
     if (event.altKey === true) {
-        intersects = raycaster.intersectObjects(meshes);
+        var intersects = raycaster.intersectObjects(meshes);
+        // if we were hovering an element(package or class), open the GitHub page with its source code
         if (intersects.length > 0) {
             var obj = intersects[0].object;
             var url;
@@ -32,7 +33,6 @@ function altClick(e) {
             win.focus();
         }
     }
-
 }
 
 /**
@@ -65,7 +65,6 @@ function onKeyPress(event) {
 
                 // pin the new object
                 pinnedObject = intersects[0];
-                pinnedColor = pinnedObject.object.material.color;
                 pinnedObject.object.material.visible = true;
                 pinnedObject.object.material.color.set(0xF77A52);
                 if (hoveredCube.object.type === "package") {
@@ -92,7 +91,6 @@ function onKeyPress(event) {
     }
 }
 
-
 /**
  * updates the visualization when we move the mouse
  */
@@ -101,7 +99,6 @@ function onMouseMove(event) {
     mouse.y = -( ( event.clientY - renderer.domElement.offsetTop ) / renderer.domElement.clientHeight ) * 2 + 1;
     render();
 }
-
 
 /**
  * updates the visualization when we resize the window

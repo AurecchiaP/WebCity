@@ -1,16 +1,23 @@
-var meshes = [];
-var scale;
+// sizes for the visualization
 var padding = 2;
 var minClassSize = 1;
 var packageHeight = 1;
-var box;
+
+// list of all the meshes
+var meshes = [];
+
+// array of classes in the visualization
 var classes = [];
-var recorder, recording = false;
-var commitsList, commitsListFirst, commitsListLast;
+
+// list of commits
+var commitsList;
+// list of commits for the recording feature
+var commitsListFirst;
+var commitsListLast;
 var commitsListFirstSelected = -1;
 var commitsListLastSelected = -1;
 
-var counter = 0;
+// boolean that tells us if it's the first visualization we are drawing
 var firstDraw = true;
 
 
@@ -20,7 +27,9 @@ var firstDraw = true;
  */
 function draw(drwPkg) {
 
+    // ratio to scale the visualization so that it doesn't get too big
     scale = 1250 / Math.max(drwPkg.width, drwPkg.depth);
+
     // create the meshes for all the packages and classes
     var totalClasses = recDraw(drwPkg);
 
@@ -29,7 +38,7 @@ function draw(drwPkg) {
     // other similar things
     geometry = mergeMeshes(meshes);
 
-    // TODO best looking, but computationally expensive
+    //  best looking material, but computationally expensive
     // var material = new THREE.MeshStandardMaterial({
     //     color: 0xffffff,
     //     shading: THREE.SmoothShading,
@@ -44,7 +53,7 @@ function draw(drwPkg) {
     });
     mesh = new THREE.Mesh(geometry, material);
 
-
+    // if it's the first visualization that we load, center it
     if (firstDraw) {
         var center = getCenterPoint(mesh);
         camera.position.setX(center.x);
@@ -60,6 +69,12 @@ function draw(drwPkg) {
     loaded(totalClasses);
 }
 
+/**
+ * given a mesh, returns its center
+ *
+ * @param {Array} mesh - the mesh that we want to know the center of
+ * @returns {Object} - the Three.Vector3 that gives the center position of the mesh
+ */
 function getCenterPoint(mesh) {
     var middle = new THREE.Vector3();
     var geometry = mesh.geometry;
@@ -97,7 +112,7 @@ function clearVisualization() {
 
 /**
  * recursively call recDraw on child packages and draw the packages and their classes
- * @param {object} drwPkg - the root package of the visualization to be drawn
+ * @param {Object} drwPkg - the root package of the visualization to be drawn
  */
 function recDraw(drwPkg) {
     var totalClasses = 0;
@@ -118,10 +133,9 @@ function recDraw(drwPkg) {
     return totalClasses;
 }
 
-
 /**
  * creates the mesh representing the given class, with the right position, size and attributes
- * @param {object} drwCls - the object representing the class to be drawn
+ * @param {Object} drwCls - the object representing the class to be drawn
  */
 function drawClass(drwCls) {
 
@@ -173,7 +187,6 @@ function drawClass(drwCls) {
     meshes.push(mesh);
     scene.add(mesh);
 }
-
 
 /**
  * creates the mesh representing the given package, with the right position, size and attributes
@@ -235,15 +248,14 @@ function drawPackage(drwPkg, totalClasses) {
     scene.add(mesh);
     return classes;
 }
-var recordWorkers;
-var videoData = [];
 
 /**
  * readies the page when the visualization is loaded
  */
 function loaded(totalClasses) {
-    if (recording) {
 
+    // if we are recording we don't have to set up everything
+    if (recording) {
         renderer.setSize(canvas.clientWidth, canvas.clientHeight);
         camera.aspect = canvas.clientWidth / canvas.clientHeight;
         camera.updateProjectionMatrix();
@@ -253,6 +265,7 @@ function loaded(totalClasses) {
         callNext();
         return;
     }
+
     $("#main-content").css('display', 'none');
     $("#container").css('display', 'block');
     $("#navbar-visualization-items").css('display', 'contents');
@@ -266,7 +279,12 @@ function loaded(totalClasses) {
     // update shadows only once
     renderer.shadowMap.needsUpdate = true;
 
+
+    // set up the results for the search feature
     setSearchResults();
+
+
+    // if possible, set up the web worker for the search function
     if (typeof(Worker) !== "undefined") {
         if (typeof(searchWorker) === "undefined") {
             searchWorker = new Worker("assets/javascripts/search_workers.js");
@@ -289,142 +307,11 @@ function loaded(totalClasses) {
     render();
 }
 
-var count = 0;
-
-var files = [];
-
-var BASE64_MARKER = ';base64,';
-
-function convertDataURIToBinary(dataURI) {
-    var base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
-    var base64 = dataURI.substring(base64Index);
-    var raw = window.atob(base64);
-    var rawLength = raw.length;
-    var array = new Uint8Array(new ArrayBuffer(rawLength));
-
-    for (i = 0; i < rawLength; i++) {
-        array[i] = raw.charCodeAt(i);
-    }
-    return array;
-}
-
-var CNidx, CNfirst, CNlist, CNlast;
-
-function callNext() {
-    var image = renderer.domElement.toDataURL('image/jpeg');
-
-    if (count < 10) {
-        files.push({
-            "name": "img0000" + count++ + ".jpg",
-            "data": convertDataURIToBinary(image)
-        });
-    }
-    else if (count < 100) {
-        files.push({
-            "name": "img000" + count++ + ".jpg",
-            "data": convertDataURIToBinary(image)
-        });
-    } else if (count < 1000) {
-        files.push({
-            "name": "img00" + count++ + ".jpg",
-            "data": convertDataURIToBinary(image)
-        });
-    }
-    else if (count < 10000) {
-        files.push({
-            "name": "img0" + count++ + ".jpg",
-            "data": convertDataURIToBinary(image)
-        });
-    }
-    else {
-        files.push({
-            "name": "img" + count++ + ".jpg",
-            "data": convertDataURIToBinary(image)
-        });
-    }
-
-
-    if (recording && ((CNidx <= CNlast && CNidx < CNlast - CNfirst) || (reversedRecording && CNidx >= CNlast && CNidx <= CNfirst - CNlast))) {
-        CNlist[CNidx].click();
-        var percentage;
-        if (reversedRecording) {
-            CNidx--;
-            percentage = (CNfirst - CNidx) / (CNfirst - CNlast) * 66.6;
-
-
-            $('.record-progress-bar').css('width', percentage + '%')
-                .attr('aria-valuenow', percentage);
-        }
-        else {
-            CNidx++;
-            percentage = (CNidx) / (CNlast - CNfirst) * 66.6;
-            $('.record-progress-bar').css('width', percentage + '%')
-                .attr('aria-valuenow', percentage);
-        }
-
-        if (orbit) rotateLeft(Math.PI/360);
-    }
-    else {
-        setTimeout(function () {
-            if (recording) {
-                generatingVideo = true;
-                recording = false;
-                var button = $("#record-button");
-                button.text("Record");
-                button.addClass("disabled");
-                canvas.style.width = "100%";
-                canvas.style.height = "100%";
-                canvas.style.left = "0";
-                renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-                camera.aspect = canvas.clientWidth / canvas.clientHeight;
-                camera.updateProjectionMatrix();
-
-                renderer.shadowMap.needsUpdate = true;
-                render();
-
-                console.log(new Date().toLocaleTimeString());
-
-                var count = 0;
-
-                // fixme change for resolution; 0.25 for commit if @720, 0.75 if @1440
-                updateGenerationProgress(count, Math.ceil(Math.abs((CNlast - CNfirst))));
-
-                var split = Math.abs(Math.ceil((CNlast - CNfirst)/ 8));
-                var start = Math.min(CNlast, CNfirst);
-                for (var i = 0; i < 8; ++i) {
-                    recordWorkers[i].postMessage({
-                        type: "command",
-                        arguments: ['-r', '24', '-start_number', start + i * split, '-i', 'img%05d.jpg', '-v', 'verbose', '-pix_fmt', 'yuv420p', '-vframes', split, 'vid' + i + '.mp4'],
-                        files: files,
-                        name: i
-                    });
-                }
-
-                $("#record-card-button").css("color", "rgba(220, 220, 220, 1)");
-                $('#record-before').css("display", "inline");
-            }
-        }, 100);
-    }
-}
-
-function updateGenerationProgress(time, expected) {
-    if (time < expected && (recording || generatingVideo)) {
-        var percentage = time/expected * 33.3;
-        $('.record-progress-bar').css('width', 66.6 + percentage + '%')
-            .attr('aria-valuenow', 66.6 + percentage);
-
-        setTimeout(function () {
-            updateGenerationProgress(time + 1, expected);
-        },1000);
-    }
-}
-
-
 /**
  * merges together an array of meshes
  *
  * @param {Array} meshes - the array of meshes to merge
- * @returns the combined mesh
+ * @returns {Object} - the combined mesh
  */
 function mergeMeshes(meshes) {
     var combined = new THREE.Geometry();
