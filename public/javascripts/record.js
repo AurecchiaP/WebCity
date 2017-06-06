@@ -50,7 +50,6 @@ function setupRecorder() {
                     reversedRecording = true;
                 }
                 recording = true;
-                console.log(new Date().toLocaleTimeString());
                 orbit = $("#orbit-checkbox").is(':checked');
                 var resolution = $("#resolution-input").val();
 
@@ -113,9 +112,9 @@ function setupRecordWorkers() {
             } else if (message.type === "stdout") {
                 // console.log(message.data);
             } else if (message.type === "start") {
-                console.log(message.data);
+                // console.log(message.data);
             } else if (message.type === "done") {
-                console.log(message);
+                // console.log(message);
                 var buffers = message.data;
 
                 if (buffers.length) {
@@ -147,7 +146,6 @@ function setupRecordWorkers() {
                     }
 
                     if (message.name === "concat") {
-                        console.log(new Date().toLocaleTimeString());
                         $("#record-button").removeClass("disabled");
                         var a = window.document.createElement('a');
                         a.href = window.URL.createObjectURL(blob);

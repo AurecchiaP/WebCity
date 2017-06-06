@@ -44,7 +44,6 @@ document.getElementById("submitButton").onclick = function () {
             clearInterval(pollId);
 
             var json = JSON.parse(data);
-            console.log(json);
 
             $("#commits-number").text("Number of commits: " + json.commits.length);
             $("#tags-number").text("Number of tags: " + json.tags.length);
