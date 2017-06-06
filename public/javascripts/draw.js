@@ -1,8 +1,8 @@
 var meshes = [];
 var scale;
-var packageHeight = 20;
-var minClassSize = 20;
-var padding = 20;
+var padding = 2;
+var minClassSize = 1;
+var packageHeight = 1;
 var box;
 var classes = [];
 var recorder, recording = false;
@@ -265,84 +265,6 @@ function loaded(totalClasses) {
 
     // update shadows only once
     renderer.shadowMap.needsUpdate = true;
-
-    // var commitsDropdown = $("#commits-dropdown");
-    // var commitsDropdownFirst = $("#commits-dropdown-first");
-    // var commitsDropdownLast = $("#commits-dropdown-last");
-    // commitsList = $("#commits-list");
-    // commitsListFirst = $("#commits-list-first");
-    // commitsListLast = $("#commits-list-last");
-
-    // commitsDropdown.on('focus', function () {
-    //     commitsList.css('display', 'block');
-    // });
-    //
-    // commitsDropdown.on('blur', function () {
-    //     commitsList.css('display', 'none');
-    // });
-    //
-    // commitsDropdownFirst.on('focus', function () {
-    //     commitsListFirst.css('display', 'block');
-    // });
-    //
-    // commitsDropdownFirst.on('blur', function () {
-    //     commitsListFirst.css('display', 'none');
-    // });
-    //
-    // commitsDropdownLast.on('focus', function () {
-    //     commitsListLast.css('display', 'block');
-    // });
-    //
-    // commitsDropdownLast.on('blur', function () {
-    //     commitsListLast.css('display', 'none');
-    // });
-    //
-    // commitsList.on('mousedown', function (e) {
-    //     var element;
-    //     if (e.target.parentElement.tagName !== "DIV") {
-    //         element = e.target.parentElement;
-    //     }
-    //     else {
-    //         element = e.target;
-    //     }
-    //
-    //     commitsDropdown.text(element.firstChild.innerText.split("\n")[0]);
-    //
-    //     event.preventDefault();
-    // });
-    //
-    // commitsListFirst.on('mousedown', function (e) {
-    //     var element;
-    //     if (e.target.parentElement.tagName !== "DIV") {
-    //         element = e.target.parentElement;
-    //     }
-    //     else {
-    //         element = e.target;
-    //     }
-    //
-    //     commitsDropdownFirst.text(element.firstChild.innerText.split("\n")[0]);
-    //     commitsListFirstSelected = commitsListFirst.children().index(element);
-    //     console.log(commitsListFirstSelected);
-    //
-    //
-    //     event.preventDefault();
-    // });
-    //
-    // commitsListLast.on('mousedown', function (e) {
-    //     var element;
-    //     if (e.target.parentElement.tagName !== "DIV") {
-    //         element = e.target.parentElement;
-    //     }
-    //     else {
-    //         element = e.target;
-    //     }
-    //
-    //     commitsDropdownLast.text(element.firstChild.innerText.split("\n")[0]);
-    //     commitsListLastSelected = commitsListLast.children().index(element);
-    //     console.log(commitsListLastSelected);
-    //
-    //     event.preventDefault();
-    // });
 
     setSearchResults();
     if (typeof(Worker) !== "undefined") {

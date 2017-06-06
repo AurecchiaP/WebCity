@@ -40,6 +40,7 @@ function setupRecorder() {
                     reversedRecording = true;
                 }
                 recording = true;
+                console.log(new Date().toLocaleTimeString());
                 orbit = $("#orbit-checkbox").is(':checked');
                 var resolution = $("#resolution-input").val();
 

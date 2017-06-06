@@ -57,7 +57,9 @@ public class BasicParser {
         for (File file : new File(path).listFiles()) {
             if (file.isDirectory()) {
                 JavaPackage pkg = makePackage(file.getPath());
-                currentPackage.addChildPackage(pkg);
+                if(pkg.getClasses().size() > 0 || pkg.getChildPackages().size() > 0) {
+                    currentPackage.addChildPackage(pkg);
+                }
             }
         }
         return currentPackage;
@@ -138,6 +140,7 @@ public class BasicParser {
                     new NumberOfMethods(n.getMethods().size()),
                     new NumberOfAttributes(n.getFields().size()),
                     new LinesOfCode(numberOfLines));
+
 
             pkg.addClass(cls);
             super.visit(n, arg);

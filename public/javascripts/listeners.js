@@ -56,6 +56,7 @@ commitsListFirst.on('mousedown', function (e) {
 
     commitsDropdownFirst.text(element.firstChild.innerText.split("\n")[0]);
     commitsListFirstSelected = commitsListFirst.children().index(element);
+    console.log(commitsListFirstSelected);
 
     event.preventDefault();
 });
@@ -71,6 +72,7 @@ commitsListLast.on('mousedown', function (e) {
 
     commitsDropdownLast.text(element.firstChild.innerText.split("\n")[0]);
     commitsListLastSelected = commitsListLast.children().index(element);
+    console.log(commitsListLastSelected);
 
     event.preventDefault();
 });

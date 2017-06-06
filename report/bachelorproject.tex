@@ -400,7 +400,8 @@ The following are some performance tests that we ran on the repository of JavaPa
         100 & 20 & 38 & 58 \\ \hline
         250 & 53 & 77 & 130\\ \hline
         500 & 115 & 149 & 264\\ \hline
-        1000 & 127 & 307 & 434 \\ \hline
+        1000 & 187 & 307 & 494 \\ \hline
+        2000 & 293 & 542 & 835 \\ \hline
         \end{tabular}
     \end{center}
     \caption{720p, orbit}
@@ -415,7 +416,8 @@ The following are some performance tests that we ran on the repository of JavaPa
         100 & 20 & 39 & 59 \\ \hline
         250 & 50 & 45 & 95\\ \hline
         500 & 111 & 76 & 187\\ \hline
-        1000 & 235 & 140 & 375 \\ \hline
+        1000 & 180 & 140 & 320 \\ \hline
+        2000 & 286 & 274 & 560 \\ \hline
         \end{tabular}
     \end{center}
     \caption{720p, no orbit}
@@ -430,6 +432,8 @@ The following are some performance tests that we ran on the repository of JavaPa
         100 & 22 & 66 & 88 \\ \hline
         250 & 60 & 156 & 216\\ \hline
         500 & 128 & 433 & 561\\ \hline
+        1000 & 197 & 637 & 834\\ \hline
+        2000 & 323 & 1323 & 1646\\ \hline
         \end{tabular}
     \end{center}
     \caption{1080p, orbit}
@@ -444,6 +448,8 @@ The following are some performance tests that we ran on the repository of JavaPa
         100 & 21 & 41 & 62 \\ \hline
         250 & 58 & 104 & 162\\ \hline
         500 & 127 & 158 & 285\\ \hline
+        1000 & 216 & 299 & 515\\ \hline
+        2000 & 319 & 597 & 916\\ \hline
         \end{tabular}
     \end{center}
     \caption{1080p, no orbit}
@@ -458,6 +464,8 @@ The following are some performance tests that we ran on the repository of JavaPa
         100 & 25 & 107 & 132 \\ \hline
         250 & 69 & 255 & 324\\ \hline
         500 & 152 & 505 & 657\\ \hline
+        1000 & 205 & 989 & 1194\\ \hline
+        2000 & 437 & 1931 & 2398\\ \hline
         \end{tabular}
     \end{center}
     \caption{1440p, orbit}
@@ -471,12 +479,22 @@ The following are some performance tests that we ran on the repository of JavaPa
         Versions & Screenshot time & Generation time & Total time \\ \hline
         100 & 25 & 64 & 89 \\ \hline
         250 & 69 & 137 & 206\\ \hline
-        500 & 155 & 266 & 412\\ \hline
+        500 & 155 & 266 & 421\\ \hline
+        1000 & 204 & 526 & 730\\ \hline
+        2000 & 436 & 1050 & 1516\\ \hline
         \end{tabular}
     \end{center}
     \caption{1440p, no orbit}
     \label{tab:performance}
 \end{table}
+
+\begin{figure} [H]
+\centering
+\includegraphics[width=1\textwidth]{pictures/figure1.png}
+\caption{Comparison of the video generation performance}
+\label{fig:plot}
+\end{figure}
+
 
 As we can see from the results, we can notice how the videos generated with the orbit option take almost twice as much time
 as the ones without orbit. This is because when we are not orbiting, there's a higher chance for pixels not to change between multiple screenshots, which means that there's less data to handle and the generation takes less time.

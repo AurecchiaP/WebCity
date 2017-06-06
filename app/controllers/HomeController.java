@@ -140,7 +140,6 @@ public class HomeController extends Controller {
             }
         }
 
-
         JavaPackageHistory jph = null;
 
         HistoryUtils historyUtils = new HistoryUtils();
@@ -324,7 +323,7 @@ public class HomeController extends Controller {
                 DrawablePackage drw = historyToDrawable(commit.getName(), jph);
 
                 // do the rectangle packing
-                packings.put(commit.getName(), new RectanglePacking(drw, null, 20,20, commit.getName()));
+                packings.put(commit.getName(), new RectanglePacking(drw, null, 2,1, commit.getName()));
             }
         } else {
             for (Ref tag : peeledTags) {
@@ -343,7 +342,7 @@ public class HomeController extends Controller {
                         DrawablePackage drw = historyToDrawable(commit.getName(), jph);
 
                         // do the rectangle packing
-                        packings.put(commit.getName(), new RectanglePacking(drw, null, 20, 20, commit.getName()));
+                        packings.put(commit.getName(), new RectanglePacking(drw, null, 2, 1, commit.getName()));
                         break;
                     }
                 }
@@ -357,7 +356,7 @@ public class HomeController extends Controller {
         // find the biggest drawable, considering all commits
         maxDrw = getMaxDrawable(new ArrayList<>(packings.values()));
 
-        new RectanglePacking(maxDrw, maxDrw, 20, 20, "max");
+        new RectanglePacking(maxDrw, maxDrw, 2, 1, "max");
 
         git.close();
 
