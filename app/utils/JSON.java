@@ -28,11 +28,6 @@ public abstract class JSON {
             jsonObject.add("methods", context.serialize(cls.getMethods().getValue()));
             jsonObject.add("linesOfCode", context.serialize(cls.getLinesOfCode().getValue()));
 
-            // TODO not sure if I want to keep them as single json fields or objects
-//            Gson gson = new Gson();
-//            jsonObject.add("Attributes", new JsonParser().parse(gson.toJson(cls.getAttributes())));
-//            jsonObject.add("Methods", new JsonParser().parse(gson.toJson(cls.getMethods())));
-//            jsonObject.add("LinesOfCode", new JsonParser().parse(gson.toJson(cls.getLinesOfCode())));
             return jsonObject;
         }
     }

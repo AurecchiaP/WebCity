@@ -1,22 +1,30 @@
-var submitButton = document.getElementById("submitButton");
-var btn = document.getElementById("testBtn");
-var inputField = document.getElementById("inputField");
-var currentCommit, commitsNumber, repositoryOwner, repositoryName, repositoryUrl;
-var currentRepo, type;
-var visualization, currentVisibles;
+// information on the current repository
+var currentCommit, repositoryOwner, repositoryName, repositoryUrl, currentRepo;
+
+// if by commit or tags
+var versionType;
+
+// data for the visualization
+var visualization;
+
+// list of visible elements
+var currentVisibles;
+
+// if we are polling for the download or the parsing
 var pollType;
 
-const id = (Math.random().toString(36) + '00000000000000000').slice(2, 7);
 
+// id to be identified by the server
+const id = (Math.random().toString(36) + '00000000000000000').slice(2, 7);
 
 /**
  * sends a request to the server with the repository linked in the input field; if valid, visualizes it
  */
-
-submitButton.onclick = function () {
-    currentRepo = inputField.value.replace(".git", "");
+document.getElementById("submitButton").onclick = function () {
+    currentRepo = document.getElementById("inputField").value.replace(".git", "");
     $('#submitButton').addClass('disabled');
-    document.getElementById("progressBar").style.width = "100%";
+    var progressBar = document.getElementById("progressBar");
+    progressBar.style.width = "100%";
     pollType = "download";
     var pollId = setInterval(poll, 1000);
 
@@ -36,7 +44,6 @@ submitButton.onclick = function () {
             clearInterval(pollId);
 
             var json = JSON.parse(data);
-            console.log(json);
 
             $("#commits-number").text("Number of commits: " + json.commits.length);
             $("#tags-number").text("Number of tags: " + json.tags.length);
@@ -44,19 +51,25 @@ submitButton.onclick = function () {
                 $("#type-select").children()[1].setAttribute("disabled", "disabled");
             }
 
-            $('.progress-bar').css('width', '0.0%')
-                .attr('aria-valuenow', "0.0%").html("");
+            $('.progress-bar').css('width', '0.0%').attr('aria-valuenow', "0.0%").html("");
 
-            document.getElementById("progressBar").style.width = "0%";
-
+            progressBar.style.width = "0%";
 
             $('#submit-card').css('display', 'block');
 
             console.log("valid repository");
 
+            $("#visualize-button").on("click", function () {
+                $('#visualize-button').addClass('disabled');
+                progressBar.style.width = "100%";
+                var id = setInterval(poll, 1000);
+                versionType = $("#type-select").val();
+                getData(id, versionType);
+            });
+
         }, error: function () {
             $('#submitButton').removeClass('disabled');
-            document.getElementById("progressBar").style.width = "0%";
+            progressBar.style.width = "0%";
 
             // show error message
             $("#errorMessage").css('opacity', '1');
@@ -67,14 +80,6 @@ submitButton.onclick = function () {
         }
     });
 };
-
-$("#visualize-button").on("click", function () {
-    $('#visualize-button').addClass('disabled');
-    document.getElementById("progressBar").style.width = "100%";
-    var id = setInterval(poll, 1000);
-    type = $("#type-select").val();
-    getData(id, type);
-});
 
 /**
  * polls the server to get percentage on the download
@@ -90,10 +95,9 @@ function poll() {
         },
         success: function (data) {
 
-            //update the progress bar with the data received from server
             var json = JSON.parse(data);
 
-
+            //update the progress bar with the data received from server
             if (pollType === "download") {
                 if (json.taskName === "Loading visualization") {
                     $('.progress-bar').css('width', '100%')
@@ -108,8 +112,7 @@ function poll() {
                     $('.progress-bar').css('width', 33.3 + (json.percentage / 3) + '%')
                         .attr('aria-valuenow', json.percentage).html(json.taskName);
                 }
-                else
-                if (json.taskName === "Updating references") {
+                else if (json.taskName === "Updating references") {
                     $('.progress-bar').css('width', 0 + (json.percentage) + '%')
                         .attr('aria-valuenow', json.percentage).html(json.taskName);
                 }
@@ -150,124 +153,29 @@ function getData(pollId, type) {
             clearInterval(pollId);
             console.log("data fetch succesful");
 
-            // initialize th visualization
             var json = JSON.parse(data);
-            console.log(json);
+
+            // update the local information about the repository
             var repository = json.details.repository.split("/");
             repositoryName = repository[1];
             repositoryOwner = repository[0];
             repositoryUrl = json.details.repositoryUrl;
+
+            // update the dropdown menus with the new list of commits
             addCommits(json.commits);
             currentCommit = json.commits[0].name;
             $('#current-commit').text(currentCommit);
+
+            // initialize the visualization`
             visualization = json.visualization;
             currentVisibles = json.visibles;
             init(visualization);
+
         }, error: function () {
             $('#submitButton').removeClass('disabled');
             // stop polling
             clearInterval(pollId);
             console.log("data fetch error");
         }
-    });
-}
-
-
-var searchObject;
-var searchSelectedItem;
-var searchInput = $('#search-input');
-var searchList = $('#search-list');
-var searchListItems;
-
-var searchWorker;
-var recordWorker;
-
-searchInput.on('keyup', function () {
-    var input = searchInput.val();
-    // if we didn't instantiate the worker it means that the browser doesn't support them
-    if (typeof(searchWorker) !== "undefined") {
-
-        // make the list of classes into a plain list (can't send HTML elements to web workers)
-        var data = [];
-        for (var j = 0; j < searchListItems.length; ++j) {
-            data[j] = searchListItems[j].innerText;
-        }
-
-        // send data to web worker
-        searchWorker.postMessage([input, data]);
-    }
-    // else go through the list manually
-    else {
-        var it;
-        for (var i = 0; i < searchListItems.length; ++i) {
-            it = searchListItems[i];
-            if (it.innerText.includes(input)) {
-                it.style.display = "block";
-            } else {
-                it.style.display = "none";
-            }
-        }
-    }
-});
-
-searchInput.on('focus', function () {
-    searchList.css('display', 'block');
-});
-
-
-searchInput.on('blur', function () {
-    searchList.css('display', 'none');
-});
-
-// prevent searchList from disappearing
-searchList.on('mousedown', function () {
-    event.preventDefault();
-});
-
-function setSearchResults() {
-    searchList.empty();
-
-    // populate the searchList
-    for (var i = 0; i < meshes.length; ++i) {
-        if (meshes[i].type === "class") {
-            searchList.append(" <button class='search-list-item list-group-item list-group-item-action'><div class='grid'>"
-                + meshes[i].filename + ":" + meshes[i].name + "<small>" + meshes[i].type + "</small></div></button>");
-
-        } else {
-            searchList.append(" <button class='search-list-item list-group-item list-group-item-action'><div class='grid'>"
-                + meshes[i].name + "<small>" + meshes[i].type + "</small></div></button>");
-        }
-
-    }
-    searchListItems = $('.search-list-item');
-
-    searchListItems.on('click', function (e) {
-        var newSearchObject = meshes[searchListItems.index(e.currentTarget)];
-        // if an object is already selected
-        if (searchObject) {
-            searchSelectedItem.classList.remove("active");
-            searchObject.material.visible = false;
-            // we clicked twice on the same object, so it's not invisible; nothing else to do, return
-            if (searchObject === newSearchObject) {
-                searchObject = null;
-                searchSelectedItem = null;
-                renderer.render(scene, camera);
-                renderer.render(scene, camera);
-                return;
-            }
-        }
-        // point camera at selected mesh
-        var vector = new THREE.Vector3();
-        vector.setFromMatrixPosition(newSearchObject.matrixWorld);
-        controls.target.set(vector.x, vector.y, vector.z);
-        controls.update();
-
-        searchSelectedItem = e.target;
-        searchSelectedItem.classList.add("active");
-        searchObject = newSearchObject;
-        searchObject.material.visible = true;
-        searchObject.material.color.set(0xA9CF54);
-        renderer.render(scene, camera);
-        renderer.render(scene, camera);
     });
 }

@@ -1,5 +1,11 @@
 package utils;
 
+/**
+ * Utility class for pairs of elements
+ *
+ * @param <F> first element of the pair
+ * @param <S> first element of the pair
+ */
 public class Pair<F, S> {
     private F first;
     private S second;
