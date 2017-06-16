@@ -7,31 +7,31 @@
 \contentsline {subsection}{\numberline {2.2}Connection between data and structure}{3}{subsection.2.2}
 \contentsline {section}{\numberline {3}The application}{4}{section.3}
 \contentsline {subsection}{\numberline {3.1}Interface}{5}{subsection.3.1}
-\contentsline {subsection}{\numberline {3.2}Interaction}{6}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.2}Interaction}{5}{subsection.3.2}
 \contentsline {subsubsection}{\numberline {3.2.1}Hover}{6}{subsubsection.3.2.1}
 \contentsline {subsubsection}{\numberline {3.2.2}Search}{6}{subsubsection.3.2.2}
-\contentsline {subsubsection}{\numberline {3.2.3}Tag}{7}{subsubsection.3.2.3}
-\contentsline {subsubsection}{\numberline {3.2.4}Source code}{8}{subsubsection.3.2.4}
-\contentsline {subsection}{\numberline {3.3}3D navigation}{8}{subsection.3.3}
-\contentsline {subsubsection}{\numberline {3.3.1}Pitch and yaw}{8}{subsubsection.3.3.1}
-\contentsline {subsubsection}{\numberline {3.3.2}Pan}{8}{subsubsection.3.3.2}
-\contentsline {subsubsection}{\numberline {3.3.3}Zoom}{9}{subsubsection.3.3.3}
-\contentsline {subsubsection}{\numberline {3.3.4}Size scaling}{9}{subsubsection.3.3.4}
-\contentsline {subsubsection}{\numberline {3.3.5}Versions navigation}{10}{subsubsection.3.3.5}
-\contentsline {subsection}{\numberline {3.4}Video generation}{11}{subsection.3.4}
-\contentsline {subsubsection}{\numberline {3.4.1}Implementation issues}{11}{subsubsection.3.4.1}
-\contentsline {subsubsection}{\numberline {3.4.2}Implementation}{12}{subsubsection.3.4.2}
-\contentsline {subsection}{\numberline {3.5}Architecture}{14}{subsection.3.5}
-\contentsline {subsubsection}{\numberline {3.5.1}General model}{14}{subsubsection.3.5.1}
-\contentsline {subsubsection}{\numberline {3.5.2}Control flow}{15}{subsubsection.3.5.2}
-\contentsline {subsection}{\numberline {3.6}Parsing}{16}{subsection.3.6}
-\contentsline {subsection}{\numberline {3.7}Rectangle packing}{16}{subsection.3.7}
-\contentsline {subsubsection}{\numberline {3.7.1}Classes packing}{17}{subsubsection.3.7.1}
-\contentsline {subsubsection}{\numberline {3.7.2}Bins}{18}{subsubsection.3.7.2}
-\contentsline {subsubsection}{\numberline {3.7.3}Maximum packing}{18}{subsubsection.3.7.3}
-\contentsline {subsubsection}{\numberline {3.7.4}Visualizing the city}{19}{subsubsection.3.7.4}
-\contentsline {section}{\numberline {4}Results}{19}{section.4}
-\contentsline {subsection}{\numberline {4.1}Visualization performance}{19}{subsection.4.1}
-\contentsline {subsection}{\numberline {4.2}Visualization generation}{19}{subsection.4.2}
-\contentsline {section}{\numberline {5}Conclusions}{20}{section.5}
-\contentsline {section}{\numberline {6}Future work}{20}{section.6}
+\contentsline {subsubsection}{\numberline {3.2.3}Tag}{6}{subsubsection.3.2.3}
+\contentsline {subsubsection}{\numberline {3.2.4}Source code}{7}{subsubsection.3.2.4}
+\contentsline {subsection}{\numberline {3.3}3D navigation}{7}{subsection.3.3}
+\contentsline {subsubsection}{\numberline {3.3.1}Pitch and yaw}{7}{subsubsection.3.3.1}
+\contentsline {subsubsection}{\numberline {3.3.2}Pan}{7}{subsubsection.3.3.2}
+\contentsline {subsubsection}{\numberline {3.3.3}Zoom}{8}{subsubsection.3.3.3}
+\contentsline {subsubsection}{\numberline {3.3.4}Size scaling}{8}{subsubsection.3.3.4}
+\contentsline {subsubsection}{\numberline {3.3.5}Versions navigation}{9}{subsubsection.3.3.5}
+\contentsline {subsection}{\numberline {3.4}Video generation}{10}{subsection.3.4}
+\contentsline {subsubsection}{\numberline {3.4.1}Implementation}{10}{subsubsection.3.4.1}
+\contentsline {subsubsection}{\numberline {3.4.2}Implementation issues}{12}{subsubsection.3.4.2}
+\contentsline {subsection}{\numberline {3.5}Architecture}{12}{subsection.3.5}
+\contentsline {subsubsection}{\numberline {3.5.1}General model}{12}{subsubsection.3.5.1}
+\contentsline {subsubsection}{\numberline {3.5.2}Control flow}{13}{subsubsection.3.5.2}
+\contentsline {subsection}{\numberline {3.6}Parsing}{14}{subsection.3.6}
+\contentsline {subsection}{\numberline {3.7}Rectangle packing}{14}{subsection.3.7}
+\contentsline {subsubsection}{\numberline {3.7.1}Bins}{15}{subsubsection.3.7.1}
+\contentsline {subsubsection}{\numberline {3.7.2}Classes packing}{16}{subsubsection.3.7.2}
+\contentsline {subsubsection}{\numberline {3.7.3}Maximum packing}{17}{subsubsection.3.7.3}
+\contentsline {subsubsection}{\numberline {3.7.4}Visualizing the city}{17}{subsubsection.3.7.4}
+\contentsline {section}{\numberline {4}Results}{17}{section.4}
+\contentsline {subsection}{\numberline {4.1}Visualization performance}{17}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}Visualization generation}{18}{subsection.4.2}
+\contentsline {section}{\numberline {5}Conclusions}{19}{section.5}
+\contentsline {section}{\numberline {6}Future work}{19}{section.6}
