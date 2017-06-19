@@ -19,18 +19,16 @@
 \contentsline {subsubsection}{\numberline {3.3.5}Versions navigation}{9}{subsubsection.3.3.5}
 \contentsline {subsection}{\numberline {3.4}Video generation}{10}{subsection.3.4}
 \contentsline {subsubsection}{\numberline {3.4.1}Implementation}{10}{subsubsection.3.4.1}
-\contentsline {subsubsection}{\numberline {3.4.2}Implementation issues}{12}{subsubsection.3.4.2}
-\contentsline {subsection}{\numberline {3.5}Architecture}{12}{subsection.3.5}
-\contentsline {subsubsection}{\numberline {3.5.1}General model}{12}{subsubsection.3.5.1}
-\contentsline {subsubsection}{\numberline {3.5.2}Control flow}{13}{subsubsection.3.5.2}
-\contentsline {subsection}{\numberline {3.6}Parsing}{14}{subsection.3.6}
-\contentsline {subsection}{\numberline {3.7}Rectangle packing}{14}{subsection.3.7}
-\contentsline {subsubsection}{\numberline {3.7.1}Bins}{15}{subsubsection.3.7.1}
-\contentsline {subsubsection}{\numberline {3.7.2}Classes packing}{16}{subsubsection.3.7.2}
-\contentsline {subsubsection}{\numberline {3.7.3}Maximum packing}{17}{subsubsection.3.7.3}
-\contentsline {subsubsection}{\numberline {3.7.4}Visualizing the city}{17}{subsubsection.3.7.4}
-\contentsline {section}{\numberline {4}Results}{17}{section.4}
-\contentsline {subsection}{\numberline {4.1}Visualization performance}{17}{subsection.4.1}
-\contentsline {subsection}{\numberline {4.2}Visualization generation}{18}{subsection.4.2}
+\contentsline {subsection}{\numberline {3.5}Architecture}{10}{subsection.3.5}
+\contentsline {subsubsection}{\numberline {3.5.1}Control flow}{11}{subsubsection.3.5.1}
+\contentsline {subsection}{\numberline {3.6}Parsing}{12}{subsection.3.6}
+\contentsline {subsection}{\numberline {3.7}Rectangle packing}{12}{subsection.3.7}
+\contentsline {subsubsection}{\numberline {3.7.1}Bins}{13}{subsubsection.3.7.1}
+\contentsline {subsubsection}{\numberline {3.7.2}Classes packing}{14}{subsubsection.3.7.2}
+\contentsline {subsubsection}{\numberline {3.7.3}Maximum packing}{15}{subsubsection.3.7.3}
+\contentsline {subsubsection}{\numberline {3.7.4}Visualizing the city}{15}{subsubsection.3.7.4}
+\contentsline {section}{\numberline {4}Results}{15}{section.4}
+\contentsline {subsection}{\numberline {4.1}Visualization performance}{15}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}Video generation performance}{17}{subsection.4.2}
+\contentsline {subsubsection}{\numberline {4.2.1}Implementation issues}{18}{subsubsection.4.2.1}
 \contentsline {section}{\numberline {5}Conclusions}{19}{section.5}
-\contentsline {section}{\numberline {6}Future work}{19}{section.6}

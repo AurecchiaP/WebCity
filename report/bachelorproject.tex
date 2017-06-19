@@ -233,7 +233,7 @@ Clicking on the cog icon on the header bar, the user can open a tab with three i
 
 These values can be set (or left blank if we don't want to change some of them) so that we can decide how the visualization should be scaled. Note that the final object is scaled before being drawn, so very big values may give similar visualization if the ratios between the sizes are similar.
 
-Take into account that the positions of classes or packages may change depending on the sizes that are given by the user. This is because when, for example, we increase the padding, a class that is in a very deep recursive position will have to be translated more than a class that that is not as deep in the recursion tree, because for each extra level of recursion, its elements are shifted by the extra padding. If we were only increasing the sizes of the paddings, this could be fine: but if we decrease them, and maybe also change the settings at the same time, it could happen that suddenly a package doesn't have enough space anymore in its old position: this is why we may have to reposition some elements during these resizing transformation.
+Take into account that the positions of classes or packages may change depending on the sizes that are given by the user. This is because when, for example, we increase the padding, a class that is in a very deep recursive position will have to be translated more than a class that that is not as deep in the recursion tree, because for each extra level of recursion, its elements are shifted by the extra padding. If we were only increasing the sizes of the paddings, this could be fine: but if we decrease them, and maybe also change the settings at the same time, it could happen that suddenly a package doesn't have enough space anymore in its old position: this is why we may have to reposition some elements during these resizing transformations.
 
 \begin{figure} [H]
 \centering
@@ -292,111 +292,6 @@ To produce the final .mp4 video we split the process into two parts.
 The first part takes care of taking the screenshots of all the versions that the user wants to have in the video. To do this, we use a Javascript function that takes care of selecting automatically the versions, taking a screenshot of the canvas, and then changing to the next version until we have all the pictures we need.
 Once we have collected our array of screenshots, we use a version of FFmpeg compiled to Javascript to take care of merging the images. Because of the linear nature of Javascript the compiled version of FFmpeg.js is not very fast, but with some optimizations, such as using web workers to make multiple smaller videos and merging them together at the end, we were able to improve its performance.
 
-Tables 1 to 6 show some performance tests that we ran on the repository JavaParser, using different resolutions (720p, 1080p, 1440p), at with different amount of versions (100, 250, 500, 1000, 2000) and with and without orbit.
-
-\begin{table}[H]
-    \begin{center}
-        \begin{tabular}{ | l | l | l | l | l | l |}
-        \hline
-        Versions & Screenshot time (s) & Generation time (s)& Total time (s) \\ \hline
-        100 & 20 & 38 & 58 \\ \hline
-        250 & 53 & 77 & 130\\ \hline
-        500 & 115 & 149 & 264\\ \hline
-        1000 & 187 & 307 & 494 \\ \hline
-        2000 & 293 & 542 & 835 \\ \hline
-        \end{tabular}
-    \end{center}
-    \caption{720p, orbit}
-    \label{tab:performance}
-
-    \begin{center}
-        \begin{tabular}{ | l | l | l | l | l | l |}
-        \hline
-        Versions & Screenshot time (s) & Generation time (s)& Total time (s) \\ \hline
-        100 & 20 & 39 & 59 \\ \hline
-        250 & 50 & 45 & 95\\ \hline
-        500 & 111 & 76 & 187\\ \hline
-        1000 & 180 & 140 & 320 \\ \hline
-        2000 & 286 & 274 & 560 \\ \hline
-        \end{tabular}
-    \end{center}
-    \caption{720p, no orbit}
-    \label{tab:performance}
-
-    \begin{center}
-        \begin{tabular}{ | l | l | l | l | l | l |}
-        \hline
-        Versions & Screenshot time (s) & Generation time (s)& Total time (s) \\ \hline
-        100 & 22 & 66 & 88 \\ \hline
-        250 & 60 & 156 & 216\\ \hline
-        500 & 128 & 433 & 561\\ \hline
-        1000 & 197 & 637 & 834\\ \hline
-        2000 & 323 & 1323 & 1646\\ \hline
-        \end{tabular}
-    \end{center}
-    \caption{1080p, orbit}
-    \label{tab:performance}
-
-    \begin{center}
-        \begin{tabular}{ | l | l | l | l | l | l |}
-        \hline
-        Versions & Screenshot time (s) & Generation time (s)& Total time (s) \\ \hline
-        100 & 21 & 41 & 62 \\ \hline
-        250 & 58 & 104 & 162\\ \hline
-        500 & 127 & 158 & 285\\ \hline
-        1000 & 216 & 299 & 515\\ \hline
-        2000 & 319 & 597 & 916\\ \hline
-        \end{tabular}
-    \end{center}
-    \caption{1080p, no orbit}
-    \label{tab:performance}
-
-    \begin{center}
-        \begin{tabular}{ | l | l | l | l | l | l |}
-        \hline
-        Versions & Screenshot time (s) & Generation time (s)& Total time (s) \\ \hline
-        100 & 25 & 107 & 132 \\ \hline
-        250 & 69 & 255 & 324\\ \hline
-        500 & 152 & 505 & 657\\ \hline
-        1000 & 205 & 989 & 1194\\ \hline
-        2000 & 437 & 1931 & 2398\\ \hline
-        \end{tabular}
-    \end{center}
-    \caption{1440p, orbit}
-    \label{tab:performance}
-
-    \begin{center}
-        \begin{tabular}{ | l | l | l | l | l | l |}
-        \hline
-        Versions & Screenshot time (s) & Generation time (s)& Total time (s) \\ \hline
-        100 & 25 & 64 & 89 \\ \hline
-        250 & 69 & 137 & 206\\ \hline
-        500 & 155 & 266 & 421\\ \hline
-        1000 & 204 & 526 & 730\\ \hline
-        2000 & 436 & 1050 & 1516\\ \hline
-        \end{tabular}
-    \end{center}
-    \caption{1440p, no orbit}
-    \label{tab:performance}
-\end{table}
-
-Figure \ref{fig:plot} shows a plot of the performance results with the different video settings:
-
-\begin{figure} [H]
-\centering
-\includegraphics[width=1\textwidth]{pictures/figure1.png}
-\caption{Comparison of the video generation performance}
-\label{fig:plot}
-\end{figure}
-
-As we can see from the results, we can notice how the videos generated with the orbit option take almost twice as much time
-as the ones without orbit. This is because when we are not orbiting, there's a higher chance for pixels not to change between multiple screenshots, which means that there's less data to handle and the generation takes less time.
-Also, as expected, increasing the resolution also increases the generation time: from what we can see, changing to a higher resolution increases the total time by around 50\%.
-
-\subsubsection{Implementation issues} \label{Implementation issues}
-
-The video generation feature is implemented almost completely on the client side. This is because to be able to do this on the server side we would have had to also be able to create the visualizations on the server side, which, without changing our current architecture, is not possible: Three.js, the library used to create the 3D cities, is a strictly web focused library. To be able to use it on the server we then would need a way to build a second web app on the server, which most likely means either changing the whole server side.
-
 \subsection{Architecture} \label{Architecture}
 
 Before we start parsing version and packing rectangles, we need to have a model to follow, so that we can store the data in a meaningful and usable way.
@@ -416,7 +311,8 @@ We then have Drawables, which are container classes that extend JavaClasses and 
 \end{figure}
 
 \subsubsection{Control flow} \label{Control flow}
-% //could be made more detailed
+Figure \ref{fig:flow} shows a simplified diagram of the general flow of the application. The user inputs the URL of a repository, then the server side checks if this specific repository had already been downloaded and parsed; if this is the case, it directly sends back the data for the visualization. If it's a new repository, the server clones it from GitHub, it parses it, it uses the rectangle packing algorithm to find the position of the elements in the visualization, and send the data back to the client to be used for the 3D rendering.
+
 WebCity makes use of various other libraries and technologies that run alongside code written by us to be able to produce the visualizations.
 
 The client side is written in HTML5, CSS3 and Javascript; of the Javascript part, some are external libraries, mainly jQuery, ffmpeg.js (a version of ffmpeg compiled to Javascript) and Three.js, which is the library that then runs WebGL undearneath to make the 3D visualization.
@@ -477,7 +373,7 @@ Figure \ref{fig:bins} shows three possible open bins in red, blue and green wher
 
 \subsubsection{Classes packing} \label{Classes packing}
 The rectangle packing algorithm to position the classes inside a package is fairly simple. Once we have found an open bin and we know that we have enough space (vertically or horizontally) to fit all the classes, we start placing them in order of size, from biggest to smallest, one next to each other. Once a row -- or column -- cannot fit another class, we go back at the beginning of the row and we stack a new row on top of it. The padding between the classes and between the classes and the package is the same, and can be set manually by the user.
-Figure \ref{fig:ClassesPacking} shows a simple example of how the final positioning of classes looks like.
+Figure \ref{fig:classesPacking} shows a simple example of how the final positioning of classes looks like.
 
 \begin{figure} [H]
 \centering
@@ -525,6 +421,10 @@ This is because if we were to keep them as different meshes, the performance wou
 \section{Results} \label{Results}
 %%%%%%%%%%%%%%%%%%%%%%%%%
 
+We will now present a short analysis of the general performance of the application, focusing on two main parts: the performance of the parsing and rectangle packing on the server side, and the video generation feature on the client side.
+
+The parsing and packing will be tested by counting how long it takes to parse and pack different repositories with varying amounts of code and versions, while the video feature will be tested on a single repository, with different combination of settings.
+
 \subsection{Visualization performance} \label{Visualization performance}
 
 For the browser-based 3D visualization of the repositories we used Three.js, a Javascript library that allows users to interface with WebGL in a simpler and more straightforward way. WebGL is based on OpenGL ES 2.0, and even though it is not as mature as the latest versions of OpenGL and it lacks some of its features, it still provides solid performance while allowing to create and manipulate 3D graphics on the client side, allowing to draw directly onto HTML5 canvas elements.
@@ -535,39 +435,19 @@ The first bottleneck was solved by merging all the meshes of the different objec
 
 Another big performance improvement was obtained disabling the automatic update of the shadows, and manually telling the renderer to update them only when needed. This allowed us to have proper shadows and lighting without greatly affecting the performance.
 
-\subsection{Visualization generation} \label{Visualization generation}
-
-Generating the visualization from scratch, when the repository contains many classes, packages and a big amount of versions to be parsed, can take a long time. We have analyzed the time it takes to generate the final visualization (where we have parsed every version of the repository's history) for different orders of magnitude. What takes most of the time is the actual parsing of the code, since we need to scan the code to gather the information for the metrics that will then be used for the visualization. The final part of generating the visualization when we already have the data takes only a small fraction of the total time.\\
-
+Generating the visualization from scratch, when the repository contains many classes, packages and a big amount of versions to be parsed, can take a long time. We have analyzed the time it takes to generate the final visualization (where we have parsed every version of the repository's history) for different orders of magnitude. What takes most of the time is the actual parsing of the code, since we need to scan the code to gather the information for the metrics that will then be used for the visualization. The final part of generating the visualization when we already have the data takes only a small fraction of the total time.\\\\
 We picked the following Java repositories to test the performance of the application:
 
 \begin{itemize}
-    \item https://github.com/AurecchiaP/webcity
-    \item https://github.com/orbit/orbit
-    \item https://github.com/javaparser/javaparser
-    \item https://github.com/junit-team/junit4
-    \item https://github.com/google/ExoPlayer
+    \item https://github.com/AurecchiaP/webcity: our own repository on GitHub
+    \item https://github.com/orbit/orbit: a framework to write distributed systems using virtual actors on the JVM
+    \item https://github.com/javaparser/javaparser: a Java 1.0 to Java 9.0 Parser with AST generation and visitor support
+    \item https://github.com/junit-team/junit4: a Java framework for unit testing
+    \item https://github.com/google/ExoPlayer: a media player for Android systems
 \end{itemize}
 
-Table \ref{tab:performance} shows the results of our tests, and table \ref{tab:performance2} contains information about the sizes of the repositories.
-
-\begin{table}[H]
-    \begin{center}
-        \begin{tabular}{ | l | l | l | l | l | l |}
-        \hline
-        Repository & Versions & Parsing time & Generation time & Total time \\ \hline
-        WebCity & 189 & 12s & <1s & 12s \\ \hline
-        Orbit & 1536 & 370s & 4s & 374s \\ \hline
-        JavaParser & 2238 & 424s & 2s & 426s \\ \hline
-        Junit4 & 2448 & 464s & 3s & 467s \\ \hline
-        ExoPlayer & 3568 & 1203s & 14s & 1217s \\ \hline
-        \end{tabular}
-    \end{center}
-    \caption{Performance test on different repositories}
-    \label{tab:performance}
-\end{table}
-
-
+Table \ref{tab:performance2} contains information about the sizes of the repositories, and table \ref{tab:performance} shows the results of our tests.
+Min. class number and Max. class number represent the lowest and highest amount of numbers found in any version of the repository,  and Min. LoC and Max. LoC represent the sum of the number of lines of code of the Java files in which the classes were found.
 
 \begin{table}[H]
     \begin{center}
@@ -585,7 +465,133 @@ Table \ref{tab:performance} shows the results of our tests, and table \ref{tab:p
     \label{tab:performance2}
 \end{table}
 
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{ | l | l | l | l | l | l |}
+        \hline
+        Repository & Versions & Parsing time & Generation time & Total time \\ \hline
+        WebCity & 189 & 12s & <1s & 12s \\ \hline
+        Orbit & 1536 & 370s & 4s & 374s \\ \hline
+        JavaParser & 2238 & 424s & 2s & 426s \\ \hline
+        Junit4 & 2448 & 464s & 3s & 467s \\ \hline
+        ExoPlayer & 3568 & 1203s & 14s & 1217s \\ \hline
+        \end{tabular}
+    \end{center}
+    \caption{Performance test on different repositories}
+    \label{tab:performance}
+\end{table}
+
 As expected, both the number of elements to be parsed and the number of versions have an important influence on the time required to parse the history of a repository, while the generation time (mostly represented by the rectangle packing algorithm) is negligible.
+
+\subsection{Video generation performance} \label{Video generation performance}
+Tables \ref{tab:performance3} to \ref{tab:performance8} show some performance tests that we ran on the repository JavaParser, using different resolutions (720p, 1080p, 1440p), with different amount of versions (100, 250, 500, 1000, 2000), with and without orbit.
+
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{ | l | l | l | l | l | l |}
+        \hline
+        Versions & Screenshot time (s) & Generation time (s)& Total time (s) \\ \hline
+        100 & 20 & 38 & 58 \\ \hline
+        250 & 53 & 77 & 130 \\ \hline
+        500 & 115 & 149 & 264\\ \hline
+        1000 & 187 & 307 & 494 \\ \hline
+        2000 & 293 & 542 & 835 \\ \hline
+        \end{tabular}
+    \end{center}
+    \caption{720p, orbit}
+    \label{tab:performance3}
+
+    \begin{center}
+        \begin{tabular}{ | l | l | l | l | l | l |}
+        \hline
+        Versions & Screenshot time (s) & Generation time (s)& Total time (s) \\ \hline
+        100 & 20 & 39 & 59 \\ \hline
+        250 & 50 & 45 & 95\\ \hline
+        500 & 111 & 76 & 187\\ \hline
+        1000 & 180 & 140 & 320 \\ \hline
+        2000 & 286 & 274 & 560 \\ \hline
+        \end{tabular}
+    \end{center}
+    \caption{720p, no orbit}
+    \label{tab:performance4}
+
+    \begin{center}
+        \begin{tabular}{ | l | l | l | l | l | l |}
+        \hline
+        Versions & Screenshot time (s) & Generation time (s)& Total time (s) \\ \hline
+        100 & 22 & 66 & 88 \\ \hline
+        250 & 60 & 156 & 216\\ \hline
+        500 & 128 & 433 & 561\\ \hline
+        1000 & 197 & 637 & 834\\ \hline
+        2000 & 323 & 1323 & 1646\\ \hline
+        \end{tabular}
+    \end{center}
+    \caption{1080p, orbit}
+    \label{tab:performance5}
+
+    \begin{center}
+        \begin{tabular}{ | l | l | l | l | l | l |}
+        \hline
+        Versions & Screenshot time (s) & Generation time (s)& Total time (s) \\ \hline
+        100 & 21 & 41 & 62 \\ \hline
+        250 & 58 & 104 & 162\\ \hline
+        500 & 127 & 158 & 285\\ \hline
+        1000 & 216 & 299 & 515\\ \hline
+        2000 & 319 & 597 & 916\\ \hline
+        \end{tabular}
+    \end{center}
+    \caption{1080p, no orbit}
+    \label{tab:performance6}
+
+    \begin{center}
+        \begin{tabular}{ | l | l | l | l | l | l |}
+        \hline
+        Versions & Screenshot time (s) & Generation time (s)& Total time (s) \\ \hline
+        100 & 25 & 107 & 132 \\ \hline
+        250 & 69 & 255 & 324\\ \hline
+        500 & 152 & 505 & 657\\ \hline
+        1000 & 205 & 989 & 1194\\ \hline
+        2000 & 437 & 1931 & 2398\\ \hline
+        \end{tabular}
+    \end{center}
+    \caption{1440p, orbit}
+    \label{tab:performance7}
+    \end{table}
+
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{ | l | l | l | l | l | l |}
+        \hline
+        Versions & Screenshot time (s) & Generation time (s)& Total time (s) \\ \hline
+        100 & 25 & 64 & 89 \\ \hline
+        250 & 69 & 137 & 206\\ \hline
+        500 & 155 & 266 & 421\\ \hline
+        1000 & 204 & 526 & 730\\ \hline
+        2000 & 436 & 1050 & 1516\\ \hline
+        \end{tabular}
+    \end{center}
+    \caption{1440p, no orbit}
+    \label{tab:performance8}
+\end{table}
+
+Figure \ref{fig:plot} shows a plot of the performance results with the different video settings:
+
+\begin{figure} [H]
+\centering
+\includegraphics[width=1\textwidth]{pictures/figure1.png}
+\caption{Comparison of the video generation performance}
+\label{fig:plot}
+\end{figure}
+
+As we can see from the results, we can notice how the videos generated with the orbit option take almost twice as much time
+as the ones without orbit. This is because when we are not orbiting, there's a higher chance for pixels not to change between multiple screenshots, which means that there's less data to handle and the generation takes less time.
+Also, as expected, increasing the resolution also increases the generation time: from what we can see, changing to a higher resolution increases the total time by around 50\%.
+
+\subsubsection{Implementation issues} \label{Implementation issues}
+
+The video generation feature is implemented almost completely on the client side. This is because to be able to do this on the server side we would have had to also be able to create the visualizations on the server side, which, without changing our current architecture, is not possible: Three.js, the library used to create the 3D cities, is a strictly web focused library. To be able to use it on the server we then would need a way to build a second web app on the server, which most likely means changing the whole server side.
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -596,7 +602,7 @@ We presented the data with the model of the city, that aims at improving and sim
 We implemented various features, like display of element information on hover, search and tagging of elements, visualization of source code, free 3D navigation that includes pitch, yaw, pan and zoom, navigation of versions and video generation of the history of a repository.
 
 For the future work on WebCity, it would be interesting to further improve the amount of features provided to the user for navigating and analysing the visualization, and perhaps finding new or alternative ways to increase the number of metrics and general information displayed about the system.
-Some work could also target performance, aiming at reducing the waiting time for the setup of the visualization and the generation of videos for big and historically complex repositories, improving the scalability of the application.
+Some work could also involve the performance, aiming at reducing the waiting time for the setup of the visualization and the generation of videos for big and historically complex repositories, improving the scalability of the application.
 
 It would also be interesting to broaden the number of supported languages. At the moment, only the analysis of Java based repositories is available: in the future support for other languages could be added, with perhaps different visualizations or by creating a single visualization that shows classes and packages of different languages and the relationships between them.
 
