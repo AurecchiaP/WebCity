@@ -30,7 +30,7 @@ The application also allows to see the different versions of the history of the 
 To generate the 3D visualizations there are some non-trivial aspects that are taken into consideration.
 We looked into which parts and metrics of a class are important and are worth showing in the visualization, while also deciding how these characteristics of the classes have to be mapped to the city.
 To position the buildings and the districts in the city in a meaningul and efficent way we developed a rectangle-packing algorithm that reduces the wasted space while maintaining the hierarchical structure of the classes and the packages, and also taking into consideration how they have evolved through time.
-We also focused on making sure that the 3D representation is performing well -- and appealing -- when we have thousands of packages or classes to visualize.
+We also focused on making sure that the 3D representation is well performing -- and appealing -- when we have thousands of packages or classes to visualize.
 }
 
 
@@ -178,7 +178,7 @@ Finding the exact class or package that we are looking for can be difficult to d
 The search function we implemented allows to filter through all the elements of the visualization. While the user types,
 the list of matching elements updates to only show the ones that match the input field. The user can then select the desired item of the list to have the camera point to it,
 and have its color changed to be able to tell it apart from the other elements.
-Figure \ref{fig:tag} shows the user looking for ``JavaPac'' in the search bar, and getting a list of results that match the input text; when then the user selected ``app/models/JavaPackage.java:JavaPackage'' the building got highlighted and the camera focused it.
+Figure \ref{fig:search} shows the user looking for ``JavaPac'' in the search bar, and getting a list of results that match the input text; when then the user selected ``app/models/JavaPackage.java:JavaPackage'' the building got highlighted and the camera focused it.
 
 \begin{figure} [H]
 \centering
@@ -337,8 +337,7 @@ The parsing can take a long time when both the number of versions and the size o
 It is difficult to improve its performance, because to do the parsing of the files we depend on JavaParser (which is quite fast anyways), and, more importantly, because to parse a version we first have to do its checkout from the local repository, which means that doing the parsing in parallel could not be done in a simple and intuitive way, as we cannot do multiple checkouts at the same time.
 
 \subsection{Rectangle packing} \label{Rectangle packing}
-% // cite yuri page\\
-Once the server side is done parsing all the versions of the repository, it means that we have gathered the data and the information on the metrics for the whole system, and we are ready to prepare the information that will then be used to generate the visualization. This means that we have to calculate the positions for all the classes and the packages of the system. Since the model we are using is the model of the city, the classes will be represented as buildings where the height is mapped to the Number of Methods and the width and depth of the building are mapped to the Number of Attributes. Since the buildings will all have a square base, we used a rectangle packing algorithm to decide where to position the different classes and buildings relative to each other.
+Once the server side is done parsing all the versions of the repository, it means that we have gathered the data and the information on the metrics for the whole system, and we are ready to prepare the information that will then be used to generate the visualization. This means that we have to calculate the positions for all the classes and the packages of the system. Since the model we are using is the model of the city, the classes will be represented as buildings where the height is mapped to the Number of Methods and the width and depth of the building are mapped to the Number of Attributes. Since the buildings will all have a square base, we used a rectangle packing algorithm \cite{yuriyBlog} to decide where to position the different classes and buildings relative to each other.
 
 We iterate the packages using a depth first algorithm, and we start placing them at the bottom left corner of the representation, in our case at position (0, 0). We do it recursively with a depth first algorithm because we have to know how much space the children packages occupy before we know how much space we need for the parent.
 Once we reach a child package that doesn't contain any sub-package, or if we already placed every children package in this current package, we position the classes that are directly contained in this package. We either pack the classes vertically or horizontally, depending on which makes the bounding box of our current package grow less, to minimize the wasted space and to keep the visualization compact.
@@ -447,7 +446,7 @@ We picked the following Java repositories to test the performance of the applica
 \end{itemize}
 
 Table \ref{tab:performance2} contains information about the sizes of the repositories, and table \ref{tab:performance} shows the results of our tests.
-Min. class number and Max. class number represent the lowest and highest amount of numbers found in any version of the repository,  and Min. LoC and Max. LoC represent the sum of the number of lines of code of the Java files in which the classes were found.
+Min. class number and Max. class number represent the lowest and highest amounts of classes found in any version of the repository,  and Min. LoC and Max. LoC represent the sum of the number of lines of code of the Java files in which the classes were found.
 
 \begin{table}[H]
     \begin{center}
@@ -583,7 +582,7 @@ Figure \ref{fig:plot} shows a plot of the performance results with the different
 \label{fig:plot}
 \end{figure}
 
-As we can see from the results, we can notice how the videos generated with the orbit option take almost twice as much time
+As we can see from the results, we can notice how the videos generated with the orbit option takes almost twice as much time
 as the ones without orbit. This is because when we are not orbiting, there's a higher chance for pixels not to change between multiple screenshots, which means that there's less data to handle and the generation takes less time.
 Also, as expected, increasing the resolution also increases the generation time: from what we can see, changing to a higher resolution increases the total time by around 50\%.
 
@@ -601,7 +600,7 @@ We presented WebCity, a browser-based application that was inspired by the work 
 We presented the data with the model of the city, that aims at improving and simplifying the usability of the system.
 We implemented various features, like display of element information on hover, search and tagging of elements, visualization of source code, free 3D navigation that includes pitch, yaw, pan and zoom, navigation of versions and video generation of the history of a repository.
 
-For the future work on WebCity, it would be interesting to further improve the amount of features provided to the user for navigating and analysing the visualization, and perhaps finding new or alternative ways to increase the number of metrics and general information displayed about the system.
+For the future work on WebCity, it would be interesting to further improve the amount of features provided to the user for navigating and analyzing the visualization, and perhaps finding new or alternative ways to increase the number of metrics and general information displayed about the system.
 Some work could also involve the performance, aiming at reducing the waiting time for the setup of the visualization and the generation of videos for big and historically complex repositories, improving the scalability of the application.
 
 It would also be interesting to broaden the number of supported languages. At the moment, only the analysis of Java based repositories is available: in the future support for other languages could be added, with perhaps different visualizations or by creating a single visualization that shows classes and packages of different languages and the relationships between them.
@@ -669,7 +668,7 @@ It would also be interesting to broaden the number of supported languages. At th
 
 
 %%%%%
-\newpage
+% \newpage
 \bibliographystyle{abbrv}
 \bibliography{references}
 
